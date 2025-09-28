@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Парадокс Умного Незнакомца: Как ИИ Понимает, Думает и Отвечает</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+</head>
+<body>
+    <div class="app" id="app">
+        <!-- Loading Screen -->
+        <div class="loading-screen" id="loading-screen">
+            <div class="loading-content">
+                <div class="loading-icon">🤖</div>
+                <h2>Loading Presentation...</h2>
+                <div class="loading-bar">
+                    <div class="loading-progress" id="loading-progress"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar" id="sidebar">
+            <div class="nav-header">
+                <h2 class="presentation-title">Парадокс Умного Незнакомца</h2>
+                <div class="presentation-controls">
+                    <button onclick="toggleFullscreen()" class="control-icon" title="Fullscreen (F5)">
+                        <span>🖥</span>
+                    </button>
+                    <button onclick="restartPresentation()" class="control-icon" title="Restart (Ctrl+R)">
+                        <span>⏮</span>
+                    </button>
+                    <button onclick="toggleSidebar()" class="control-icon mobile-only" title="Hide Sidebar">
+                        <span>📋</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="nav-sections" id="nav-sections">
+                <!-- Navigation tree will be populated by JavaScript -->
+                <div class="nav-loading">Loading slides...</div>
+            </div>
+
+            <div class="nav-footer">
+                <div class="presentation-info">
+                    <div class="slide-count" id="slide-count">Slide 1 of 8</div>
+                    <div class="presentation-time" id="presentation-time">00:00</div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content" id="main-content">
+            <!-- Slide Display Area -->
+            <div class="slide-display-container">
+                <div class="slide-display" id="slide-display">
+                    <iframe
+                        id="slide-frame"
+                        class="slide-iframe"
+                        frameborder="0"
+                        scrolling="auto"
+                        sandbox="allow-scripts allow-popups">
+                    </iframe>
+                </div>
+
+                <!-- Progress Indicators -->
+                <div class="progress-container">
+                    <div class="progress-info">
+                        <span class="progress-dots" id="progress-dots">●○○○○</span>
+                        <span class="progress-text" id="progress-text">Action 1 of 5</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill" style="width: 20%"></div>
+                    </div>
+                    <div class="progress-hint" id="progress-hint">
+                        Next: Space or click to reveal content
+                    </div>
+                </div>
+
+                <!-- Slide Controls -->
+                <div class="slide-controls">
+                    <button onclick="prevAction()" class="control-btn prev-btn" id="prev-btn" disabled>
+                        <span class="btn-icon">←</span>
+                        <span class="btn-text">Previous</span>
+                    </button>
+
+                    <div class="control-center">
+                        <button onclick="toggleFullscreen()" class="control-btn fullscreen-btn" title="Fullscreen (F5)">
+                            <span class="btn-icon">⛶</span>
+                        </button>
+                        <button onclick="restartSlide()" class="control-btn restart-btn" title="Restart Slide">
+                            <span class="btn-icon">⟲</span>
+                        </button>
+                        <button onclick="toggleTabs()" class="control-btn tabs-btn" title="Toggle Content (Tab)">
+                            <span class="btn-icon">📝</span>
+                        </button>
+                    </div>
+
+                    <button onclick="nextAction()" class="control-btn next-btn primary" id="next-btn">
+                        <span class="btn-text">Next</span>
+                        <span class="btn-icon">→</span>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Resize Handle -->
+        <div class="resize-handle" id="resize-handle" title="Drag to resize content area"></div>
+
+        <!-- Content Tabs Area -->
+        <section class="content-tabs" id="content-tabs">
+            <div class="tab-headers">
+                <button class="tab-header active" onclick="switchTab('analysis')" data-tab="analysis">
+                    <span class="tab-icon">📊</span>
+                    <span class="tab-text">Analysis</span>
+                </button>
+                <button class="tab-header" onclick="switchTab('speech')" data-tab="speech">
+                    <span class="tab-icon">🎤</span>
+                    <span class="tab-text">Speech Notes</span>
+                </button>
+                <button class="tab-header" onclick="switchTab('design')" data-tab="design">
+                    <span class="tab-icon">🎨</span>
+                    <span class="tab-text">Design</span>
+                </button>
+                <button class="tab-header" onclick="switchTab('sources')" data-tab="sources">
+                    <span class="tab-icon">📚</span>
+                    <span class="tab-text">Sources</span>
+                </button>
+            </div>
+
+            <div class="tab-content" id="tab-content">
+                <div class="tab-pane active" id="tab-analysis">
+                    <div class="content-loading">Loading analysis...</div>
+                </div>
+                <div class="tab-pane" id="tab-speech">
+                    <div class="content-loading">Loading speech notes...</div>
+                </div>
+                <div class="tab-pane" id="tab-design">
+                    <div class="content-loading">Loading design specifications...</div>
+                </div>
+                <div class="tab-pane" id="tab-sources">
+                    <div class="content-loading">Loading sources...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mobile Navigation Overlay -->
+        <div class="mobile-overlay" id="mobile-overlay" onclick="toggleSidebar()"></div>
+
+        <!-- Help Modal -->
+        <div class="help-modal" id="help-modal">
+            <div class="help-content">
+                <div class="help-header">
+                    <h3>Keyboard Shortcuts</h3>
+                    <button onclick="closeHelp()" class="close-btn">×</button>
+                </div>
+                <div class="help-body">
+                    <div class="shortcut-group">
+                        <h4>Navigation</h4>
+                        <div class="shortcut-item">
+                            <kbd>Space</kbd> / <kbd>→</kbd> - Next action/slide
+                        </div>
+                        <div class="shortcut-item">
+                            <kbd>Backspace</kbd> / <kbd>←</kbd> - Previous action/slide
+                        </div>
+                        <div class="shortcut-item">
+                            <kbd>Home</kbd> - First slide
+                        </div>
+                        <div class="shortcut-item">
+                            <kbd>End</kbd> - Last slide
+                        </div>
+                        <div class="shortcut-item">
+                            <kbd>1-9</kbd> - Jump to slide number
+                        </div>
+                    </div>
+                    <div class="shortcut-group">
+                        <h4>Presentation</h4>
+                        <div class="shortcut-item">
+                            <kbd>F5</kbd> - Enter/exit fullscreen
+                        </div>
+                        <div class="shortcut-item">
+                            <kbd>Esc</kbd> - Exit fullscreen
+                        </div>
+                        <div class="shortcut-item">
+                            <kbd>Tab</kbd> - Toggle content tabs
+                        </div>
+                        <div class="shortcut-item">
+                            <kbd>Ctrl</kbd> + <kbd>R</kbd> - Restart presentation
+                        </div>
+                    </div>
+                    <div class="shortcut-group">
+                        <h4>Content</h4>
+                        <div class="shortcut-item">
+                            <kbd>Ctrl</kbd> + <kbd>1-4</kbd> - Switch content tabs
+                        </div>
+                        <div class="shortcut-item">
+                            <kbd>?</kbd> - Show this help
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Modal -->
+        <div class="error-modal" id="error-modal">
+            <div class="error-content">
+                <div class="error-header">
+                    <h3>⚠️ Error Loading Content</h3>
+                    <button onclick="closeError()" class="close-btn">×</button>
+                </div>
+                <div class="error-body" id="error-message">
+                    An error occurred while loading the presentation content.
+                </div>
+                <div class="error-actions">
+                    <button onclick="retryLoad()" class="btn-primary">Retry</button>
+                    <button onclick="closeError()" class="btn-secondary">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Button -->
+    <button class="help-button" onclick="showHelp()" title="Show Help (?)">
+        <span>?</span>
+    </button>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+</html>
