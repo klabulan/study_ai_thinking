@@ -1,0 +1,128 @@
+{
+  "partId": 1,
+  "partTitle": "Парадокс Умного Незнакомца",
+  "subtitle": "Как ИИ понимает, думает и отвечает",
+  "totalDuration": "3.5-4 минуты",
+  "presenter": "Dr. Elena Cognitive",
+  "structure": "multi-slide",
+  "slides": [
+    {
+      "id": "1-1",
+      "file": "slides/1-1-title.html",
+      "title": "Титульный слайд",
+      "duration": 30,
+      "maxActions": 0,
+      "type": "title",
+      "purpose": "Приветствие и установление контакта"
+    },
+    {
+      "id": "1-2",
+      "file": "slides/1-2-contrast.html",
+      "title": "Основной контрастный слайд",
+      "duration": 180,
+      "maxActions": 4,
+      "type": "content",
+      "purpose": "Демонстрация парадоксов ИИ"
+    }
+  ],
+  "keyThemes": [
+    "cognitive_paradox",
+    "ai_limitations",
+    "business_metrics",
+    "scientific_breakthrough"
+  ],
+  "cognitiveInsights": [
+    {
+      "insight": "67% людей ожидают от ИИ человеческой логики",
+      "source": "research/5_1_cognitive/myth_busting_guide.md"
+    },
+    {
+      "insight": "ИИ организует знания как многомерную паутину, не как энциклопедию",
+      "source": "Anthropic Circuit Tracing 2024"
+    },
+    {
+      "insight": "45% проблем с ИИ связаны с неправильными ментальными моделями",
+      "source": "research/3_2_errors/comprehensive_research_results.md"
+    }
+  ],
+  "businessExamples": [
+    {
+      "company": "Тинькофф Банк",
+      "metric": "95% кредитных решений автоматически",
+      "timeframe": "2 минуты",
+      "paradox": "Эффективность без объяснимости"
+    },
+    {
+      "company": "OpenAI o1-preview",
+      "metric": "78 из 80 сложных диагнозов",
+      "paradox": "Превосходит врачей, но выдумывает лекарства"
+    },
+    {
+      "company": "Anthropic Claude 3",
+      "metric": "16+ миллионов концепций извлечено",
+      "breakthrough": "Первый взгляд внутрь 'чёрного ящика'"
+    }
+  ],
+  "speechSynchronization": [
+    {
+      "slide": "1-1",
+      "action": 0,
+      "timing": "0-30 секунд",
+      "content": "Заголовок и приветствие Dr. Elena Cognitive",
+      "focus": "Установление контакта с аудиторией, теплое открытие"
+    },
+    {
+      "slide": "1-2",
+      "action": 0,
+      "timing": "30-45 секунд",
+      "content": "Переход к контрастам, заголовок УМЕЕТ vs НЕ УМЕЕТ",
+      "focus": "Интрига и подготовка к парадоксам"
+    },
+    {
+      "slide": "1-2",
+      "action": 1,
+      "timing": "45 секунд - 1.5 минуты",
+      "content": "Медицинский парадокс: 78/80 диагнозов vs галлюцинации",
+      "focus": "Первый шок от противоречия"
+    },
+    {
+      "slide": "1-2",
+      "action": 2,
+      "timing": "1.5-2.5 минуты",
+      "content": "Парадокс генерации: джазовая импровизация vs непланирование",
+      "focus": "Углубление понимания механизмов ИИ"
+    },
+    {
+      "slide": "1-2",
+      "action": 3,
+      "timing": "2.5-3.5 минуты",
+      "content": "Финансовый парадокс: Тинькофф 95% vs чёрный ящик",
+      "focus": "Бизнес-реальность и проблема объяснимости"
+    },
+    {
+      "slide": "1-2",
+      "action": 4,
+      "timing": "3.5-4 минуты",
+      "content": "Статистика: 70% используют, 40% не понимают",
+      "focus": "Масштаб проблемы и переход к следующей части"
+    }
+  ],
+  "visualElements": {
+    "cognitiveParallel": "images/cognitive-parallel.svg",
+    "colorScheme": {
+      "capabilities": "#00a86b",
+      "limitations": "#ff6b6b",
+      "insights": "#667eea",
+      "neutral": "#718096"
+    },
+    "typography": {
+      "primary": "system-ui, sans-serif",
+      "monospace": "SF Mono, Monaco, monospace"
+    }
+  },
+  "transitions": {
+    "fadeIn": "0.3s ease",
+    "slideUp": "translateY(20px) → translateY(0)",
+    "reveal": "opacity: 0 → 1"
+  }
+}

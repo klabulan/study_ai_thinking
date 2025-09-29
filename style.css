@@ -103,6 +103,45 @@ kbd {
     grid-template-rows: 1fr;
 }
 
+.app.fullscreen .main-content {
+    height: 100vh;
+    grid-area: main;
+}
+
+.app.fullscreen .slide-display-container {
+    height: 100vh;
+    padding: 0;
+}
+
+.app.fullscreen .slide-display {
+    flex: 1;
+    border-radius: 0;
+    background: var(--background);
+    margin: 0;
+    height: calc(100vh - var(--controls-height));
+}
+
+.app.fullscreen .slide-iframe {
+    height: 100%;
+    border-radius: 0;
+}
+
+.app.fullscreen .slide-controls {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: var(--z-help);
+    border-top: 1px solid var(--border-color);
+}
+
+.app.fullscreen .progress-container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+}
+
 .app.fullscreen .sidebar {
     position: fixed;
     left: calc(-1 * var(--sidebar-width));

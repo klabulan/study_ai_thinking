@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" style="background: white;">
+  <!-- Definitions for gradients and patterns -->
+  <defs>
+    <linearGradient id="humanGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00a86b;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#00a86b;stop-opacity:0.3" />
+    </linearGradient>
+    <linearGradient id="aiGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#667eea;stop-opacity:0.3" />
+    </linearGradient>
+  </defs>
+
+  <!-- Human Brain Side -->
+  <g id="human-side">
+    <!-- Background -->
+    <rect x="50" y="50" width="300" height="200" rx="15" fill="url(#humanGrad)" stroke="#00a86b" stroke-width="2"/>
+
+    <!-- Title -->
+    <text x="200" y="80" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#00a86b">
+      Человеческий Мозг
+    </text>
+
+    <!-- Brain Icon -->
+    <circle cx="200" cy="120" r="25" fill="#00a86b" opacity="0.2"/>
+    <text x="200" y="127" text-anchor="middle" font-size="24">🧠</text>
+
+    <!-- Process Steps -->
+    <g transform="translate(120, 160)">
+      <rect x="0" y="0" width="60" height="25" rx="12" fill="#00a86b" opacity="0.8"/>
+      <text x="30" y="16" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="white">Восприятие</text>
+
+      <rect x="70" y="0" width="60" height="25" rx="12" fill="#00a86b" opacity="0.6"/>
+      <text x="100" y="16" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="white">Обработка</text>
+
+      <rect x="140" y="0" width="60" height="25" rx="12" fill="#00a86b" opacity="0.8"/>
+      <text x="170" y="16" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="white">Ответ</text>
+    </g>
+
+    <!-- Arrows between steps -->
+    <path d="M 180 172 L 190 172" stroke="#00a86b" stroke-width="2" marker-end="url(#arrowGreen)"/>
+    <path d="M 250 172 L 260 172" stroke="#00a86b" stroke-width="2" marker-end="url(#arrowGreen)"/>
+  </g>
+
+  <!-- Parallel Symbol -->
+  <g id="parallel-symbol">
+    <text x="400" y="160" text-anchor="middle" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#718096">≈</text>
+    <text x="400" y="190" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#718096">НЕ РАВНО</text>
+  </g>
+
+  <!-- AI System Side -->
+  <g id="ai-side">
+    <!-- Background -->
+    <rect x="450" y="50" width="300" height="200" rx="15" fill="url(#aiGrad)" stroke="#667eea" stroke-width="2"/>
+
+    <!-- Title -->
+    <text x="600" y="80" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#667eea">
+      ИИ Система
+    </text>
+
+    <!-- AI Icon -->
+    <circle cx="600" cy="120" r="25" fill="#667eea" opacity="0.2"/>
+    <text x="600" y="127" text-anchor="middle" font-size="24">🤖</text>
+
+    <!-- Process Steps -->
+    <g transform="translate(520, 160)">
+      <rect x="0" y="0" width="60" height="25" rx="12" fill="#667eea" opacity="0.8"/>
+      <text x="30" y="16" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="white">Кодирование</text>
+
+      <rect x="70" y="0" width="60" height="25" rx="12" fill="#667eea" opacity="0.6"/>
+      <text x="100" y="16" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="white">Мышление</text>
+
+      <rect x="140" y="0" width="60" height="25" rx="12" fill="#667eea" opacity="0.8"/>
+      <text x="170" y="16" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="white">Генерация</text>
+    </g>
+
+    <!-- Arrows between steps -->
+    <path d="M 580 172 L 590 172" stroke="#667eea" stroke-width="2" marker-end="url(#arrowBlue)"/>
+    <path d="M 650 172 L 660 172" stroke="#667eea" stroke-width="2" marker-end="url(#arrowBlue)"/>
+  </g>
+
+  <!-- Arrow markers -->
+  <defs>
+    <marker id="arrowGreen" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <polygon points="0,0 0,6 9,3" fill="#00a86b"/>
+    </marker>
+    <marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <polygon points="0,0 0,6 9,3" fill="#667eea"/>
+    </marker>
+  </defs>
+
+  <!-- Key Insight -->
+  <text x="400" y="280" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-style="italic" fill="#718096">
+    Похожие результаты, разные механизмы
+  </text>
+</svg>

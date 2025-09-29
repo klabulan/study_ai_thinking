@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slide 2.1: Разрыв Использования и Понимания</title>
+    <style>
+        :root {
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --primary-text: #1e3a5f;
+            --secondary-text: #6c757d;
+            --background: #ffffff;
+            --background-secondary: #f8f9fa;
+            --border-color: #e2e8f0;
+
+            --font-family-main: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+
+            --transition-normal: 0.5s ease;
+            --transition-fast: 0.3s ease;
+        }
+
+        body {
+            margin: 0;
+            padding: var(--spacing-xl);
+            font-family: var(--font-family-main);
+            background: var(--background);
+            color: var(--primary-text);
+            height: 100vh;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .slide-header {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .main-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-text);
+            margin-bottom: var(--spacing-lg);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+        }
+
+        .main-title.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .investment-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: var(--spacing-xl);
+            height: calc(100vh - 200px);
+            max-height: 500px;
+            align-items: center;
+            margin: var(--spacing-xl) 0;
+        }
+
+        .investment-block {
+            background: white;
+            border-radius: 16px;
+            padding: var(--spacing-xl);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transition: all var(--transition-normal);
+        }
+
+        .investment-block.technology {
+            background: linear-gradient(135deg, var(--success-color), #20c997);
+            color: white;
+            transform: translateX(-100px);
+        }
+
+        .investment-block.understanding {
+            background: linear-gradient(135deg, var(--danger-color), #fd7e14);
+            color: white;
+            transform: translateX(100px);
+        }
+
+        .investment-block.revealed {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .block-header {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-lg);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .block-amount {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .block-percentage {
+            font-size: 2rem;
+            font-weight: 700;
+            opacity: 0.9;
+        }
+
+        .separator {
+            width: 4px;
+            height: 200px;
+            position: relative;
+            align-self: center;
+        }
+
+        .crack {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg,
+                transparent 0%,
+                var(--danger-color) 20%,
+                var(--danger-color) 80%,
+                transparent 100%);
+            position: relative;
+            opacity: 0;
+            transition: opacity var(--transition-normal);
+        }
+
+        .crack.revealed {
+            opacity: 1;
+        }
+
+        .crack::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -2px;
+            right: -2px;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent 0px,
+                var(--danger-color) 1px,
+                transparent 2px,
+                transparent 8px
+            );
+            animation: crackling 3s ease-in-out infinite;
+        }
+
+        @keyframes crackling {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
+        .understanding .question-marks {
+            font-size: 4rem;
+            opacity: 0.6;
+            margin: var(--spacing-md) 0;
+        }
+
+        .result-banner {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(220, 53, 69, 0.95);
+            color: white;
+            padding: var(--spacing-lg);
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 600;
+            transform: translateY(100%);
+            transition: transform var(--transition-normal);
+        }
+
+        .result-banner.revealed {
+            transform: translateY(0);
+        }
+
+        .result-icon {
+            font-size: 2rem;
+            margin-right: var(--spacing-md);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .investment-grid {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-md);
+            }
+
+            .separator {
+                width: 200px;
+                height: 4px;
+                justify-self: center;
+            }
+
+            .crack {
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg,
+                    transparent 0%,
+                    var(--danger-color) 20%,
+                    var(--danger-color) 80%,
+                    transparent 100%);
+            }
+
+            .main-title {
+                font-size: 2rem;
+            }
+
+            .block-amount {
+                font-size: 2.5rem;
+            }
+
+            body {
+                padding: var(--spacing-md);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="slide-header">
+        <h1 class="main-title" data-action="0">ИНВЕСТИЦИИ В ИИ В 2024 ГОДУ</h1>
+    </div>
+
+    <!-- Main content grid -->
+    <div class="investment-grid">
+        <!-- Technology Investment Block -->
+        <div class="investment-block technology" data-action="1">
+            <div class="block-header">Технологии</div>
+            <div class="block-amount">$200 млрд</div>
+            <div class="block-percentage">90%</div>
+        </div>
+
+        <!-- Separator Crack -->
+        <div class="separator">
+            <div class="crack" data-action="1"></div>
+        </div>
+
+        <!-- Understanding Investment Block -->
+        <div class="investment-block understanding" data-action="1">
+            <div class="block-header">Понимание</div>
+            <div class="question-marks">???</div>
+            <div class="block-percentage">10%</div>
+        </div>
+    </div>
+
+    <!-- Result Banner -->
+    <div class="result-banner" data-action="2">
+        <span class="result-icon">❌</span>
+        <strong>РЕЗУЛЬТАТ:</strong> 97% предприятий испытывают трудности с получением ценности от ИИ
+    </div>
+
+    <script>
+        let currentAction = -1;
+
+        // Auto-reveal header on load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                revealSection(0);
+            }, 300);
+        });
+
+        function revealSection(actionIndex) {
+            console.log('Slide 2-1: revealSection called with:', actionIndex);
+            currentAction = actionIndex;
+
+            // Reveal elements for current and previous actions
+            for (let i = 0; i <= actionIndex; i++) {
+                const elements = document.querySelectorAll(`[data-action="${i}"]`);
+                console.log(`Action ${i}: found ${elements.length} elements`);
+                elements.forEach((element, index) => {
+                    console.log(`Revealing element:`, element);
+                    setTimeout(() => {
+                        element.classList.add('revealed');
+                    }, index * 200); // Stagger animations
+                });
+            }
+
+            // Hide elements for future actions
+            for (let i = actionIndex + 1; i <= 2; i++) {
+                const elements = document.querySelectorAll(`[data-action="${i}"]`);
+                elements.forEach(element => {
+                    element.classList.remove('revealed');
+                });
+            }
+        }
+
+        // Global function for external control
+        window.revealSection = revealSection;
+
+        // Listen for postMessage from parent window
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'revealSection') {
+                console.log('Investment gap slide received postMessage:', event.data);
+                revealSection(event.data.actionIndex);
+            }
+        });
+
+        // Expose slide metadata
+        window.slideMetadata = {
+            id: "2-1",
+            title: "Разрыв Использования и Понимания",
+            duration: 90, // 1.5 minutes
+            maxActions: 2,
+            type: "content",
+            actions: [
+                { index: 0, description: "Заголовок инвестиций", timing: "0-20s" },
+                { index: 1, description: "Контраст инвестиций", timing: "20s-60s" },
+                { index: 2, description: "Результат BCG", timing: "60s-90s" }
+            ]
+        };
+    </script>
+</body>
+</html>

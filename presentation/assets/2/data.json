@@ -1,0 +1,179 @@
+{
+  "part": {
+    "id": 2,
+    "title": "Тайна Чёрного Ящика",
+    "section": "Проблематизация",
+    "description": "Раскрытие проблемы разрыва между использованием и пониманием ИИ через российские примеры и бизнес-кейсы",
+    "duration": 240,
+    "speaker": "Dr. Elena Cognitive",
+    "customSlides": true,
+    "theme": {
+      "primary": "#667eea",
+      "secondary": "#764ba2",
+      "success": "#28a745",
+      "danger": "#dc3545",
+      "warning": "#ffc107",
+      "info": "#17a2b8"
+    }
+  },
+  "slides": [
+    {
+      "id": "2-1",
+      "file": "slides/2-1-investment-gap.html",
+      "title": "Разрыв Использования и Понимания",
+      "type": "content",
+      "duration": 90,
+      "maxActions": 2,
+      "description": "Контраст между $200 млрд инвестиций в технологии и 10% инвестиций в понимание",
+      "actions": [
+        {
+          "index": 0,
+          "description": "Заголовок инвестиций",
+          "timing": "0-20s",
+          "elements": ["main-title"]
+        },
+        {
+          "index": 1,
+          "description": "Контраст инвестиций",
+          "timing": "20s-60s",
+          "elements": ["investment-blocks", "separator-crack"]
+        },
+        {
+          "index": 2,
+          "description": "Результат BCG",
+          "timing": "60s-90s",
+          "elements": ["result-banner"]
+        }
+      ]
+    },
+    {
+      "id": "2-2",
+      "file": "slides/2-2-russian-cases.html",
+      "title": "Российские Кейсы",
+      "type": "content",
+      "duration": 90,
+      "maxActions": 2,
+      "description": "Конкретные примеры слепого доверия: МегаФон и московские поликлиники",
+      "actions": [
+        {
+          "index": 0,
+          "description": "Заголовок",
+          "timing": "0-10s",
+          "elements": ["main-title"]
+        },
+        {
+          "index": 1,
+          "description": "Кейс МегаФон",
+          "timing": "10s-50s",
+          "elements": ["megafon-card"]
+        },
+        {
+          "index": 2,
+          "description": "Кейс поликлиники",
+          "timing": "50s-90s",
+          "elements": ["medical-card"]
+        }
+      ]
+    },
+    {
+      "id": "2-3",
+      "file": "slides/2-3-cost-of-ignorance.html",
+      "title": "Цена Непонимания",
+      "type": "content",
+      "duration": 60,
+      "maxActions": 2,
+      "description": "Бизнес-риски непонимания ИИ и кейс Amazon recruiting bot",
+      "actions": [
+        {
+          "index": 0,
+          "description": "Заголовок",
+          "timing": "0-10s",
+          "elements": ["main-title"]
+        },
+        {
+          "index": 1,
+          "description": "Статистика потерь ROI",
+          "timing": "10s-35s",
+          "elements": ["cost-card"]
+        },
+        {
+          "index": 2,
+          "description": "Пример Amazon",
+          "timing": "35s-60s",
+          "elements": ["case-study"]
+        }
+      ]
+    },
+    {
+      "id": "2-4",
+      "file": "slides/2-4-black-box-opening.html",
+      "title": "Открытие Чёрного Ящика",
+      "type": "transition",
+      "duration": 60,
+      "maxActions": 1,
+      "description": "Переход к решению: от проблемы к надежде на понимание",
+      "actions": [
+        {
+          "index": 0,
+          "description": "Заголовок и вступление",
+          "timing": "0-20s",
+          "elements": ["main-title", "subtitle"]
+        },
+        {
+          "index": 1,
+          "description": "Открытие ящика и призыв к действию",
+          "timing": "20s-60s",
+          "elements": ["black-box-animation", "breakthrough-text", "cta-section"]
+        }
+      ]
+    }
+  ],
+  "speechNotes": {
+    "transitions": [
+      {
+        "from": "Task 1",
+        "to": "2-1",
+        "text": "Эти парадоксы — не просто технологические курьёзы. За ними стоит гораздо более серьёзная проблема."
+      },
+      {
+        "from": "2-4",
+        "to": "Task 3",
+        "text": "Итак, первый шаг — погружение в мир кодирования. Как ИИ превращает хаос реальности в упорядоченные числа?"
+      }
+    ],
+    "keyPoints": [
+      "$200 млрд инвестиций в технологии vs 10% в понимание",
+      "97% предприятий испытывают трудности с получением ценности от ИИ",
+      "МегаФон: 84% точность, но невозможность объяснения",
+      "Поликлиники: ответственность врача без понимания алгоритма",
+      "Amazon recruiting bot: миллионы потрачены, проект закрыт",
+      "Компании с низкой ИИ-грамотностью: 2.1x меньше отдачи",
+      "Прорывы в интерпретируемости 2024-2025",
+      "7% профессионалов понимают логику ИИ"
+    ]
+  },
+  "metadata": {
+    "created": "2025-01-29",
+    "version": "1.0",
+    "architecture": "multi-slide",
+    "communication": "postMessage",
+    "testing": {
+      "testSystem": "test-system.html",
+      "navigation": "navigation.html",
+      "individualSlides": true
+    },
+    "integration": {
+      "mainSystem": "../../../script.js",
+      "slideConfig": "slideConfig[2]",
+      "actionMapping": "global -> slide-specific"
+    },
+    "sources": [
+      "IDC Global AI Investment Report 2024",
+      "BCG AI Value Creation Study 2024",
+      "McKinsey AI Literacy ROI Analysis",
+      "Section Research Productivity Study",
+      "Amazon Recruiting Bot Case Study",
+      "Verified Russian cases: МегаФон, Moscow clinics"
+    ]
+  }
+}

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slide 1: Парадокс Умного Незнакомца</title>
+    <style>
+        :root {
+            --primary-text: #2d3748;
+            --secondary-text: #718096;
+            --accent-color: #667eea;
+            --success-color: #00a86b;
+            --warning-color: #ff6b6b;
+            --background: #ffffff;
+            --background-secondary: #f7fafc;
+            --border-color: #e2e8f0;
+
+            --font-family-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-family-mono: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+
+            --transition-fast: 0.15s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+        }
+
+        body {
+            font-family: var(--font-family-main);
+            color: var(--primary-text);
+            line-height: 1.6;
+            padding: var(--spacing-xl);
+            max-width: 100%;
+            box-sizing: border-box;
+            margin: 0;
+            background: var(--background);
+        }
+
+        .slide-section {
+            transition: all var(--transition-normal);
+            opacity: 0;
+            transform: translateY(20px);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .slide-section.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .slide-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--primary-text);
+            margin-bottom: var(--spacing-lg);
+            line-height: 1.2;
+            text-align: center;
+        }
+
+        .slide-subtitle {
+            font-size: 1.25rem;
+            color: var(--secondary-text);
+            margin-bottom: var(--spacing-xl);
+            text-align: center;
+            font-style: italic;
+        }
+
+        .paradox-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-xl);
+            margin: var(--spacing-xl) 0;
+        }
+
+        .capability-section {
+            background: rgba(0, 168, 107, 0.05);
+            border-left: 4px solid var(--success-color);
+            padding: var(--spacing-lg);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .limitation-section {
+            background: rgba(255, 107, 107, 0.05);
+            border-left: 4px solid var(--warning-color);
+            padding: var(--spacing-lg);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .section-header {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            text-align: center;
+        }
+
+        .capability-section .section-header {
+            color: var(--success-color);
+        }
+
+        .limitation-section .section-header {
+            color: var(--warning-color);
+        }
+
+        .example-item {
+            margin-bottom: var(--spacing-md);
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .metric {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .description {
+            color: var(--secondary-text);
+            font-size: 0.95rem;
+        }
+
+        .highlight {
+            background: rgba(102, 126, 234, 0.1);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: 4px;
+            color: var(--accent-color);
+            font-weight: 500;
+        }
+
+        .statistics-bar {
+            background: var(--background-secondary);
+            padding: var(--spacing-lg);
+            border-radius: 8px;
+            text-align: center;
+            margin-top: var(--spacing-xl);
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-md);
+        }
+
+        .stat-item {
+            background: white;
+            padding: var(--spacing-md);
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            display: block;
+        }
+
+        .stat-label {
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+            margin-top: var(--spacing-xs);
+        }
+
+        .cognitive-insight {
+            background: rgba(102, 126, 234, 0.05);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            padding: var(--spacing-lg);
+            border-radius: 8px;
+            margin: var(--spacing-xl) 0;
+        }
+
+        .insight-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+        }
+
+        .insight-title::before {
+            content: "🧠";
+            margin-right: var(--spacing-sm);
+        }
+
+        .breakthrough {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(0, 168, 107, 0.1));
+            border: 2px solid var(--accent-color);
+            padding: var(--spacing-lg);
+            border-radius: 12px;
+            margin: var(--spacing-xl) 0;
+        }
+
+        .breakthrough-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: var(--spacing-md);
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .paradox-container {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-lg);
+            }
+
+            .slide-title {
+                font-size: 2rem;
+            }
+
+            .slide-section {
+                padding: var(--spacing-md);
+            }
+
+            .stat-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="slide-content">
+    <!-- Title and Introduction -->
+    <div class="slide-section" data-action="0">
+        <h1 class="slide-title">Парадокс Умного Незнакомца</h1>
+        <p class="slide-subtitle">Как ИИ понимает, думает и отвечает</p>
+    </div>
+
+    <!-- Main Paradox Comparison -->
+    <div class="slide-section" data-action="1">
+        <div class="paradox-container">
+            <div class="capability-section">
+                <div class="section-header">УМЕЕТ 🎯</div>
+
+                <div class="example-item">
+                    <div class="metric">78 из 80 диагнозов</div>
+                    <div class="description">Сложнейшие медицинские случаи — лучше врачей-экспертов</div>
+                </div>
+
+                <div class="example-item">
+                    <div class="metric">95% кредитных решений</div>
+                    <div class="description"><span class="highlight">Тинькофф</span>: 2 минуты, миллиарды рублей</div>
+                </div>
+
+                <div class="example-item">
+                    <div class="metric">16M концепций</div>
+                    <div class="description">Организует знания как многомерную паутину</div>
+                </div>
+
+                <div class="example-item">
+                    <div class="metric">Джазовая импровизация</div>
+                    <div class="description">Генерирует связный текст без предварительного плана</div>
+                </div>
+            </div>
+
+            <div class="limitation-section">
+                <div class="section-header">НЕ УМЕЕТ ❌</div>
+
+                <div class="example-item">
+                    <div class="metric">38% опасных ошибок</div>
+                    <div class="description">Выдумывает лекарства в медицинских записях</div>
+                </div>
+
+                <div class="example-item">
+                    <div class="metric">Объяснить решения</div>
+                    <div class="description">Почему Ивану одобрили, а Петру — отказали?</div>
+                </div>
+
+                <div class="example-item">
+                    <div class="metric">Понимать логику</div>
+                    <div class="description">Нет модели мира — только статистические паттерны</div>
+                </div>
+
+                <div class="example-item">
+                    <div class="metric">Планировать ответ</div>
+                    <div class="description">Не знает, чем закончит предложение, когда начинает</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cognitive Science Insight -->
+    <div class="slide-section" data-action="2">
+        <div class="cognitive-insight">
+            <div class="insight-title">Когнитивный Парадокс</div>
+            <p><strong>67% людей</strong> неосознанно ожидают от ИИ человеческой логики. Мы говорим "он думает", "решил", "понял". Но это опасная иллюзия.</p>
+            <p>ИИ — это не цифровой человек. Это принципиально иная форма обработки информации, возникшая из математики и статистики, а не из биологии и эволюции.</p>
+        </div>
+    </div>
+
+    <!-- Scientific Breakthrough -->
+    <div class="slide-section" data-action="3">
+        <div class="breakthrough">
+            <div class="breakthrough-title">Прорыв 2024-2025: Заглядывая в Чёрный Ящик</div>
+            <div style="text-align: center; margin: var(--spacing-lg) 0;">
+                <img src="images/cognitive-parallel.svg" alt="Cognitive Parallel Diagram" style="max-width: 100%; height: auto; border-radius: 8px;">
+            </div>
+            <p><strong>Anthropic</strong> впервые "вскрыли" Claude 3 Sonnet и извлекли <span class="highlight">16+ миллионов</span> интерпретируемых концепций.</p>
+            <p><strong>Революционное открытие:</strong> ИИ организует знания не как энциклопедия (от А до Я), а как многомерную паутину ассоциаций, где "близость" определяется статистической корреляцией в обучающих данных.</p>
+        </div>
+    </div>
+
+    <!-- Current Reality Statistics -->
+    <div class="slide-section" data-action="4">
+        <div class="statistics-bar">
+            <h3 style="color: var(--primary-text); margin-bottom: var(--spacing-md);">Реальность ИИ в России 2025</h3>
+            <div class="stat-grid">
+                <div class="stat-item">
+                    <span class="stat-number">70%</span>
+                    <div class="stat-label">компаний используют ИИ</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">40%</span>
+                    <div class="stat-label">жалуются на нехватку понимания</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">45%</span>
+                    <div class="stat-label">проблем из-за неправильных ментальных моделей</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize with first section visible
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstSection = document.querySelector('[data-action="0"]');
+            if (firstSection) {
+                firstSection.classList.add('revealed');
+            }
+        });
+
+        // Global function for external control
+        window.revealSection = function(actionIndex) {
+            const sections = document.querySelectorAll('[data-action]');
+            sections.forEach((section, index) => {
+                const sectionAction = parseInt(section.getAttribute('data-action'));
+                if (sectionAction <= actionIndex) {
+                    section.classList.add('revealed');
+                } else {
+                    section.classList.remove('revealed');
+                }
+            });
+        };
+    </script>
+</body>
+</html>

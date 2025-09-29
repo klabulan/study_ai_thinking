@@ -1,45 +1,79 @@
-# Slide Rendering System Specification
+# Slide Rendering System Specification v2.0
 
-## Main Window Display Integration
+## Multi-Slide Architecture Integration
 
-This document details how slide pages integrate with the main presentation window, ensuring consistent rendering, proper progressive disclosure, and seamless user experience.
+This document details how the enhanced multi-slide system integrates with the main presentation window, using **postMessage communication** for secure cross-origin iframe control and dynamic slide switching within parts.
 
-## Rendering Architecture
+## Enhanced Rendering Architecture
 
-### Dual Content System
+### Multi-Slide Content System
 
 **Content Sources:**
-1. **Visual Content**: `presentation/assets/[slideId]/index.html` → Main display area
-2. **Text Content**: `presentation/[slideId]/*.md` → Bottom tabs
+1. **Multi-slide parts**: `presentation/assets/[partId]/slides/[slideId].html` → Individual slide files
+2. **Single slide parts**: `presentation/assets/[partId]/index.html` → Legacy combined slides
+3. **Text Content**: `presentation/[partId]/*.md` → Bottom tabs and documentation
 
 **Integration Flow:**
 ```
-User Navigation → Load Slide → Display Visual + Load Text → Progressive Disclosure
+User Navigation → Load Part Configuration → Determine Slide Type →
+Load Individual Slide → PostMessage Communication → Progressive Disclosure
 ```
 
-### Main Window Layout Integration
+### Part Configuration Detection
 
-**HTML Structure:**
+**slideConfig Structure:**
+```javascript
+// Multi-slide part configuration
+1: {
+    title: "Парадокс умного незнакомца",
+    section: "Введение",
+    customSlides: true,
+    slides: [
+        {
+            file: "presentation/assets/1/slides/1-1-title.html",
+            title: "Титульный слайд",
+            actions: 0
+        },
+        {
+            file: "presentation/assets/1/slides/1-2-contrast.html",
+            title: "Контрастный слайд",
+            actions: 4
+        }
+    ]
+},
+
+// Single slide part configuration
+2: {
+    title: "Тайна чёрного ящика",
+    section: "Введение"
+    // No customSlides = uses legacy loading
+}
+```
+
+### PostMessage Communication Architecture
+
+**Main System Integration:**
 ```html
 <div class="app">
     <!-- Sidebar Navigation -->
     <nav class="sidebar">
-        <!-- Navigation tree (existing) -->
+        <!-- Navigation tree with part-based structure -->
     </nav>
 
     <!-- Main Content Area -->
     <main class="main-content">
-        <!-- Slide Header -->
+        <!-- Part Header -->
         <header class="slide-header">
             <h1 class="slide-title-main" id="current-slide-title">
-                Slide 1: Парадокс умного незнакомца
+                Part 1: Парадокс умного незнакомца
             </h1>
 
-            <!-- Progress Indicators -->
+            <!-- Enhanced Progress Indicators -->
             <div class="progress-container">
                 <div class="progress-info">
                     <span class="progress-dots" id="progress-dots">●●○○○</span>
                     <span class="progress-text" id="progress-text">Action 2 of 5</span>
+                    <span class="slide-indicator" id="slide-indicator">Slide 2/2</span>
                 </div>
                 <div class="progress-bar">
                     <div class="progress-fill" id="progress-fill" style="width: 40%"></div>
@@ -50,7 +84,7 @@ User Navigation → Load Slide → Display Visual + Load Text → Progressive Di
             </div>
         </header>
 
-        <!-- Slide Display Area -->
+        <!-- Slide Display Area with PostMessage Support -->
         <div class="slide-display-container">
             <div class="slide-display">
                 <iframe
@@ -62,7 +96,7 @@ User Navigation → Load Slide → Display Visual + Load Text → Progressive Di
                 </iframe>
             </div>
 
-            <!-- Slide Controls -->
+            <!-- Enhanced Slide Controls -->
             <div class="slide-controls">
                 <button onclick="prevAction()" class="control-btn prev-btn" id="prev-btn">
                     <span class="btn-icon">←</span>
@@ -76,10 +110,13 @@ User Navigation → Load Slide → Display Visual + Load Text → Progressive Di
                     <button onclick="restartSlide()" class="control-btn restart-btn">
                         <span class="btn-icon">⟲</span>
                     </button>
+                    <button onclick="debugSlide()" class="control-btn debug-btn" title="Show slide metadata">
+                        <span class="btn-icon">🔍</span>
+                    </button>
                 </div>
 
                 <button onclick="nextAction()" class="control-btn next-btn primary" id="next-btn">
-                    <span class="btn-text">Next</span>
+                    <span class="btn-text">Continue</span>
                     <span class="btn-icon">→</span>
                 </button>
             </div>
@@ -88,24 +125,26 @@ User Navigation → Load Slide → Display Visual + Load Text → Progressive Di
 
     <!-- Content Tabs Area -->
     <section class="content-tabs" id="content-tabs">
-        <!-- Tab system (existing) -->
+        <!-- Tab system with part-based content -->
     </section>
 </div>
 ```
 
-## Slide Content Loading System
+## Multi-Slide Content Loading System
 
-### Enhanced Content Loader
+### Enhanced Part Loader with Dynamic Slide Switching
 
 ```javascript
-class SlideRenderer {
+class MultiSlideRenderer {
     constructor() {
-        this.currentSlide = null;
+        this.currentPart = null;
+        this.currentSlideIndex = 0;
         this.slideFrame = null;
         this.isLoading = false;
+        this.partConfig = null;
     }
 
-    async loadSlide(slideId) {
+    async loadPart(partId) {
         if (this.isLoading) return;
         this.isLoading = true;
 
@@ -113,34 +152,98 @@ class SlideRenderer {
             // Show loading state
             this.showLoadingState();
 
-            // Load both visual and text content
-            const content = await this.loadSlideContent(slideId);
+            // Load part configuration
+            this.partConfig = this.getPartConfiguration(partId);
 
-            // Update main window
-            await this.renderSlideContent(slideId, content);
+            // Determine loading strategy
+            if (this.partConfig.customSlides) {
+                await this.loadMultiSlidePart(partId);
+            } else {
+                await this.loadSingleSlidePart(partId);
+            }
 
             // Update tabs content
-            this.updateTabsContent(content);
+            this.updateTabsContent(partId);
 
-            // Initialize progressive disclosure
-            this.initializeProgressiveDisclosure(content);
+            // Initialize progressive disclosure with postMessage
+            this.initializePostMessageDisclosure();
 
             // Update navigation state
-            this.updateNavigationState(slideId);
+            this.updateNavigationState(partId);
 
         } catch (error) {
-            this.handleLoadError(slideId, error);
+            this.handleLoadError(partId, error);
         } finally {
             this.hideLoadingState();
             this.isLoading = false;
         }
     }
 
-    async loadSlideContent(slideId) {
+    async loadMultiSlidePart(partId) {
+        // Load first slide by default
+        this.currentSlideIndex = 0;
+        const firstSlide = this.partConfig.slides[0];
+        await this.loadIndividualSlide(firstSlide.file);
+
+        // Update part title
+        this.updatePartTitle(partId, this.partConfig.title);
+
+        // Calculate total actions across all slides
+        this.calculateTotalActions();
+    }
+
+    async loadIndividualSlide(slideFile) {
+        const iframe = document.getElementById('slide-frame');
+
+        // Load slide with proper error handling
+        iframe.src = slideFile;
+
+        return new Promise((resolve, reject) => {
+            iframe.onload = () => {
+                console.log(`Loaded slide: ${slideFile}`);
+                this.slideFrame = iframe.contentWindow;
+
+                // Wait for slide initialization
+                setTimeout(() => {
+                    this.verifySlideMetadata();
+                    resolve();
+                }, 100);
+            };
+
+            iframe.onerror = () => {
+                console.error(`Failed to load slide: ${slideFile}`);
+                reject(new Error(`Failed to load slide: ${slideFile}`));
+            };
+        });
+    }
+
+    verifySlideMetadata() {
+        try {
+            if (this.slideFrame && this.slideFrame.slideMetadata) {
+                const metadata = this.slideFrame.slideMetadata;
+                console.log('Slide metadata:', metadata);
+
+                // Update UI with slide-specific information
+                this.updateSlideIndicator(metadata);
+            } else {
+                console.warn('Slide metadata not available');
+            }
+        } catch (e) {
+            console.warn('Cannot access slide metadata (cross-origin):', e.message);
+        }
+    }
+
+    async loadSingleSlidePart(partId) {
+        // Legacy single slide loading
+        const content = await this.loadPartContent(partId);
+        await this.renderSlideContent(partId, content);
+    }
+
+    async loadPartContent(partId) {
         const content = {};
 
         // Load text content for tabs
-        const textPath = `presentation/${slideId}/`;
+        const textPath = `presentation/${partId}/`;
         const textFiles = {
             analysis: 'extended_analysis.md',
             speech: 'speech_notes.md',
@@ -157,28 +260,25 @@ class SlideRenderer {
             }
         }
 
-        // Load visual content for main display
-        const visualPath = `presentation/assets/${slideId}/index.html`;
-        try {
-            const visualResponse = await fetch(visualPath);
-            if (visualResponse.ok) {
-                content.visual = await visualResponse.text();
-                content.hasCustomVisual = true;
-            } else {
-                content.visual = this.generateDefaultSlideHTML(slideId, content);
-                content.hasCustomVisual = false;
-            }
-        } catch (error) {
-            content.visual = this.generateDefaultSlideHTML(slideId, content);
-            content.hasCustomVisual = false;
-        }
-
-        // Parse actions from both sources
-        content.speechActions = this.parseActionsFromText(content.speech);
-        content.visualActions = this.parseActionsFromHTML(content.visual);
-        content.maxActions = Math.max(content.speechActions, content.visualActions, 1);
-
         return content;
+    }
+
+    calculateTotalActions() {
+        let totalActions = 0;
+        this.partConfig.slides.forEach(slide => {
+            totalActions += slide.actions || 0;
+        });
+        this.totalActions = Math.max(totalActions, 1);
+        return this.totalActions;
+    }
+
+    getPartConfiguration(partId) {
+        // Access slideConfig from main app
+        return this.app.slideConfig[partId] || {
+            title: `Part ${partId}`,
+            section: "Unknown",
+            customSlides: false
+        };
     }
 
     async renderSlideContent(slideId, content) {
@@ -418,62 +518,140 @@ class SlideRenderer {
 }
 ```
 
-## Progressive Disclosure Implementation
+## PostMessage Progressive Disclosure Implementation
 
-### Action Management System
+### Enhanced Action Management with Dynamic Slide Switching
 
 ```javascript
-class ProgressiveDisclosure {
-    constructor(slideRenderer) {
-        this.slideRenderer = slideRenderer;
-        this.currentAction = 0;
-        this.maxActions = 1;
+class PostMessageProgressiveDisclosure {
+    constructor(multiSlideRenderer) {
+        this.renderer = multiSlideRenderer;
+        this.currentGlobalAction = 0;
+        this.totalActions = 1;
+        this.currentSlideIndex = 0;
     }
 
-    initializeSlide(slideContent) {
-        this.maxActions = slideContent.maxActions;
-        this.currentAction = 0;
+    initializePart(partConfig) {
+        this.partConfig = partConfig;
+
+        if (partConfig.customSlides) {
+            this.totalActions = this.renderer.calculateTotalActions();
+        } else {
+            this.totalActions = this.parseActionsFromContent();
+        }
+
+        this.currentGlobalAction = 0;
         this.updateProgressDisplay();
         this.revealContent(0);
     }
 
     nextAction() {
-        if (this.currentAction < this.maxActions - 1) {
-            this.currentAction++;
-            this.revealContent(this.currentAction);
+        if (this.currentGlobalAction < this.totalActions - 1) {
+            this.currentGlobalAction++;
+            this.revealContent(this.currentGlobalAction);
             this.updateProgressDisplay();
-            return true; // Action within slide
+            return true; // Action within part
         }
-        return false; // Need to go to next slide
+        return false; // Need to go to next part
     }
 
     prevAction() {
-        if (this.currentAction > 0) {
-            this.currentAction--;
-            this.revealContent(this.currentAction);
+        if (this.currentGlobalAction > 0) {
+            this.currentGlobalAction--;
+            this.revealContent(this.currentGlobalAction);
             this.updateProgressDisplay();
-            return true; // Action within slide
+            return true; // Action within part
         }
-        return false; // Need to go to previous slide
+        return false; // Need to go to previous part
     }
 
-    revealContent(actionIndex) {
-        if (!this.slideRenderer.slideFrame) return;
+    revealContent(globalActionIndex) {
+        const iframe = document.getElementById('slide-frame');
+        if (!iframe) return;
 
-        const sections = this.slideRenderer.slideFrame.querySelectorAll('[data-action]');
+        if (this.partConfig && this.partConfig.customSlides) {
+            // Multi-slide part: determine target slide and switch if needed
+            const targetSlide = this.getTargetSlideForAction(globalActionIndex);
+            const slideActionIndex = this.getSlideActionIndex(globalActionIndex, targetSlide);
 
+            // Check if we need to switch slides
+            if (!iframe.src.includes(targetSlide.file)) {
+                console.log(`Switching to slide: ${targetSlide.file}`);
+                iframe.src = targetSlide.file;
+                iframe.onload = () => {
+                    setTimeout(() => {
+                        this.sendRevealMessage(iframe, slideActionIndex);
+                    }, 100);
+                };
+                return;
+            }
+
+            // Same slide: just send message
+            this.sendRevealMessage(iframe, slideActionIndex);
+        } else {
+            // Single slide part: use legacy method
+            this.legacyRevealContent(globalActionIndex);
+        }
+    }
+
+    getTargetSlideForAction(globalActionIndex) {
+        // Map global actions to specific slides
+        // Example for Part 1: Actions 0 → slide 1, Actions 1-4 → slide 2
+        if (globalActionIndex === 0) {
+            return this.partConfig.slides[0];
+        } else {
+            return this.partConfig.slides[1];
+        }
+    }
+
+    getSlideActionIndex(globalActionIndex, targetSlide) {
+        // Map global actions to slide-specific actions
+        // Example: Global action 3 → slide action 2 for second slide
+        if (targetSlide === this.partConfig.slides[0]) {
+            return 0; // Title slide only has action 0
+        } else {
+            return Math.max(0, globalActionIndex - 1); // Subtract offset for second slide
+        }
+    }
+
+    sendRevealMessage(iframe, actionIndex) {
+        try {
+            console.log(`Sending postMessage: revealSection(${actionIndex})`);
+            iframe.contentWindow.postMessage({
+                type: 'revealSection',
+                actionIndex: actionIndex
+            }, '*');
+        } catch (e) {
+            console.warn('PostMessage failed, trying fallback:', e.message);
+            this.fallbackRevealContent(iframe, actionIndex);
+        }
+    }
+
+    fallbackRevealContent(iframe, actionIndex) {
+        // Direct DOM access fallback for same-origin slides
+        try {
+            if (iframe.contentWindow && iframe.contentWindow.revealSection) {
+                iframe.contentWindow.revealSection(actionIndex);
+            }
+        } catch (e) {
+            console.error('Both postMessage and direct access failed:', e.message);
+        }
+    }
+
+    legacyRevealContent(actionIndex) {
+        // Legacy method for single-slide parts
+        const iframe = document.getElementById('slide-frame');
+        if (!iframe || !iframe.contentDocument) return;
+
+        const sections = iframe.contentDocument.querySelectorAll('[data-action]');
         sections.forEach((section) => {
             const sectionAction = parseInt(section.getAttribute('data-action'));
-
             if (sectionAction <= actionIndex) {
                 section.classList.add('revealed');
             } else {
                 section.classList.remove('revealed');
             }
         });
-
-        // Smooth scroll to revealed content
-        this.scrollToCurrentContent(actionIndex);
     }
 
     scrollToCurrentContent(actionIndex) {
@@ -490,85 +668,220 @@ class ProgressiveDisclosure {
         // Update dots
         const dotsElement = document.getElementById('progress-dots');
         let dotsHTML = '';
-        for (let i = 0; i < this.maxActions; i++) {
-            dotsHTML += i <= this.currentAction ? '●' : '○';
+        for (let i = 0; i < this.totalActions; i++) {
+            dotsHTML += i <= this.currentGlobalAction ? '●' : '○';
         }
         dotsElement.textContent = dotsHTML;
 
         // Update text
         const textElement = document.getElementById('progress-text');
-        textElement.textContent = `Action ${this.currentAction + 1} of ${this.maxActions}`;
+        textElement.textContent = `Action ${this.currentGlobalAction + 1} of ${this.totalActions}`;
+
+        // Update slide indicator for multi-slide parts
+        const slideIndicator = document.getElementById('slide-indicator');
+        if (this.partConfig && this.partConfig.customSlides) {
+            const currentSlideIndex = this.getCurrentSlideIndex();
+            slideIndicator.textContent = `Slide ${currentSlideIndex + 1}/${this.partConfig.slides.length}`;
+            slideIndicator.style.display = 'inline';
+        } else {
+            slideIndicator.style.display = 'none';
+        }
 
         // Update progress bar
         const fillElement = document.getElementById('progress-fill');
-        const percentage = ((this.currentAction + 1) / this.maxActions) * 100;
+        const percentage = ((this.currentGlobalAction + 1) / this.totalActions) * 100;
         fillElement.style.width = `${percentage}%`;
 
         // Update hint
         const hintElement = document.getElementById('progress-hint');
-        if (this.currentAction < this.maxActions - 1) {
-            hintElement.textContent = 'Next: Space or click to continue';
+        if (this.currentGlobalAction < this.totalActions - 1) {
+            const nextSlideIndex = this.getNextSlideIndex();
+            if (nextSlideIndex !== this.getCurrentSlideIndex()) {
+                const nextSlide = this.partConfig.slides[nextSlideIndex];
+                hintElement.textContent = `Next: ${nextSlide.title}`;
+            } else {
+                hintElement.textContent = 'Next: Space or click to continue';
+            }
         } else {
-            hintElement.textContent = 'Next: Space for next slide';
+            hintElement.textContent = 'Next: Space for next part';
         }
 
         // Update button states
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
 
-        prevBtn.disabled = this.currentAction === 0;
-        nextBtn.textContent = this.currentAction < this.maxActions - 1 ? 'Continue' : 'Next Slide';
+        prevBtn.disabled = this.currentGlobalAction === 0;
+        nextBtn.textContent = this.currentGlobalAction < this.totalActions - 1 ? 'Continue' : 'Next Part';
+    }
+
+    getCurrentSlideIndex() {
+        if (!this.partConfig || !this.partConfig.customSlides) return 0;
+
+        // Determine current slide based on global action
+        const targetSlide = this.getTargetSlideForAction(this.currentGlobalAction);
+        return this.partConfig.slides.indexOf(targetSlide);
+    }
+
+    getNextSlideIndex() {
+        if (!this.partConfig || !this.partConfig.customSlides) return 0;
+
+        if (this.currentGlobalAction < this.totalActions - 1) {
+            const nextTargetSlide = this.getTargetSlideForAction(this.currentGlobalAction + 1);
+            return this.partConfig.slides.indexOf(nextTargetSlide);
+        }
+        return this.getCurrentSlideIndex();
     }
 }
 ```
 
 ## Error Handling and Fallbacks
 
-### Default Content Generation
+### PostMessage Communication Error Handling
 
 ```javascript
-function generateDefaultSlideHTML(slideId, content) {
-    const config = SLIDE_CONFIG[slideId];
-    const speechSections = content.speech.split(/\[СЛАЙД\]/);
+class ErrorHandler {
+    static handleSlideLoadError(slideFile, error) {
+        console.error(`Failed to load slide: ${slideFile}`, error);
 
-    return `
-        <!DOCTYPE html>
-        <html lang="ru">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Slide ${slideId}: ${config.title}</title>
-        </head>
-        <body class="slide-content">
-            <div class="slide-section" data-action="0">
-                <h1 class="slide-title">${config.title}</h1>
-                <p class="slide-subtitle">Generated from speech notes</p>
-            </div>
+        // Show error state in iframe
+        const iframe = document.getElementById('slide-frame');
+        const errorHTML = this.generateErrorSlideHTML(slideFile, error);
 
-            ${speechSections.map((section, index) => {
-                if (!section.trim()) return '';
-                return `
-                    <div class="slide-section" data-action="${index + 1}">
-                        <div class="auto-generated-content">
-                            ${this.convertTextToHTML(section.trim())}
-                        </div>
+        const blob = new Blob([errorHTML], { type: 'text/html' });
+        const blobUrl = URL.createObjectURL(blob);
+        iframe.src = blobUrl;
+
+        // Clean up after loading
+        iframe.onload = () => URL.revokeObjectURL(blobUrl);
+    }
+
+    static handlePostMessageError(actionIndex, error) {
+        console.warn('PostMessage communication failed:', error);
+
+        // Try direct DOM access as fallback
+        const iframe = document.getElementById('slide-frame');
+        try {
+            if (iframe.contentWindow && iframe.contentWindow.revealSection) {
+                iframe.contentWindow.revealSection(actionIndex);
+                console.log('Fallback direct access successful');
+            }
+        } catch (fallbackError) {
+            console.error('All communication methods failed:', fallbackError);
+            this.showCommunicationError();
+        }
+    }
+
+    static generateErrorSlideHTML(slideFile, error) {
+        return `
+            <!DOCTYPE html>
+            <html lang="ru">
+            <head>
+                <meta charset="UTF-8">
+                <title>Error Loading Slide</title>
+                <style>
+                    body {
+                        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+                        padding: 2rem;
+                        text-align: center;
+                        color: #dc3545;
+                    }
+                    .error-container {
+                        max-width: 600px;
+                        margin: 0 auto;
+                        padding: 2rem;
+                        border: 2px solid #dc3545;
+                        border-radius: 8px;
+                        background: #fff5f5;
+                    }
+                    .error-title {
+                        font-size: 1.5rem;
+                        margin-bottom: 1rem;
+                    }
+                    .error-details {
+                        font-size: 0.9rem;
+                        color: #666;
+                        margin-top: 1rem;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="error-container">
+                    <h1 class="error-title">⚠️ Slide Loading Error</h1>
+                    <p>Failed to load slide:</p>
+                    <code>${slideFile}</code>
+                    <div class="error-details">
+                        <strong>Error:</strong> ${error.message || error}
                     </div>
-                `;
-            }).join('')}
-        </body>
-        </html>
-    `;
+                    <div class="error-details">
+                        <strong>Solution:</strong> Check that the slide file exists and is accessible.
+                    </div>
+                </div>
+            </body>
+            </html>
+        `;
+    }
+
+    static showCommunicationError() {
+        const hint = document.getElementById('progress-hint');
+        if (hint) {
+            hint.textContent = '⚠️ Slide communication error - check console';
+            hint.style.color = '#dc3545';
+        }
+    }
 }
 
-function convertTextToHTML(text) {
-    return text
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.+?)\*/g, '<em>$1</em>')
-        .replace(/`(.+?)`/g, '<code>$1</code>')
-        .replace(/\n\n/g, '</p><p>')
-        .replace(/^(.+)$/gm, '<p>$1</p>')
-        .replace(/<p><\/p>/g, '');
-}
+// Global error handlers
+window.addEventListener('error', (event) => {
+    if (event.target.tagName === 'IFRAME') {
+        console.error('Iframe error:', event);
+        ErrorHandler.handleSlideLoadError(event.target.src, event.error);
+    }
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+    if (event.reason && event.reason.message && event.reason.message.includes('slide')) {
+        console.error('Slide-related promise rejection:', event.reason);
+    }
+});
 ```
 
-This rendering system ensures seamless integration between slide content and the main presentation window while maintaining consistent styling and smooth progressive disclosure functionality.
+### Debugging and Development Tools
+
+```javascript
+// Debugging functions for development
+function debugSlide() {
+    const iframe = document.getElementById('slide-frame');
+    if (!iframe) {
+        console.log('No iframe found');
+        return;
+    }
+
+    console.log('=== Slide Debug Info ===');
+    console.log('Iframe src:', iframe.src);
+
+    try {
+        if (iframe.contentWindow && iframe.contentWindow.slideMetadata) {
+            console.log('Slide metadata:', iframe.contentWindow.slideMetadata);
+        } else {
+            console.log('No slide metadata accessible');
+        }
+    } catch (e) {
+        console.log('Cannot access slide content (cross-origin)');
+    }
+
+    // Test postMessage communication
+    iframe.contentWindow.postMessage({
+        type: 'debug',
+        message: 'Debug test from main window'
+    }, '*');
+}
+
+// Listen for debug messages from slides
+window.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'debug') {
+        console.log('Debug message from slide:', event.data);
+    }
+});
+```
+
+This enhanced rendering system provides robust **postMessage communication**, dynamic slide switching within parts, comprehensive error handling, and debugging tools for development. The system supports both multi-slide parts with individual HTML files and legacy single-slide parts, ensuring backward compatibility while enabling sophisticated presentation structures.

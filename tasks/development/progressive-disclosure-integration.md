@@ -1,37 +1,82 @@
-# Progressive Disclosure Integration for Slide Pages
+# Progressive Disclosure Integration v2.0 - PostMessage Architecture
 
-## Complete Integration System
+## Multi-Slide Progressive Disclosure System
 
-This document details how progressive disclosure works across the presentation system, ensuring seamless coordination between slide content, navigation controls, and user interactions.
+This document details the enhanced progressive disclosure system using **postMessage communication** for secure cross-origin iframe control, supporting both multi-slide parts and single-slide parts with dynamic slide switching.
 
-## Progressive Disclosure Architecture
+## Enhanced Progressive Disclosure Architecture
 
-### Data Flow Overview
+### PostMessage Data Flow Overview
 
 ```
-User Action → Navigation Controller → Slide Renderer → Content Reveal → Progress Update
-     ↓              ↓                    ↓               ↓              ↓
-  Keyboard/Click → Parse Actions → Update iframe → CSS Transitions → UI Feedback
+User Action → Action Mapping → Slide Selection → PostMessage → Content Reveal → Progress Update
+     ↓              ↓              ↓               ↓              ↓              ↓
+  Keyboard/Click → Global→Local → Dynamic Switch → Cross-Origin → CSS Transitions → UI Feedback
 ```
 
-### Action Detection System
+### Multi-Slide Action Mapping
 
-**Multi-Source Action Parsing:**
+```
+Global Actions:    [0] ──→ [1] ──→ [2] ──→ [3] ──→ [4]
+                    │       │       │       │       │
+Slide Targets:   Slide1   Slide2  Slide2  Slide2  Slide2
+                    │       │       │       │       │
+Local Actions:     [0]     [0]     [1]     [2]     [3]
+```
+
+### Multi-Slide Action Detection System
+
+**Enhanced Part-Based Action Parsing:**
 ```javascript
-class ActionDetector {
-    static parseSlideActions(slideContent) {
+class MultiSlideActionDetector {
+    static parsePartActions(partConfig, partContent) {
+        if (partConfig.customSlides) {
+            // Multi-slide part: calculate total from slide configuration
+            return this.parseMultiSlideActions(partConfig);
+        } else {
+            // Single slide part: use legacy parsing
+            return this.parseSingleSlideActions(partContent);
+        }
+    }
+
+    static parseMultiSlideActions(partConfig) {
+        let totalActions = 0;
+        const slideActionMap = [];
+
+        partConfig.slides.forEach((slide, index) => {
+            const slideActions = slide.actions || 0;
+            slideActionMap.push({
+                slideIndex: index,
+                slideFile: slide.file,
+                slideTitle: slide.title,
+                localActions: slideActions,
+                globalActionStart: totalActions,
+                globalActionEnd: totalActions + slideActions - 1
+            });
+            totalActions += slideActions;
+        });
+
+        return {
+            totalActions: Math.max(totalActions, 1),
+            slideActionMap,
+            type: 'multi-slide',
+            partConfig
+        };
+    }
+
+    static parseSingleSlideActions(partContent) {
         const sources = {
-            speech: this.parseActionsFromSpeech(slideContent.speech),
-            visual: this.parseActionsFromHTML(slideContent.visual),
-            design: this.parseActionsFromDesign(slideContent.design)
+            speech: this.parseActionsFromSpeech(partContent.speech || ''),
+            visual: this.parseActionsFromHTML(partContent.visual || ''),
+            design: this.parseActionsFromDesign(partContent.design || '')
         };
 
-        // Take the maximum to ensure all content is accessible
         const maxActions = Math.max(...Object.values(sources), 1);
 
         return {
-            maxActions,
+            totalActions: maxActions,
             sources,
+            type: 'single-slide',
             actionMap: this.createActionMap(maxActions, sources)
         };
     }
@@ -94,34 +139,39 @@ class ActionDetector {
 }
 ```
 
-### Enhanced Progressive Disclosure Controller
+### PostMessage Progressive Disclosure Controller
 
 ```javascript
-class ProgressiveDisclosureController {
-    constructor(slideRenderer, navigationController) {
-        this.slideRenderer = slideRenderer;
+class PostMessageProgressiveDisclosureController {
+    constructor(multiSlideRenderer, navigationController) {
+        this.renderer = multiSlideRenderer;
         this.navigationController = navigationController;
-        this.currentSlide = null;
-        this.currentAction = 0;
-        this.maxActions = 1;
-        this.actionMap = [];
-        this.animationQueue = [];
+        this.currentPart = null;
+        this.currentGlobalAction = 0;
+        this.totalActions = 1;
+        this.slideActionMap = [];
+        this.partConfig = null;
         this.isAnimating = false;
+        this.currentSlideIndex = 0;
     }
 
-    initializeSlide(slideContent) {
-        // Parse actions from all sources
-        const actionData = ActionDetector.parseSlideActions(slideContent);
+    initializePart(partConfig, partContent) {
+        // Parse actions from part configuration
+        const actionData = MultiSlideActionDetector.parsePartActions(partConfig, partContent);
 
-        this.maxActions = actionData.maxActions;
-        this.actionMap = actionData.actionMap;
-        this.currentAction = 0;
+        this.partConfig = partConfig;
+        this.totalActions = actionData.totalActions;
+        this.slideActionMap = actionData.slideActionMap || [];
+        this.currentGlobalAction = 0;
+        this.currentSlideIndex = 0;
+
+        console.log('Initialized part with action data:', actionData);
 
         // Initialize UI state
         this.updateProgressDisplay();
         this.updateNavigationButtons();
 
-        // Reveal initial content
+        // Reveal initial content with postMessage
         this.revealContent(0, { immediate: true });
 
         // Set up interaction listeners
@@ -131,54 +181,167 @@ class ProgressiveDisclosureController {
     nextAction() {
         if (this.isAnimating) return false;
 
-        if (this.currentAction < this.maxActions - 1) {
-            this.currentAction++;
-            this.revealContent(this.currentAction);
+        if (this.currentGlobalAction < this.totalActions - 1) {
+            this.currentGlobalAction++;
+            this.revealContent(this.currentGlobalAction);
             this.updateProgressDisplay();
             this.updateNavigationButtons();
-            return true; // Action within slide
+            console.log(`Advanced to global action ${this.currentGlobalAction}`);
+            return true; // Action within part
         }
 
-        return false; // Need to advance to next slide
+        return false; // Need to advance to next part
     }
 
     prevAction() {
         if (this.isAnimating) return false;
 
-        if (this.currentAction > 0) {
-            this.currentAction--;
-            this.revealContent(this.currentAction);
+        if (this.currentGlobalAction > 0) {
+            this.currentGlobalAction--;
+            this.revealContent(this.currentGlobalAction);
             this.updateProgressDisplay();
             this.updateNavigationButtons();
-            return true; // Action within slide
+            console.log(`Moved back to global action ${this.currentGlobalAction}`);
+            return true; // Action within part
         }
 
-        return false; // Need to go to previous slide
+        return false; // Need to go to previous part
     }
 
-    async revealContent(actionIndex, options = {}) {
+    async revealContent(globalActionIndex, options = {}) {
         if (this.isAnimating && !options.immediate) return;
 
         this.isAnimating = !options.immediate;
 
         try {
-            // Update iframe content
-            await this.updateIframeContent(actionIndex, options);
+            console.log(`Revealing content for global action ${globalActionIndex}`);
 
-            // Update main window elements
-            this.updateMainWindowContent(actionIndex);
-
-            // Trigger animations
-            if (!options.immediate) {
-                await this.animateContentReveal(actionIndex);
+            if (this.partConfig && this.partConfig.customSlides) {
+                // Multi-slide part: use postMessage communication
+                await this.revealMultiSlideContent(globalActionIndex, options);
+            } else {
+                // Single slide part: use legacy method
+                await this.revealSingleSlideContent(globalActionIndex, options);
             }
 
+            // Update main window elements
+            this.updateMainWindowContent(globalActionIndex);
+
             // Handle special interactions
-            this.handleSpecialInteractions(actionIndex);
+            this.handleSpecialInteractions(globalActionIndex);
 
         } finally {
             this.isAnimating = false;
         }
+    }
+
+    async revealMultiSlideContent(globalActionIndex, options) {
+        const iframe = document.getElementById('slide-frame');
+        if (!iframe) return;
+
+        // Determine target slide and action mapping
+        const targetSlide = this.getTargetSlideForAction(globalActionIndex);
+        const slideActionIndex = this.getSlideActionIndex(globalActionIndex, targetSlide);
+
+        console.log(`Target slide: ${targetSlide.file}, slide action: ${slideActionIndex}`);
+
+        // Check if we need to switch slides
+        if (!iframe.src.includes(targetSlide.file)) {
+            console.log(`Switching slides: ${iframe.src} → ${targetSlide.file}`);
+
+            // Update current slide index
+            this.currentSlideIndex = this.partConfig.slides.indexOf(targetSlide);
+
+            // Load new slide
+            iframe.src = targetSlide.file;
+
+            // Wait for slide to load, then send message
+            iframe.onload = () => {
+                setTimeout(() => {
+                    this.sendRevealMessage(iframe, slideActionIndex);
+                }, 100);
+            };
+            return;
+        }
+
+        // Same slide: just send postMessage
+        this.sendRevealMessage(iframe, slideActionIndex);
+    }
+
+    getTargetSlideForAction(globalActionIndex) {
+        // Find which slide should handle this global action
+        for (let slideMap of this.slideActionMap) {
+            if (globalActionIndex >= slideMap.globalActionStart &&
+                globalActionIndex <= slideMap.globalActionEnd) {
+                return this.partConfig.slides[slideMap.slideIndex];
+            }
+        }
+
+        // Fallback to first slide
+        return this.partConfig.slides[0];
+    }
+
+    getSlideActionIndex(globalActionIndex, targetSlide) {
+        // Map global action to slide-specific action
+        const slideMap = this.slideActionMap.find(map =>
+            this.partConfig.slides[map.slideIndex] === targetSlide
+        );
+
+        if (slideMap) {
+            return Math.max(0, globalActionIndex - slideMap.globalActionStart);
+        }
+
+        return 0;
+    }
+
+    sendRevealMessage(iframe, slideActionIndex) {
+        try {
+            console.log(`Sending postMessage: revealSection(${slideActionIndex})`);
+            iframe.contentWindow.postMessage({
+                type: 'revealSection',
+                actionIndex: slideActionIndex
+            }, '*');
+        } catch (e) {
+            console.warn('PostMessage failed, trying fallback:', e.message);
+            this.fallbackRevealContent(iframe, slideActionIndex);
+        }
+    }
+
+    fallbackRevealContent(iframe, actionIndex) {
+        // Direct DOM access fallback for same-origin slides
+        try {
+            if (iframe.contentWindow && iframe.contentWindow.revealSection) {
+                iframe.contentWindow.revealSection(actionIndex);
+                console.log('Fallback direct access successful');
+            }
+        } catch (e) {
+            console.error('Both postMessage and direct access failed:', e.message);
+        }
+    }
+
+    async revealSingleSlideContent(globalActionIndex, options) {
+        // Legacy method for single-slide parts
+        const iframe = document.getElementById('slide-frame');
+        if (!iframe || !iframe.contentDocument) return;
+
+        const sections = iframe.contentDocument.querySelectorAll('[data-action]');
+
+        sections.forEach((section) => {
+            const sectionAction = parseInt(section.getAttribute('data-action'));
+
+            if (sectionAction <= globalActionIndex) {
+                section.classList.add('revealed');
+                section.style.opacity = '1';
+                section.style.transform = 'translateY(0)';
+            } else {
+                section.classList.remove('revealed');
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(20px)';
+            }
+        });
+
+        // Scroll to current content
+        this.scrollToCurrentContent(globalActionIndex, options.immediate);
     }
 
     async updateIframeContent(actionIndex, options) {
@@ -224,30 +387,47 @@ class ProgressiveDisclosureController {
         this.scrollToCurrentContent(actionIndex, options.immediate);
     }
 
-    updateMainWindowContent(actionIndex) {
-        // Update any main window elements that sync with slide content
-        const actionInfo = this.actionMap[actionIndex];
-
-        // Update progress hint text
+    updateMainWindowContent(globalActionIndex) {
+        // Update progress hint text with slide context
         const hintElement = document.getElementById('progress-hint');
         if (hintElement) {
-            if (actionIndex < this.maxActions - 1) {
-                hintElement.textContent = `Next: ${this.actionMap[actionIndex + 1]?.description || 'Continue'}`;
+            if (globalActionIndex < this.totalActions - 1) {
+                const nextSlideIndex = this.getNextSlideIndex();
+                if (nextSlideIndex !== this.currentSlideIndex && this.partConfig && this.partConfig.customSlides) {
+                    const nextSlide = this.partConfig.slides[nextSlideIndex];
+                    hintElement.textContent = `Next: ${nextSlide.title}`;
+                } else {
+                    hintElement.textContent = 'Next: Space or click to continue';
+                }
             } else {
-                hintElement.textContent = 'Next: Space for next slide';
+                hintElement.textContent = 'Next: Space for next part';
             }
         }
 
-        // Update slide subtitle if it changes per action
-        this.updateSlideSubtitle(actionIndex);
+        // Update slide subtitle for current action
+        this.updateSlideSubtitle(globalActionIndex);
     }
 
-    updateSlideSubtitle(actionIndex) {
-        const actionInfo = this.actionMap[actionIndex];
+    updateSlideSubtitle(globalActionIndex) {
         const subtitleElement = document.querySelector('.slide-subtitle-dynamic');
+        if (!subtitleElement) return;
 
-        if (subtitleElement && actionInfo.description) {
-            subtitleElement.textContent = actionInfo.description;
+        let description = '';
+
+        if (this.partConfig && this.partConfig.customSlides) {
+            // Multi-slide: show current slide and action
+            const currentSlide = this.partConfig.slides[this.currentSlideIndex];
+            const targetSlide = this.getTargetSlideForAction(globalActionIndex);
+            const slideActionIndex = this.getSlideActionIndex(globalActionIndex, targetSlide);
+            description = `${currentSlide.title} - Step ${slideActionIndex + 1}`;
+        } else {
+            // Single slide: use action map if available
+            const actionInfo = this.actionMap && this.actionMap[globalActionIndex];
+            description = actionInfo ? actionInfo.description : `Action ${globalActionIndex + 1}`;
+        }
+
+        if (description) {
+            subtitleElement.textContent = description;
             subtitleElement.classList.add('subtitle-updated');
 
             setTimeout(() => {
@@ -408,8 +588,8 @@ class ProgressiveDisclosureController {
         const dotsElement = document.getElementById('progress-dots');
         if (dotsElement) {
             let dotsHTML = '';
-            for (let i = 0; i < this.maxActions; i++) {
-                dotsHTML += i <= this.currentAction ? '●' : '○';
+            for (let i = 0; i < this.totalActions; i++) {
+                dotsHTML += i <= this.currentGlobalAction ? '●' : '○';
             }
             dotsElement.textContent = dotsHTML;
         }
@@ -417,21 +597,44 @@ class ProgressiveDisclosureController {
         // Update progress text
         const textElement = document.getElementById('progress-text');
         if (textElement) {
-            textElement.textContent = `Action ${this.currentAction + 1} of ${this.maxActions}`;
+            textElement.textContent = `Action ${this.currentGlobalAction + 1} of ${this.totalActions}`;
+        }
+
+        // Update slide indicator for multi-slide parts
+        const slideIndicator = document.getElementById('slide-indicator');
+        if (slideIndicator && this.partConfig && this.partConfig.customSlides) {
+            slideIndicator.textContent = `Slide ${this.currentSlideIndex + 1}/${this.partConfig.slides.length}`;
+            slideIndicator.style.display = 'inline';
+        } else if (slideIndicator) {
+            slideIndicator.style.display = 'none';
         }
 
         // Update progress bar
         const fillElement = document.getElementById('progress-fill');
         if (fillElement) {
-            const percentage = ((this.currentAction + 1) / this.maxActions) * 100;
+            const percentage = ((this.currentGlobalAction + 1) / this.totalActions) * 100;
             fillElement.style.width = `${percentage}%`;
         }
 
-        // Update progress description
-        const actionInfo = this.actionMap[this.currentAction];
+        // Update progress description with slide context
+        this.updateProgressDescription();
+    }
+
+    updateProgressDescription() {
         const descElement = document.getElementById('progress-description');
-        if (descElement && actionInfo) {
-            descElement.textContent = actionInfo.description;
+        if (!descElement) return;
+
+        if (this.partConfig && this.partConfig.customSlides) {
+            // Multi-slide: show current slide info
+            const currentSlide = this.partConfig.slides[this.currentSlideIndex];
+            const targetSlide = this.getTargetSlideForAction(this.currentGlobalAction);
+            const slideActionIndex = this.getSlideActionIndex(this.currentGlobalAction, targetSlide);
+
+            descElement.textContent = `${currentSlide.title} - Action ${slideActionIndex + 1}`;
+        } else {
+            // Single slide: show action description
+            const actionInfo = this.actionMap && this.actionMap[this.currentGlobalAction];
+            descElement.textContent = actionInfo ? actionInfo.description : `Action ${this.currentGlobalAction + 1}`;
         }
     }
 
@@ -440,15 +643,41 @@ class ProgressiveDisclosureController {
         const nextBtn = document.getElementById('next-btn');
 
         if (prevBtn) {
-            prevBtn.disabled = this.currentAction === 0;
-            prevBtn.classList.toggle('disabled', this.currentAction === 0);
+            prevBtn.disabled = this.currentGlobalAction === 0;
+            prevBtn.classList.toggle('disabled', this.currentGlobalAction === 0);
         }
 
         if (nextBtn) {
-            const isLastAction = this.currentAction >= this.maxActions - 1;
-            nextBtn.textContent = isLastAction ? 'Next Slide →' : 'Continue →';
-            nextBtn.classList.toggle('next-slide', isLastAction);
+            const isLastAction = this.currentGlobalAction >= this.totalActions - 1;
+
+            if (isLastAction) {
+                nextBtn.textContent = 'Next Part →';
+                nextBtn.classList.add('next-part');
+                nextBtn.classList.remove('next-slide');
+            } else {
+                // Check if next action will switch slides
+                const nextSlideIndex = this.getNextSlideIndex();
+                if (nextSlideIndex !== this.currentSlideIndex) {
+                    const nextSlide = this.partConfig.slides[nextSlideIndex];
+                    nextBtn.textContent = `→ ${nextSlide.title}`;
+                    nextBtn.classList.add('next-slide');
+                    nextBtn.classList.remove('next-part');
+                } else {
+                    nextBtn.textContent = 'Continue →';
+                    nextBtn.classList.remove('next-slide', 'next-part');
+                }
+            }
         }
+    }
+
+    getNextSlideIndex() {
+        if (!this.partConfig || !this.partConfig.customSlides) return 0;
+
+        if (this.currentGlobalAction < this.totalActions - 1) {
+            const nextTargetSlide = this.getTargetSlideForAction(this.currentGlobalAction + 1);
+            return this.partConfig.slides.indexOf(nextTargetSlide);
+        }
+        return this.currentSlideIndex;
     }
 
     setupInteractionListeners() {
@@ -479,40 +708,61 @@ class ProgressiveDisclosureController {
 
     // Public API for external control
     goToAction(actionIndex) {
-        if (actionIndex >= 0 && actionIndex < this.maxActions) {
-            this.currentAction = actionIndex;
+        if (actionIndex >= 0 && actionIndex < this.totalActions) {
+            this.currentGlobalAction = actionIndex;
             this.revealContent(actionIndex);
             this.updateProgressDisplay();
             this.updateNavigationButtons();
+            console.log(`Jumped to global action ${actionIndex}`);
         }
     }
 
-    resetSlide() {
+    resetPart() {
         this.goToAction(0);
     }
 
     getActionInfo() {
         return {
-            current: this.currentAction,
-            max: this.maxActions,
-            map: this.actionMap,
-            progress: (this.currentAction + 1) / this.maxActions
+            current: this.currentGlobalAction,
+            total: this.totalActions,
+            currentSlideIndex: this.currentSlideIndex,
+            slideActionMap: this.slideActionMap,
+            partConfig: this.partConfig,
+            progress: (this.currentGlobalAction + 1) / this.totalActions
         };
+    }
+
+    // Debug functionality
+    debugCurrentState() {
+        console.log('=== Progressive Disclosure Debug ===');
+        console.log('Global action:', this.currentGlobalAction);
+        console.log('Total actions:', this.totalActions);
+        console.log('Current slide index:', this.currentSlideIndex);
+        console.log('Part config:', this.partConfig);
+        console.log('Slide action map:', this.slideActionMap);
+
+        if (this.partConfig && this.partConfig.customSlides) {
+            const targetSlide = this.getTargetSlideForAction(this.currentGlobalAction);
+            const slideActionIndex = this.getSlideActionIndex(this.currentGlobalAction, targetSlide);
+            console.log('Target slide:', targetSlide.file);
+            console.log('Slide action index:', slideActionIndex);
+        }
     }
 }
 ```
 
-## CSS Enhancements for Progressive Disclosure
+## CSS Enhancements for Multi-Slide Progressive Disclosure
 
-### Animation Styles
+### Enhanced Animation Styles with PostMessage Support
 
 ```css
-/* Progressive disclosure animations */
+/* Progressive disclosure animations for multi-slide parts */
 .slide-section {
     transition: all var(--transition-normal);
     opacity: 0;
     transform: translateY(20px);
     margin-bottom: var(--spacing-lg);
+    will-change: opacity, transform;
 }
 
 .slide-section.revealed {
@@ -522,6 +772,40 @@ class ProgressiveDisclosureController {
 
 .slide-section.revealing {
     animation: contentReveal 0.5s ease-out forwards;
+}
+
+/* Slide transition animations */
+.slide-frame {
+    transition: opacity 0.3s ease-in-out;
+}
+
+.slide-frame.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Progress indicator enhancements */
+.slide-indicator {
+    font-size: 0.875rem;
+    color: var(--secondary-text);
+    margin-left: var(--spacing-sm);
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+}
+
+.slide-indicator.visible {
+    opacity: 1;
+}
+
+/* Button state variations */
+.control-btn.next-slide {
+    background: linear-gradient(135deg, var(--accent-color), #5a67d8);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.control-btn.next-part {
+    background: linear-gradient(135deg, var(--success-color), #38a169);
+    box-shadow: 0 4px 12px rgba(0, 168, 107, 0.3);
 }
 
 @keyframes contentReveal {
@@ -583,7 +867,7 @@ class ProgressiveDisclosureController {
     100% { background: transparent; }
 }
 
-/* Auto-animation styles */
+/* Auto-animation styles with postMessage coordination */
 [data-auto-animate="typewriter"] {
     opacity: 0;
     font-family: var(--font-family-mono);
@@ -602,6 +886,106 @@ class ProgressiveDisclosureController {
 [data-auto-animate="fade-in"].animated {
     opacity: 1;
 }
+
+/* PostMessage communication indicators */
+.debug-info {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: var(--spacing-sm);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-family: monospace;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.debug-info.visible {
+    opacity: 1;
+}
+
+/* Error state indicators */
+.communication-error {
+    color: var(--warning-color) !important;
+    animation: errorPulse 1s ease-in-out infinite;
+}
+
+@keyframes errorPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Loading states for slide transitions */
+.slide-transition-loading {
+    position: relative;
+}
+
+.slide-transition-loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--accent-color);
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
 ```
 
-This comprehensive progressive disclosure system ensures smooth, engaging transitions between content sections while maintaining perfect synchronization between slide content, navigation controls, and user feedback.
+## PostMessage Event Listeners for Individual Slides
+
+### Required Implementation for Each Slide File
+
+```javascript
+// Template for slide files to handle postMessage communication
+window.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'revealSection') {
+        console.log(`Slide received reveal message: action ${event.data.actionIndex}`);
+
+        // Call slide-specific reveal function
+        if (window.revealSection) {
+            window.revealSection(event.data.actionIndex);
+        }
+    }
+
+    if (event.data && event.data.type === 'debug') {
+        console.log('Debug message received by slide:', event.data);
+
+        // Send back slide metadata
+        if (window.slideMetadata) {
+            window.parent.postMessage({
+                type: 'slideMetadata',
+                metadata: window.slideMetadata
+            }, '*');
+        }
+    }
+});
+
+// Required: Expose slide metadata
+window.slideMetadata = {
+    id: "[slide-id]",
+    title: "[slide-title]",
+    maxActions: [number],
+    type: "[title|content|transition]",
+    loaded: true
+};
+
+// Required: Expose reveal function for external control
+window.revealSection = function(actionIndex) {
+    // Slide-specific implementation
+    console.log(`Revealing slide action: ${actionIndex}`);
+};
+```
+
+This enhanced progressive disclosure system provides **robust postMessage communication**, dynamic slide switching, comprehensive error handling, and smooth animations while supporting both multi-slide parts and legacy single-slide parts.

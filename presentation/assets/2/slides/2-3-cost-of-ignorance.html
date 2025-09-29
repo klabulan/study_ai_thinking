@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slide 2.3: Цена Непонимания</title>
+    <style>
+        :root {
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ff6b6b;
+            --primary-text: #1e3a5f;
+            --secondary-text: #6c757d;
+            --background: #ffffff;
+            --background-secondary: #f8f9fa;
+            --border-color: #e2e8f0;
+
+            --font-family-main: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+
+            --transition-normal: 0.5s ease;
+            --transition-fast: 0.3s ease;
+        }
+
+        body {
+            margin: 0;
+            padding: var(--spacing-xl);
+            font-family: var(--font-family-main);
+            background: var(--background);
+            color: var(--primary-text);
+            height: 100vh;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .slide-header {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .main-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-text);
+            margin-bottom: var(--spacing-lg);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+        }
+
+        .main-title.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .content-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .cost-card {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(255, 255, 255, 0.9));
+            border-radius: 12px;
+            padding: var(--spacing-xl);
+            border: 2px solid rgba(220, 53, 69, 0.2);
+            box-shadow: 0 4px 16px rgba(220, 53, 69, 0.1);
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all var(--transition-normal);
+        }
+
+        .cost-card.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .cost-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .cost-icon {
+            font-size: 2.5rem;
+            margin-right: var(--spacing-md);
+        }
+
+        .cost-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--danger-color);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .metric-item {
+            display: flex;
+            align-items: center;
+            padding: var(--spacing-md);
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .metric-icon {
+            font-size: 1.8rem;
+            margin-right: var(--spacing-md);
+        }
+
+        .metric-content {
+            flex: 1;
+        }
+
+        .metric-number {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--danger-color);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .metric-description {
+            font-size: 0.9rem;
+            color: var(--secondary-text);
+            line-height: 1.3;
+        }
+
+        .analogy {
+            font-size: 1.2rem;
+            font-style: italic;
+            text-align: center;
+            color: var(--primary-text);
+            background: rgba(30, 58, 95, 0.05);
+            padding: var(--spacing-md);
+            border-radius: 8px;
+        }
+
+        .case-study {
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.15), rgba(255, 255, 255, 0.95));
+            border-radius: 12px;
+            padding: var(--spacing-xl);
+            border: 2px solid var(--danger-color);
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all var(--transition-normal);
+        }
+
+        .case-study.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .case-study-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .case-study-icon {
+            font-size: 2.5rem;
+            margin-right: var(--spacing-md);
+        }
+
+        .case-study-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-text);
+        }
+
+        .case-study-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .case-detail {
+            display: flex;
+            align-items: center;
+            padding: var(--spacing-sm);
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 6px;
+        }
+
+        .case-detail-icon {
+            font-size: 1.2rem;
+            margin-right: var(--spacing-sm);
+        }
+
+        .case-detail-text {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .case-conclusion {
+            font-size: 1.1rem;
+            color: var(--primary-text);
+            font-weight: 600;
+            text-align: center;
+            background: rgba(220, 53, 69, 0.1);
+            padding: var(--spacing-md);
+            border-radius: 8px;
+        }
+
+        .highlight {
+            background: rgba(30, 58, 95, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--primary-text);
+            font-weight: 600;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .metrics-grid,
+            .case-study-details {
+                grid-template-columns: 1fr;
+            }
+
+            .main-title {
+                font-size: 2rem;
+            }
+
+            .cost-title,
+            .case-study-title {
+                font-size: 1.4rem;
+            }
+
+            .cost-card,
+            .case-study {
+                padding: var(--spacing-md);
+            }
+
+            body {
+                padding: var(--spacing-md);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="slide-header">
+        <h1 class="main-title" data-action="0">ЦЕНА НЕПОНИМАНИЯ</h1>
+    </div>
+
+    <!-- Content Container -->
+    <div class="content-container">
+        <!-- ROI Losses Card -->
+        <div class="cost-card" data-action="1">
+            <div class="cost-header">
+                <span class="cost-icon">📉</span>
+                <div class="cost-title">ПОТЕРИ ROI</div>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-item">
+                    <span class="metric-icon">📊</span>
+                    <div class="metric-content">
+                        <div class="metric-number">2.1x меньше отдачи</div>
+                        <div class="metric-description">McKinsey: компании с низкой ИИ-грамотностью</div>
+                    </div>
+                </div>
+
+                <div class="metric-item">
+                    <span class="metric-icon">⏰</span>
+                    <div class="metric-content">
+                        <div class="metric-number">12 часов/неделя</div>
+                        <div class="metric-description">Section Research: потери продуктивности</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="analogy">
+                "Феррари с правами на велосипед"
+            </div>
+        </div>
+
+        <!-- Amazon Case Study -->
+        <div class="case-study" data-action="2">
+            <div class="case-study-header">
+                <span class="case-study-icon">🏢</span>
+                <div class="case-study-title">AMAZON RECRUITING BOT</div>
+            </div>
+
+            <div class="case-study-details">
+                <div class="case-detail">
+                    <span class="case-detail-icon">💸</span>
+                    <span class="case-detail-text">Миллионы инвестиций</span>
+                </div>
+                <div class="case-detail">
+                    <span class="case-detail-icon">⚡</span>
+                    <span class="case-detail-text">Системная дискриминация</span>
+                </div>
+                <div class="case-detail">
+                    <span class="case-detail-icon">🗑️</span>
+                    <span class="case-detail-text">Проект закрыт</span>
+                </div>
+            </div>
+
+            <div class="case-conclusion">
+                Причина: <span class="highlight">HR не понимал логику алгоритма</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentAction = -1;
+
+        // Auto-reveal header on load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                revealSection(0);
+            }, 300);
+        });
+
+        function revealSection(actionIndex) {
+            console.log('Slide 2-3: revealSection called with:', actionIndex);
+            currentAction = actionIndex;
+
+            // Reveal elements for current and previous actions
+            for (let i = 0; i <= actionIndex; i++) {
+                const elements = document.querySelectorAll(`[data-action="${i}"]`);
+                console.log(`Action ${i}: found ${elements.length} elements`);
+                elements.forEach((element, index) => {
+                    console.log(`Revealing element:`, element);
+                    setTimeout(() => {
+                        element.classList.add('revealed');
+                    }, index * 400); // Stagger animations for complex content
+                });
+            }
+
+            // Hide elements for future actions
+            for (let i = actionIndex + 1; i <= 2; i++) {
+                const elements = document.querySelectorAll(`[data-action="${i}"]`);
+                elements.forEach(element => {
+                    element.classList.remove('revealed');
+                });
+            }
+        }
+
+        // Global function for external control
+        window.revealSection = revealSection;
+
+        // Listen for postMessage from parent window
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'revealSection') {
+                console.log('Cost of ignorance slide received postMessage:', event.data);
+                revealSection(event.data.actionIndex);
+            }
+        });
+
+        // Expose slide metadata
+        window.slideMetadata = {
+            id: "2-3",
+            title: "Цена Непонимания",
+            duration: 60, // 1 minute
+            maxActions: 2,
+            type: "content",
+            actions: [
+                { index: 0, description: "Заголовок", timing: "0-10s" },
+                { index: 1, description: "Статистика потерь ROI", timing: "10s-35s" },
+                { index: 2, description: "Пример Amazon", timing: "35s-60s" }
+            ]
+        };
+    </script>
+</body>
+</html>

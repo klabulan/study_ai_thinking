@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slide 1.2: Основной Контрастный Слайд</title>
+    <style>
+        :root {
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --primary-text: #1e3a5f;
+            --secondary-text: #6c757d;
+            --background: #ffffff;
+            --background-secondary: #f8f9fa;
+            --border-color: #e2e8f0;
+
+            --font-family-main: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+
+            --transition-normal: 0.5s ease;
+            --transition-fast: 0.3s ease;
+        }
+
+        body {
+            margin: 0;
+            padding: var(--spacing-xl);
+            font-family: var(--font-family-main);
+            background: var(--background);
+            color: var(--primary-text);
+            height: 100vh;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .slide-header {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .contrast-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-text);
+            margin-bottom: var(--spacing-md);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+        }
+
+        .contrast-title.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-xl);
+            height: calc(100vh - 200px);
+            max-height: 600px;
+        }
+
+        .column-header {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            padding: var(--spacing-md);
+            border-radius: 12px 12px 0 0;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .can-do-header {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .cannot-do-header {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .contrast-item {
+            background: white;
+            border-radius: 8px;
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid transparent;
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all var(--transition-normal);
+        }
+
+        .contrast-item.can-do {
+            border-left-color: var(--success-color);
+            transform: translateX(-50px);
+        }
+
+        .contrast-item.cannot-do {
+            border-left-color: var(--danger-color);
+            transform: translateX(50px);
+        }
+
+        .contrast-item.revealed {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .item-icon {
+            font-size: 2rem;
+            margin-bottom: var(--spacing-sm);
+            display: block;
+        }
+
+        .item-metric {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+            line-height: 1.2;
+        }
+
+        .can-do .item-metric {
+            color: var(--success-color);
+        }
+
+        .cannot-do .item-metric {
+            color: var(--danger-color);
+        }
+
+        .item-description {
+            font-size: 1rem;
+            color: var(--secondary-text);
+            line-height: 1.4;
+        }
+
+        .highlight {
+            background: rgba(30, 58, 95, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--primary-text);
+            font-weight: 600;
+        }
+
+        .statistics-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(30, 58, 95, 0.9);
+            color: white;
+            padding: var(--spacing-lg);
+            text-align: center;
+            transform: translateY(100%);
+            transition: transform var(--transition-normal);
+        }
+
+        .statistics-bar.revealed {
+            transform: translateY(0);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            display: block;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* Question marks for unrevealed items */
+        .question-mark {
+            font-size: 4rem;
+            color: var(--secondary-text);
+            opacity: 0.3;
+            text-align: center;
+            padding: var(--spacing-xl);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-md);
+            }
+
+            .contrast-title {
+                font-size: 2rem;
+            }
+
+            .column-header {
+                font-size: 1.5rem;
+            }
+
+            .contrast-item {
+                padding: var(--spacing-md);
+            }
+
+            body {
+                padding: var(--spacing-md);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="slide-header">
+        <h1 class="contrast-title" data-action="0">УМЕЕТ vs НЕ УМЕЕТ</h1>
+    </div>
+
+    <!-- Main content grid -->
+    <div class="main-grid">
+        <!-- Can Do Column -->
+        <div class="can-do-column">
+            <div class="column-header can-do-header">УМЕЕТ</div>
+
+            <!-- Medical paradox -->
+            <div class="contrast-item can-do" data-action="1">
+                <span class="item-icon">🏥</span>
+                <div class="item-metric">78 из 80 диагнозов</div>
+                <div class="item-description">Сложнейшие медицинские случаи — лучше врачей-экспертов</div>
+            </div>
+
+            <!-- Generation capability -->
+            <div class="contrast-item can-do" data-action="2">
+                <span class="item-icon">🎭</span>
+                <div class="item-metric">Джазовая импровизация</div>
+                <div class="item-description">Генерирует связный текст без предварительного плана</div>
+            </div>
+
+            <!-- Financial capability -->
+            <div class="contrast-item can-do" data-action="3">
+                <span class="item-icon">💳</span>
+                <div class="item-metric">95% решений за 2 минуты</div>
+                <div class="item-description"><span class="highlight">Тинькофф</span>: миллиарды рублей ежедневно</div>
+            </div>
+
+            <!-- Placeholder for unrevealed -->
+            <div class="question-mark" data-action="-1">?</div>
+        </div>
+
+        <!-- Cannot Do Column -->
+        <div class="cannot-do-column">
+            <div class="column-header cannot-do-header">НЕ УМЕЕТ</div>
+
+            <!-- Medical limitation -->
+            <div class="contrast-item cannot-do" data-action="1">
+                <span class="item-icon">💊</span>
+                <div class="item-metric">38% опасных ошибок</div>
+                <div class="item-description">Выдумывает лекарства в медицинских записях</div>
+            </div>
+
+            <!-- Planning limitation -->
+            <div class="contrast-item cannot-do" data-action="2">
+                <span class="item-icon">📝</span>
+                <div class="item-metric">Не знает конец фразы</div>
+                <div class="item-description">Когда начинает предложение, не планирует его завершение</div>
+            </div>
+
+            <!-- Explainability limitation -->
+            <div class="contrast-item cannot-do" data-action="3">
+                <span class="item-icon">❓</span>
+                <div class="item-metric">Чёрный ящик</div>
+                <div class="item-description">Почему Ивану одобрили, а Петру отказали?</div>
+            </div>
+
+            <!-- Placeholder for unrevealed -->
+            <div class="question-mark" data-action="-1">?</div>
+        </div>
+    </div>
+
+    <!-- Statistics bar -->
+    <div class="statistics-bar" data-action="4">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-number">70%</span>
+                <div class="stat-label">компаний используют ИИ</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">40%</span>
+                <div class="stat-label">не понимают как работает</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentAction = -1;
+
+        // Auto-reveal header on load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                revealSection(0);
+            }, 300);
+        });
+
+        function revealSection(actionIndex) {
+            console.log('Slide 1-2: revealSection called with:', actionIndex);
+            currentAction = actionIndex;
+
+            // Hide question marks when items are revealed
+            const questionMarks = document.querySelectorAll('.question-mark');
+            console.log('Found question marks:', questionMarks.length);
+            questionMarks.forEach(mark => {
+                if (actionIndex >= 1) {
+                    mark.style.display = 'none';
+                } else {
+                    mark.style.display = 'block';
+                }
+            });
+
+            // Reveal elements for current and previous actions
+            for (let i = 0; i <= actionIndex; i++) {
+                const elements = document.querySelectorAll(`[data-action="${i}"]`);
+                console.log(`Action ${i}: found ${elements.length} elements`);
+                elements.forEach((element, index) => {
+                    console.log(`Revealing element:`, element);
+                    setTimeout(() => {
+                        element.classList.add('revealed');
+                    }, index * 100); // Stagger animations slightly
+                });
+            }
+
+            // Hide elements for future actions
+            for (let i = actionIndex + 1; i <= 4; i++) {
+                const elements = document.querySelectorAll(`[data-action="${i}"]`);
+                elements.forEach(element => {
+                    element.classList.remove('revealed');
+                });
+            }
+        }
+
+        // Global function for external control
+        window.revealSection = revealSection;
+
+        // Listen for postMessage from parent window
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'revealSection') {
+                console.log('Contrast slide received postMessage:', event.data);
+                revealSection(event.data.actionIndex);
+            }
+        });
+
+        // Expose slide metadata
+        window.slideMetadata = {
+            id: "1-2",
+            title: "Основной Контрастный Слайд",
+            duration: 180, // 3 minutes
+            maxActions: 4,
+            type: "content",
+            actions: [
+                { index: 0, description: "Заголовок", timing: "0-30s" },
+                { index: 1, description: "Медицинский парадокс", timing: "30s-1m" },
+                { index: 2, description: "Парадокс генерации", timing: "1m-1.5m" },
+                { index: 3, description: "Финансовый парадокс", timing: "1.5m-2.5m" },
+                { index: 4, description: "Статистика", timing: "2.5m-3m" }
+            ]
+        };
+    </script>
+</body>
+</html>

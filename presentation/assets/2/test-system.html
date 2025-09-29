@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Part 2 Test System: Тайна Чёрного Ящика</title>
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --border-color: #dee2e6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--dark-color);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            height: 100vh;
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid var(--border-color);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .sidebar h1 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .slide-nav {
+            margin-bottom: 30px;
+        }
+
+        .slide-nav h3 {
+            color: var(--dark-color);
+            font-size: 1rem;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .slide-button {
+            display: block;
+            width: 100%;
+            background: white;
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        .slide-button:hover {
+            background: var(--light-color);
+            border-color: var(--primary-color);
+        }
+
+        .slide-button.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .controls {
+            margin-bottom: 20px;
+        }
+
+        .controls h3 {
+            color: var(--dark-color);
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .action-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .action-button {
+            background: var(--info-color);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .action-button:hover {
+            background: #138496;
+        }
+
+        .action-button.active {
+            background: var(--success-color);
+        }
+
+        .nav-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .nav-button {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background: #6a4c93;
+        }
+
+        .nav-button:disabled {
+            background: var(--border-color);
+            cursor: not-allowed;
+        }
+
+        .metadata {
+            background: var(--light-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+            font-size: 0.8rem;
+        }
+
+        .metadata h4 {
+            color: var(--dark-color);
+            margin-bottom: 8px;
+        }
+
+        .metadata-item {
+            margin-bottom: 5px;
+        }
+
+        .metadata-item strong {
+            color: var(--primary-color);
+        }
+
+        .content-area {
+            position: relative;
+            background: white;
+        }
+
+        .slide-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+            }
+
+            .sidebar {
+                height: auto;
+                max-height: 40vh;
+                overflow-y: auto;
+            }
+        }
+
+        /* Console log styles */
+        .console {
+            position: fixed;
+            bottom: 0;
+            left: 300px;
+            right: 0;
+            height: 150px;
+            background: rgba(0, 0, 0, 0.9);
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            padding: 10px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .console.visible {
+            display: block;
+        }
+
+        .console-toggle {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: var(--dark-color);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h1>Part 2 Test System</h1>
+
+            <div class="slide-nav">
+                <h3>📊 Slides</h3>
+                <button class="slide-button active" onclick="loadSlide('slides/2-1-investment-gap.html', this)">
+                    2.1 Investment Gap
+                </button>
+                <button class="slide-button" onclick="loadSlide('slides/2-2-russian-cases.html', this)">
+                    2.2 Russian Cases
+                </button>
+                <button class="slide-button" onclick="loadSlide('slides/2-3-cost-of-ignorance.html', this)">
+                    2.3 Cost of Ignorance
+                </button>
+                <button class="slide-button" onclick="loadSlide('slides/2-4-black-box-opening.html', this)">
+                    2.4 Black Box Opening
+                </button>
+            </div>
+
+            <div class="controls">
+                <h3>🎯 Actions</h3>
+                <div class="action-controls" id="actionControls">
+                    <!-- Dynamic action buttons will be inserted here -->
+                </div>
+
+                <h3>⚡ Navigation</h3>
+                <div class="nav-controls">
+                    <button class="nav-button" onclick="previousAction()">← Previous</button>
+                    <button class="nav-button" onclick="nextAction()">Next →</button>
+                </div>
+
+                <button class="nav-button" onclick="resetSlide()" style="width: 100%; margin-top: 10px;">
+                    🔄 Reset Slide
+                </button>
+            </div>
+
+            <div class="metadata" id="metadata">
+                <h4>📋 Slide Metadata</h4>
+                <div class="metadata-item"><strong>ID:</strong> <span id="slideId">-</span></div>
+                <div class="metadata-item"><strong>Title:</strong> <span id="slideTitle">-</span></div>
+                <div class="metadata-item"><strong>Duration:</strong> <span id="slideDuration">-</span></div>
+                <div class="metadata-item"><strong>Max Actions:</strong> <span id="slideMaxActions">-</span></div>
+                <div class="metadata-item"><strong>Type:</strong> <span id="slideType">-</span></div>
+                <div class="metadata-item"><strong>Current Action:</strong> <span id="currentActionDisplay">-1</span></div>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="loading" id="loading">Loading slide...</div>
+            <iframe id="slideFrame" class="slide-frame" src="slides/2-1-investment-gap.html"></iframe>
+        </div>
+    </div>
+
+    <div class="console" id="console"></div>
+    <button class="console-toggle" onclick="toggleConsole()">Console</button>
+
+    <script>
+        let currentAction = -1;
+        let maxActions = 0;
+        let currentSlideMetadata = null;
+
+        // Load initial slide
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                loadSlide('slides/2-1-investment-gap.html', document.querySelector('.slide-button'));
+            }, 500);
+        });
+
+        function loadSlide(slidePath, buttonElement) {
+            console.log('Loading slide:', slidePath);
+            log('Loading slide: ' + slidePath);
+
+            // Update active button
+            document.querySelectorAll('.slide-button').forEach(btn => btn.classList.remove('active'));
+            buttonElement.classList.add('active');
+
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+
+            // Load slide in iframe
+            const iframe = document.getElementById('slideFrame');
+            iframe.onload = function() {
+                document.getElementById('loading').style.display = 'none';
+
+                // Get slide metadata
+                setTimeout(() => {
+                    try {
+                        const slideWindow = iframe.contentWindow;
+                        currentSlideMetadata = slideWindow.slideMetadata;
+                        updateMetadataDisplay();
+                        generateActionButtons();
+                        resetToFirstAction();
+                    } catch (e) {
+                        console.log('Could not access slide metadata (cross-origin):', e);
+                        log('Could not access slide metadata: ' + e.message);
+                    }
+                }, 100);
+            };
+
+            iframe.src = slidePath;
+        }
+
+        function updateMetadataDisplay() {
+            if (!currentSlideMetadata) return;
+
+            document.getElementById('slideId').textContent = currentSlideMetadata.id || '-';
+            document.getElementById('slideTitle').textContent = currentSlideMetadata.title || '-';
+            document.getElementById('slideDuration').textContent =
+                currentSlideMetadata.duration ? `${currentSlideMetadata.duration}s` : '-';
+            document.getElementById('slideMaxActions').textContent = currentSlideMetadata.maxActions || '-';
+            document.getElementById('slideType').textContent = currentSlideMetadata.type || '-';
+
+            maxActions = currentSlideMetadata.maxActions || 0;
+        }
+
+        function generateActionButtons() {
+            const container = document.getElementById('actionControls');
+            container.innerHTML = '';
+
+            if (!currentSlideMetadata) return;
+
+            for (let i = 0; i <= (currentSlideMetadata.maxActions || 0); i++) {
+                const button = document.createElement('button');
+                button.className = 'action-button';
+                button.textContent = `Action ${i}`;
+                button.onclick = () => revealAction(i);
+                container.appendChild(button);
+            }
+        }
+
+        function revealAction(actionIndex) {
+            console.log('Revealing action:', actionIndex);
+            log('Revealing action: ' + actionIndex);
+
+            currentAction = actionIndex;
+            document.getElementById('currentActionDisplay').textContent = actionIndex;
+
+            // Update active action button
+            document.querySelectorAll('.action-button').forEach((btn, index) => {
+                btn.classList.toggle('active', index === actionIndex);
+            });
+
+            // Send message to slide
+            const iframe = document.getElementById('slideFrame');
+            try {
+                iframe.contentWindow.postMessage({
+                    type: 'revealSection',
+                    actionIndex: actionIndex
+                }, '*');
+
+                log('Sent postMessage to slide with actionIndex: ' + actionIndex);
+            } catch (e) {
+                console.log('Could not send postMessage:', e);
+                log('Could not send postMessage: ' + e.message);
+            }
+        }
+
+        function nextAction() {
+            if (currentAction < maxActions) {
+                revealAction(currentAction + 1);
+            }
+        }
+
+        function previousAction() {
+            if (currentAction > 0) {
+                revealAction(currentAction - 1);
+            }
+        }
+
+        function resetSlide() {
+            revealAction(0);
+        }
+
+        function resetToFirstAction() {
+            setTimeout(() => {
+                revealAction(0);
+            }, 200);
+        }
+
+        // Console logging
+        function log(message) {
+            const console = document.getElementById('console');
+            const timestamp = new Date().toLocaleTimeString();
+            console.innerHTML += `[${timestamp}] ${message}\n`;
+            console.scrollTop = console.scrollHeight;
+        }
+
+        function toggleConsole() {
+            const console = document.getElementById('console');
+            console.classList.toggle('visible');
+        }
+
+        // Listen for messages from slides
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'revealSection') {
+                log('Received message from slide: ' + JSON.stringify(event.data));
+            }
+        });
+
+        // Override console.log to capture slide logs
+        const originalLog = console.log;
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            log('CONSOLE: ' + args.join(' '));
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slide 2.4: Открытие Чёрного Ящика</title>
+    <style>
+        :root {
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --primary-text: #1e3a5f;
+            --secondary-text: #6c757d;
+            --background: #ffffff;
+            --background-secondary: #f8f9fa;
+            --border-color: #e2e8f0;
+            --gold-color: #ffd700;
+
+            --font-family-main: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+
+            --transition-normal: 0.5s ease;
+            --transition-fast: 0.3s ease;
+            --transition-slow: 1s ease;
+        }
+
+        body {
+            margin: 0;
+            padding: var(--spacing-xl);
+            font-family: var(--font-family-main);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--primary-text);
+            height: 100vh;
+            box-sizing: border-box;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slide-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .main-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: var(--spacing-lg);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all var(--transition-normal);
+        }
+
+        .main-title.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: var(--spacing-xl);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+        }
+
+        .subtitle.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .black-box-container {
+            position: relative;
+            margin: var(--spacing-xl) 0;
+        }
+
+        .black-box {
+            width: 300px;
+            height: 200px;
+            background: linear-gradient(145deg, #2c3e50, #000000);
+            border-radius: 20px;
+            position: relative;
+            box-shadow:
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                inset 0 2px 4px rgba(255, 255, 255, 0.1);
+            transform: rotateY(15deg) rotateX(5deg);
+            transition: all var(--transition-slow);
+            opacity: 0;
+        }
+
+        .black-box.revealed {
+            opacity: 1;
+            transform: rotateY(0deg) rotateX(0deg);
+        }
+
+        .black-box::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            background: radial-gradient(ellipse at center,
+                rgba(255, 215, 0, 0) 0%,
+                rgba(255, 215, 0, 0.3) 40%,
+                rgba(255, 215, 0, 0.6) 70%,
+                rgba(255, 215, 0, 0.8) 100%);
+            border-radius: 10px;
+            opacity: 0;
+            transition: opacity var(--transition-slow);
+        }
+
+        .black-box.opened::before {
+            opacity: 1;
+            animation: goldGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes goldGlow {
+            0% {
+                transform: scale(0.8);
+                opacity: 0.6;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .lock-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            transition: all var(--transition-normal);
+        }
+
+        .lock-icon.opened {
+            color: var(--gold-color);
+            transform: translate(-50%, -50%) scale(1.2);
+        }
+
+        .breakthrough-text {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin: var(--spacing-lg) 0;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+        }
+
+        .breakthrough-text.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .cta-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: var(--spacing-xl);
+            margin-top: var(--spacing-xl);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all var(--transition-normal);
+        }
+
+        .cta-section.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .cta-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: var(--spacing-md);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .percentage-highlight {
+            color: var(--gold-color);
+            font-weight: 900;
+            font-size: 1.3em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Animated background particles */
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .particle:nth-child(1) { top: 20%; left: 20%; animation-delay: 0s; }
+        .particle:nth-child(2) { top: 80%; left: 80%; animation-delay: 2s; }
+        .particle:nth-child(3) { top: 40%; left: 70%; animation-delay: 4s; }
+        .particle:nth-child(4) { top: 60%; left: 30%; animation-delay: 1s; }
+        .particle:nth-child(5) { top: 10%; left: 90%; animation-delay: 3s; }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+                opacity: 0.6;
+            }
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.5rem;
+            }
+
+            .subtitle {
+                font-size: 1.2rem;
+            }
+
+            .black-box {
+                width: 250px;
+                height: 150px;
+            }
+
+            .lock-icon {
+                font-size: 2rem;
+            }
+
+            .cta-section {
+                padding: var(--spacing-md);
+            }
+
+            .cta-title {
+                font-size: 1.4rem;
+            }
+
+            body {
+                padding: var(--spacing-md);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated background particles -->
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+
+    <div class="slide-content">
+        <!-- Title Section -->
+        <h1 class="main-title" data-action="0">ЧЁРНЫЙ ЯЩИК</h1>
+        <div class="subtitle" data-action="0">БОЛЬШЕ НЕ АБСОЛЮТНО ЧЁРНЫЙ</div>
+
+        <!-- Black Box Visual -->
+        <div class="black-box-container" data-action="1">
+            <div class="black-box">
+                <div class="lock-icon">🔓</div>
+            </div>
+        </div>
+
+        <!-- Breakthrough Text -->
+        <div class="breakthrough-text" data-action="1">
+            Прорывы в интерпретируемости<br>
+            <strong>2024-2025</strong>
+        </div>
+
+        <!-- Call to Action Section -->
+        <div class="cta-section" data-action="1">
+            <div class="cta-title">
+                Войдите в <span class="percentage-highlight">7%</span> профессионалов,
+            </div>
+            <div class="cta-subtitle">
+                которые понимают логику ИИ
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentAction = -1;
+
+        // Auto-reveal header on load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                revealSection(0);
+            }, 300);
+        });
+
+        function revealSection(actionIndex) {
+            console.log('Slide 2-4: revealSection called with:', actionIndex);
+            currentAction = actionIndex;
+
+            // Reveal elements for current and previous actions
+            for (let i = 0; i <= actionIndex; i++) {
+                const elements = document.querySelectorAll(`[data-action="${i}"]`);
+                console.log(`Action ${i}: found ${elements.length} elements`);
+                elements.forEach((element, index) => {
+                    console.log(`Revealing element:`, element);
+                    setTimeout(() => {
+                        element.classList.add('revealed');
+
+                        // Special handling for black box opening animation
+                        if (i === 1 && element.classList.contains('black-box-container')) {
+                            const blackBox = element.querySelector('.black-box');
+                            const lockIcon = element.querySelector('.lock-icon');
+
+                            // Make the black box visible immediately
+                            blackBox.classList.add('revealed');
+                            console.log('Added revealed class to black box:', blackBox);
+
+                            // Then trigger opening animation after a delay
+                            setTimeout(() => {
+                                blackBox.classList.add('opened');
+                                lockIcon.classList.add('opened');
+                                console.log('Added opened class to black box and lock');
+                            }, 500);
+                        }
+                    }, index * 300);
+                });
+            }
+
+            // Hide elements for future actions
+            for (let i = actionIndex + 1; i <= 1; i++) {
+                const elements = document.querySelectorAll(`[data-action="${i}"]`);
+                elements.forEach(element => {
+                    element.classList.remove('revealed');
+
+                    // Reset black box animations
+                    const blackBox = element.querySelector('.black-box');
+                    const lockIcon = element.querySelector('.lock-icon');
+                    if (blackBox) {
+                        blackBox.classList.remove('revealed');
+                        blackBox.classList.remove('opened');
+                        lockIcon.classList.remove('opened');
+                    }
+                });
+            }
+        }
+
+        // Global function for external control
+        window.revealSection = revealSection;
+
+        // Listen for postMessage from parent window
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'revealSection') {
+                console.log('Black box opening slide received postMessage:', event.data);
+                revealSection(event.data.actionIndex);
+            }
+        });
+
+        // Expose slide metadata
+        window.slideMetadata = {
+            id: "2-4",
+            title: "Открытие Чёрного Ящика",
+            duration: 60, // 1 minute
+            maxActions: 1,
+            type: "transition",
+            actions: [
+                { index: 0, description: "Заголовок и вступление", timing: "0-20s" },
+                { index: 1, description: "Открытие ящика и призыв к действию", timing: "20s-60s" }
+            ]
+        };
+    </script>
+</body>
+</html>

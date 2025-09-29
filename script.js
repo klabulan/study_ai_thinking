@@ -282,8 +282,50 @@ class PresentationApp {
     async loadSlideConfiguration() {
         // Define slide structure (can be loaded from JSON in the future)
         this.slideConfig = {
-            1: { title: "Парадокс умного незнакомца", section: "Введение" },
-            2: { title: "Тайна чёрного ящика", section: "Введение" },
+            1: {
+                title: "Парадокс умного незнакомца",
+                section: "Введение",
+                customSlides: true,
+                slides: [
+                    {
+                        file: "presentation/assets/1/slides/1-1-title.html",
+                        title: "Титульный слайд",
+                        actions: 0
+                    },
+                    {
+                        file: "presentation/assets/1/slides/1-2-contrast.html",
+                        title: "Контрастный слайд",
+                        actions: 4
+                    }
+                ]
+            },
+            2: {
+                title: "Тайна чёрного ящика",
+                section: "Введение",
+                customSlides: true,
+                slides: [
+                    {
+                        file: "presentation/assets/2/slides/2-1-investment-gap.html",
+                        title: "Разрыв использования и понимания",
+                        actions: 3
+                    },
+                    {
+                        file: "presentation/assets/2/slides/2-2-russian-cases.html",
+                        title: "Российские кейсы",
+                        actions: 3
+                    },
+                    {
+                        file: "presentation/assets/2/slides/2-3-cost-of-ignorance.html",
+                        title: "Цена непонимания",
+                        actions: 3
+                    },
+                    {
+                        file: "presentation/assets/2/slides/2-4-black-box-opening.html",
+                        title: "Открытие чёрного ящика",
+                        actions: 2
+                    }
+                ]
+            },
             3: { title: "Три шага к пониманию", section: "Введение" },
             4: { title: "Человеческое чтение", section: "Кодирование" },
             5: { title: "Токенизация", section: "Кодирование" },
@@ -343,8 +385,30 @@ class PresentationApp {
             return this.slides[slideId];
         }
 
+        const config = this.slideConfig[slideId];
         const content = {};
         const isFileProtocol = window.location.protocol === 'file:';
+
+        // Handle custom slides (like our Part 1 assets)
+        if (config && config.customSlides) {
+            console.log('Loading custom slides for slide', slideId);
+
+            // For custom slides, we use the first slide by default
+            const firstSlide = config.slides[0];
+            content.visual = firstSlide.file;
+            content.hasVisual = true;
+
+            // Calculate total actions across all slides in the part
+            // For Part 1: 1 action for title + 4 actions for contrast = 5 total (0-4)
+            content.maxActions = config.slides.reduce((total, slide) => total + slide.actions, 0) + 1;
+            content.customSlides = config.slides;
+
+            // Load markdown content for tabs (fallback to default structure)
+            await this.loadMarkdownContent(content, slideId, isFileProtocol);
+
+            this.slides[slideId] = content;
+            return content;
+        }
 
         // For file:// protocol, show informative message and use fallbacks
         if (isFileProtocol) {
@@ -358,36 +422,8 @@ class PresentationApp {
             this.showLocalModeIndicator();
         }
 
-        // Load text content for tabs
-        const textPath = `presentation/${slideId}/`;
-        const textFiles = {
-            analysis: 'extended_analysis.md',
-            speech: 'speech_notes.md',
-            design: 'slide_design.md',
-            sources: 'sources_reference.md'
-        };
-
-        for (const [key, filename] of Object.entries(textFiles)) {
-            if (isFileProtocol) {
-                // Skip fetch attempts on file:// protocol to avoid CORS errors
-                content[key] = this.getDefaultTextContent(key, slideId);
-            } else {
-                // For HTTP/HTTPS protocols, try to fetch
-                try {
-                    const response = await fetch(`${textPath}${filename}`);
-                    if (response.ok) {
-                        content[key] = await response.text();
-                        console.info(`✅ Loaded ${filename} for slide ${slideId}`);
-                    } else {
-                        console.warn(`📄 File not found: ${textPath}${filename}, using fallback content`);
-                        content[key] = this.getDefaultTextContent(key, slideId);
-                    }
-                } catch (error) {
-                    console.warn(`❌ Failed to load ${filename} for slide ${slideId}:`, error.message);
-                    content[key] = this.getDefaultTextContent(key, slideId);
-                }
-            }
-        }
+        // Load markdown content for tabs
+        await this.loadMarkdownContent(content, slideId, isFileProtocol);
 
         // Load visual content for main display
         const visualPath = `presentation/assets/${slideId}/index.html`;
@@ -423,6 +459,39 @@ class PresentationApp {
         // Cache the content
         this.slides[slideId] = content;
         return content;
+    }
+
+    async loadMarkdownContent(content, slideId, isFileProtocol) {
+        // Load text content for tabs
+        const textPath = `presentation/${slideId}/`;
+        const textFiles = {
+            analysis: 'extended_analysis.md',
+            speech: 'speech_notes.md',
+            design: 'slide_design.md',
+            sources: 'sources_reference.md'
+        };
+
+        for (const [key, filename] of Object.entries(textFiles)) {
+            if (isFileProtocol) {
+                // Skip fetch attempts on file:// protocol to avoid CORS errors
+                content[key] = this.getDefaultTextContent(key, slideId);
+            } else {
+                // For HTTP/HTTPS protocols, try to fetch
+                try {
+                    const response = await fetch(`${textPath}${filename}`);
+                    if (response.ok) {
+                        content[key] = await response.text();
+                        console.info(`✅ Loaded ${filename} for slide ${slideId}`);
+                    } else {
+                        console.warn(`📄 File not found: ${textPath}${filename}, using fallback content`);
+                        content[key] = this.getDefaultTextContent(key, slideId);
+                    }
+                } catch (error) {
+                    console.warn(`❌ Failed to load ${filename} for slide ${slideId}:`, error.message);
+                    content[key] = this.getDefaultTextContent(key, slideId);
+                }
+            }
+        }
     }
 
     parseActionsFromText(text) {
@@ -653,17 +722,20 @@ Content not available. Expected location: \`presentation/${slideId}/${type}.md\`
     async renderSlide(slideId, content) {
         const config = this.slideConfig[slideId];
 
-        // Inject global styles into slide content
-        const styledContent = this.injectGlobalStyles(content.visual);
-
-        // Create blob URL for iframe
-        const blob = new Blob([styledContent], { type: 'text/html' });
-        const blobUrl = URL.createObjectURL(blob);
-
         // Load content in iframe
         const iframe = document.getElementById('slide-frame');
         if (iframe) {
-            iframe.src = blobUrl;
+            // For custom slides, load the file directly
+            if (config && config.customSlides) {
+                console.log('Loading custom slide directly:', content.visual);
+                iframe.src = content.visual;
+            } else {
+                // For regular slides, inject global styles and create blob
+                const styledContent = this.injectGlobalStyles(content.visual);
+                const blob = new Blob([styledContent], { type: 'text/html' });
+                const blobUrl = URL.createObjectURL(blob);
+                iframe.src = blobUrl;
+            }
 
             // Wait for iframe load
             await new Promise((resolve, reject) => {
@@ -671,13 +743,19 @@ Content not available. Expected location: \`presentation/${slideId}/${type}.md\`
 
                 iframe.onload = () => {
                     clearTimeout(timeout);
-                    URL.revokeObjectURL(blobUrl);
+                    // Only revoke blob URLs for non-custom slides
+                    if (!(config && config.customSlides) && typeof blobUrl !== 'undefined') {
+                        URL.revokeObjectURL(blobUrl);
+                    }
                     resolve();
                 };
 
                 iframe.onerror = () => {
                     clearTimeout(timeout);
-                    URL.revokeObjectURL(blobUrl);
+                    // Only revoke blob URLs for non-custom slides
+                    if (!(config && config.customSlides) && typeof blobUrl !== 'undefined') {
+                        URL.revokeObjectURL(blobUrl);
+                    }
                     reject(new Error('Iframe load error'));
                 };
             });
@@ -1214,29 +1292,158 @@ class ProgressiveDisclosureController {
 
     revealContent(actionIndex) {
         const iframe = document.getElementById('slide-frame');
-        if (!iframe || !iframe.contentDocument) return;
+        if (!iframe) return;
 
-        const slideDocument = iframe.contentDocument;
-        const sections = slideDocument.querySelectorAll('[data-action]');
+        console.log('Revealing content for action:', actionIndex);
 
-        sections.forEach((section) => {
-            const sectionAction = parseInt(section.getAttribute('data-action'));
+        // For custom slides, check if we need to switch slides
+        const currentSlideId = this.app.state.currentSlide;
+        const slideConfig = this.app.slideConfig[currentSlideId];
 
-            if (sectionAction <= actionIndex) {
-                section.classList.add('revealed');
-            } else {
-                section.classList.remove('revealed');
+        if (slideConfig && slideConfig.customSlides) {
+            // Determine which slide should be shown based on action
+            const targetSlide = this.getTargetSlideForAction(slideConfig, actionIndex);
+            const currentSrc = iframe.src;
+            const expectedSrc = window.location.origin + '/' + targetSlide.file;
+
+            // If we need to switch slides, do it first
+            if (!currentSrc.includes(targetSlide.file)) {
+                console.log('Switching to slide:', targetSlide.file);
+                iframe.src = targetSlide.file;
+
+                // Wait for the iframe to load before sending message
+                iframe.onload = () => {
+                    setTimeout(() => {
+                        this.sendRevealMessage(iframe, actionIndex);
+                    }, 100);
+                };
+                return;
             }
-        });
-
-        // Scroll to current content
-        const currentSection = slideDocument.querySelector(`[data-action="${actionIndex}"]`);
-        if (currentSection) {
-            currentSection.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
         }
+
+        // Send reveal message to current slide
+        this.sendRevealMessage(iframe, actionIndex);
+    }
+
+    getTargetSlideForAction(slideConfig, actionIndex) {
+        const currentSlideId = this.app.state.currentSlide;
+
+        if (currentSlideId === 1) {
+            // Part 1: action 0 = title slide, actions 1+ = contrast slide
+            if (actionIndex === 0) {
+                return slideConfig.slides[0]; // Title slide
+            } else {
+                return slideConfig.slides[1]; // Contrast slide
+            }
+        } else if (currentSlideId === 2) {
+            // Part 2: distribute actions across 4 slides
+            // Slide 2-1 (Investment gap): actions 0-2 (3 actions: 0,1,2)
+            // Slide 2-2 (Russian cases): actions 3-5 (3 actions: 0,1,2)
+            // Slide 2-3 (Cost of ignorance): actions 6-8 (3 actions: 0,1,2)
+            // Slide 2-4 (Black box opening): actions 9-11 (2 actions: 0,1)
+            if (actionIndex <= 2) {
+                return slideConfig.slides[0]; // Investment gap (actions 0-2)
+            } else if (actionIndex <= 5) {
+                return slideConfig.slides[1]; // Russian cases (actions 3-5)
+            } else if (actionIndex <= 8) {
+                return slideConfig.slides[2]; // Cost of ignorance (actions 6-8)
+            } else {
+                return slideConfig.slides[3]; // Black box opening (actions 9-11)
+            }
+        }
+
+        // Default fallback
+        return slideConfig.slides[0];
+    }
+
+    getSlideActionIndex(slideConfig, globalActionIndex, targetSlide) {
+        const currentSlideId = this.app.state.currentSlide;
+
+        if (currentSlideId === 1) {
+            // Part 1 mapping
+            if (targetSlide === slideConfig.slides[0]) {
+                // Title slide: always action 0
+                return 0;
+            } else {
+                // Contrast slide: map actions 1+ to 0-3
+                return Math.max(0, globalActionIndex - 1);
+            }
+        } else if (currentSlideId === 2) {
+            // Part 2 mapping
+            if (targetSlide === slideConfig.slides[0]) {
+                // Investment gap slide: global actions 0-2 → slide actions 0-2
+                return Math.min(globalActionIndex, 2);
+            } else if (targetSlide === slideConfig.slides[1]) {
+                // Russian cases slide: global actions 3-5 → slide actions 0-2
+                return Math.max(0, Math.min(globalActionIndex - 3, 2));
+            } else if (targetSlide === slideConfig.slides[2]) {
+                // Cost of ignorance slide: global actions 6-8 → slide actions 0-2
+                return Math.max(0, Math.min(globalActionIndex - 6, 2));
+            } else if (targetSlide === slideConfig.slides[3]) {
+                // Black box opening slide: global actions 9-11 → slide actions 0-1
+                return Math.max(0, Math.min(globalActionIndex - 9, 1));
+            }
+        }
+
+        // Default fallback
+        return Math.max(0, globalActionIndex);
+    }
+
+    sendRevealMessage(iframe, actionIndex) {
+        const currentSlideId = this.app.state.currentSlide;
+        const slideConfig = this.app.slideConfig[currentSlideId];
+        let slideActionIndex = actionIndex;
+
+        // Adjust action index for custom slides
+        if (slideConfig && slideConfig.customSlides) {
+            const targetSlide = this.getTargetSlideForAction(slideConfig, actionIndex);
+            slideActionIndex = this.getSlideActionIndex(slideConfig, actionIndex, targetSlide);
+            console.log(`Global action ${actionIndex} → Slide action ${slideActionIndex} for ${targetSlide.title}`);
+        }
+
+        // Try postMessage communication first (for new slide format)
+        try {
+            iframe.contentWindow.postMessage({
+                type: 'revealSection',
+                actionIndex: slideActionIndex
+            }, '*');
+            console.log('Sent postMessage revealSection with action:', slideActionIndex);
+            return;
+        } catch (e) {
+            console.log('Could not send postMessage:', e.message);
+        }
+
+        // Fallback: try direct DOM manipulation (for legacy slides)
+        try {
+            if (iframe.contentDocument) {
+                console.log('Using direct DOM manipulation with action:', actionIndex);
+                const slideDocument = iframe.contentDocument;
+                const sections = slideDocument.querySelectorAll('[data-action]');
+
+                sections.forEach((section) => {
+                    const sectionAction = parseInt(section.getAttribute('data-action'));
+
+                    if (sectionAction <= actionIndex) {
+                        section.classList.add('revealed');
+                    } else {
+                        section.classList.remove('revealed');
+                    }
+                });
+
+                // Scroll to current content
+                const currentSection = slideDocument.querySelector(`[data-action="${actionIndex}"]`);
+                if (currentSection) {
+                    currentSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            }
+        } catch (e) {
+            console.log('Could not access iframe.contentDocument:', e.message);
+        }
+
+        console.log('Progressive disclosure attempt completed');
     }
 }
 
@@ -1342,6 +1549,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ===== Service Worker Registration (Optional) =====
+// Disabled - no sw.js file available
+/*
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js')
@@ -1353,3 +1562,4 @@ if ('serviceWorker' in navigator && location.protocol !== 'file:') {
             });
     });
 }
+*/

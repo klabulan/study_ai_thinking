@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slide 2.2: Российские Кейсы</title>
+    <style>
+        :root {
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --primary-text: #1e3a5f;
+            --secondary-text: #6c757d;
+            --background: #ffffff;
+            --background-secondary: #f8f9fa;
+            --border-color: #e2e8f0;
+
+            --font-family-main: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+
+            --transition-normal: 0.5s ease;
+            --transition-fast: 0.3s ease;
+        }
+
+        body {
+            margin: 0;
+            padding: var(--spacing-xl);
+            font-family: var(--font-family-main);
+            background: var(--background);
+            color: var(--primary-text);
+            height: 100vh;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .slide-header {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .main-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-text);
+            margin-bottom: var(--spacing-lg);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+        }
+
+        .main-title.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .cases-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .case-card {
+            background: white;
+            border-radius: 12px;
+            padding: var(--spacing-xl);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            border-left: 6px solid transparent;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all var(--transition-normal);
+        }
+
+        .case-card.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .case-card.megafon {
+            border-left-color: #9b59b6;
+        }
+
+        .case-card.medical {
+            border-left-color: #e74c3c;
+        }
+
+        .case-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .case-icon {
+            font-size: 2.5rem;
+            margin-right: var(--spacing-md);
+        }
+
+        .case-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-text);
+        }
+
+        .case-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .metric {
+            display: flex;
+            align-items: center;
+            padding: var(--spacing-md);
+            border-radius: 8px;
+            background: var(--background-secondary);
+        }
+
+        .metric-icon {
+            font-size: 1.5rem;
+            margin-right: var(--spacing-sm);
+        }
+
+        .metric.success {
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--success-color);
+        }
+
+        .metric.warning {
+            background: rgba(255, 193, 7, 0.1);
+            color: #e67e22;
+        }
+
+        .metric.info {
+            background: rgba(23, 162, 184, 0.1);
+            color: var(--info-color);
+        }
+
+        .metric-text {
+            font-weight: 600;
+        }
+
+        .case-description {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: var(--secondary-text);
+            font-style: italic;
+        }
+
+        .highlight {
+            background: rgba(30, 58, 95, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--primary-text);
+            font-weight: 600;
+            font-style: normal;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .case-metrics {
+                grid-template-columns: 1fr;
+            }
+
+            .main-title {
+                font-size: 2rem;
+            }
+
+            .case-title {
+                font-size: 1.4rem;
+            }
+
+            .case-card {
+                padding: var(--spacing-md);
+            }
+
+            body {
+                padding: var(--spacing-md);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="slide-header">
+        <h1 class="main-title" data-action="0">РОССИЙСКИЕ РЕАЛИИ</h1>
+    </div>
+
+    <!-- Cases Container -->
+    <div class="cases-container">
+        <!-- MegaFon Case -->
+        <div class="case-card megafon" data-action="1">
+            <div class="case-header">
+                <span class="case-icon">📱</span>
+                <div class="case-title">МЕГАФОН</div>
+            </div>
+
+            <div class="case-metrics">
+                <div class="metric success">
+                    <span class="metric-icon">✅</span>
+                    <span class="metric-text">Предсказание оттока: 84%</span>
+                </div>
+                <div class="metric warning">
+                    <span class="metric-icon">❓</span>
+                    <span class="metric-text">Объяснение клиенту: ???</span>
+                </div>
+            </div>
+
+            <div class="case-description">
+                Система видит <span class="highlight">сотни микро-паттернов поведения</span>, которые человек даже не осознаёт
+            </div>
+        </div>
+
+        <!-- Medical Case -->
+        <div class="case-card medical" data-action="2">
+            <div class="case-header">
+                <span class="case-icon">🏥</span>
+                <div class="case-title">МОСКОВСКИЕ ПОЛИКЛИНИКИ</div>
+            </div>
+
+            <div class="case-metrics">
+                <div class="metric success">
+                    <span class="metric-icon">✅</span>
+                    <span class="metric-text">ИИ-диагностика: 85%</span>
+                </div>
+                <div class="metric info">
+                    <span class="metric-icon">⚖️</span>
+                    <span class="metric-text">Ответственность: врач</span>
+                </div>
+                <div class="metric warning">
+                    <span class="metric-icon">❓</span>
+                    <span class="metric-text">Понимание алгоритма: 0%</span>
+                </div>
+            </div>
+
+            <div class="case-description">
+                Юридическую ответственность несёт врач, который <span class="highlight">не понимает логику алгоритма</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentAction = -1;
+
+        // Auto-reveal header on load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                revealSection(0);
+            }, 300);
+        });
+
+        function revealSection(actionIndex) {
+            console.log('Slide 2-2: revealSection called with:', actionIndex);
+            currentAction = actionIndex;
+
+            // Reveal elements for current and previous actions
+            for (let i = 0; i <= actionIndex; i++) {
+                const elements = document.querySelectorAll(`[data-action="${i}"]`);
+                console.log(`Action ${i}: found ${elements.length} elements`);
+                elements.forEach((element, index) => {
+                    console.log(`Revealing element:`, element);
+                    setTimeout(() => {
+                        element.classList.add('revealed');
+                    }, index * 300); // Stagger animations for cards
+                });
+            }
+
+            // Hide elements for future actions
+            for (let i = actionIndex + 1; i <= 2; i++) {
+                const elements = document.querySelectorAll(`[data-action="${i}"]`);
+                elements.forEach(element => {
+                    element.classList.remove('revealed');
+                });
+            }
+        }
+
+        // Global function for external control
+        window.revealSection = revealSection;
+
+        // Listen for postMessage from parent window
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'revealSection') {
+                console.log('Russian cases slide received postMessage:', event.data);
+                revealSection(event.data.actionIndex);
+            }
+        });
+
+        // Expose slide metadata
+        window.slideMetadata = {
+            id: "2-2",
+            title: "Российские Кейсы",
+            duration: 90, // 1.5 minutes
+            maxActions: 2,
+            type: "content",
+            actions: [
+                { index: 0, description: "Заголовок", timing: "0-10s" },
+                { index: 1, description: "Кейс МегаФон", timing: "10s-50s" },
+                { index: 2, description: "Кейс поликлиники", timing: "50s-90s" }
+            ]
+        };
+    </script>
+</body>
+</html>

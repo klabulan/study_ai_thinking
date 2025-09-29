@@ -1,33 +1,77 @@
-# Slide Pages Content Specification
+# Slide Pages Content Specification v2.0
+## Multi-Slide Architecture with PostMessage Communication
 
 ## Overview
-This document defines the requirements, structure, and specifications for slide page content stored in `presentation/assets/[1-8]/` folders, ensuring proper rendering in the main presentation window with consistent styling and progressive disclosure support.
+This document defines the **updated requirements, structure, and specifications** for slide page content stored in `presentation/assets/[1-8]/` folders. Based on the successful implementation of **Part 1**, this specification covers the **multi-slide approach** with secure cross-origin communication using postMessage API.
 
 ## Content Requirements
 
-### Slide Page Structure
-Each slide in `presentation/assets/[slideId]/` should contain visual content that complements the text-based markdown files in `presentation/[slideId]/`.
+### Multi-Slide Page Structure
+Each part can contain **multiple individual slides** for complex presentations, supporting both simple and sophisticated slide transitions.
 
 ```
 presentation/assets/
-├── 1/                           # Slide 1: Парадокс умного незнакомца
-│   ├── index.html              # Main slide content
-│   ├── style.css               # Slide-specific styles (optional)
-│   ├── images/                 # Visual assets
-│   │   ├── paradox-diagram.svg
-│   │   └── ai-black-box.png
-│   └── data.json               # Slide metadata (optional)
-├── 2/                          # Slide 2: Тайна чёрного ящика
-│   ├── index.html
+├── 1/                              # Part 1: Парадокс умного незнакомца
+│   ├── slides/                     # Multi-slide structure
+│   │   ├── 1-1-title.html         # Individual slide files
+│   │   ├── 1-2-contrast.html      # Each with own logic
+│   │   └── 1-3-transition.html    # Optional additional slides
+│   ├── images/                     # Shared visual assets
+│   │   ├── cognitive-parallel.svg
+│   │   └── paradox-diagram.png
+│   ├── data.json                   # Part metadata with slide configuration
+│   ├── navigation.html             # Local test navigation
+│   ├── test-system.html           # Comprehensive test system
+│   └── index.html                  # Legacy combined version (optional)
+├── 2/                              # Part 2: Simple single slide
+│   ├── index.html                  # Direct slide content
 │   ├── images/
-│   └── interactive/            # Interactive elements
+│   └── data.json
 └── .../
 ```
 
 ### Slide Content Format Standards
 
-**Primary Content File: `index.html`**
-Each slide must have an `index.html` file containing the visual presentation content:
+#### Configuration Types
+
+**Type 1: Multi-Slide Parts (Complex)**
+For parts requiring multiple slides and sophisticated transitions:
+
+```javascript
+// In script.js slideConfig
+1: {
+    title: "Парадокс умного незнакомца",
+    section: "Введение",
+    customSlides: true,
+    slides: [
+        {
+            file: "presentation/assets/1/slides/1-1-title.html",
+            title: "Титульный слайд",
+            actions: 0
+        },
+        {
+            file: "presentation/assets/1/slides/1-2-contrast.html",
+            title: "Контрастный слайд",
+            actions: 4
+        }
+    ]
+}
+```
+
+**Type 2: Single Slide Parts (Simple)**
+For straightforward presentations:
+
+```javascript
+// In script.js slideConfig
+2: {
+    title: "Тайна чёрного ящика",
+    section: "Введение"
+    // No customSlides property = uses standard loading
+}
+```
+
+#### Individual Slide Template
+Each slide file must implement **postMessage communication** and **progressive disclosure**:
 
 ```html
 <!DOCTYPE html>
@@ -35,8 +79,29 @@ Each slide must have an `index.html` file containing the visual presentation con
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Slide [Number]: [Title]</title>
-    <!-- Slide-specific styles embedded or linked -->
+    <title>Slide [ID]: [Title]</title>
+    <style>
+        /* Embedded styles with CSS variables */
+        :root {
+            --primary-text: #2d3748;
+            --secondary-text: #718096;
+            --accent-color: #667eea;
+            --success-color: #00a86b;
+            --warning-color: #ff6b6b;
+            --transition-normal: 0.3s ease;
+        }
+
+        .slide-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+        }
+
+        .slide-section.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
 </head>
 <body class="slide-content">
     <!-- Progressive disclosure sections -->
@@ -52,54 +117,118 @@ Each slide must have an `index.html` file containing the visual presentation con
         <!-- Content revealed on second action -->
     </div>
 
-    <!-- Additional action sections as needed -->
+    <script>
+        // Progressive disclosure logic
+        function revealSection(actionIndex) {
+            console.log(`Slide revealing action: ${actionIndex}`);
+
+            // Implementation varies by slide type
+            // See examples below
+        }
+
+        // PostMessage communication (REQUIRED)
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'revealSection') {
+                console.log('Slide received postMessage:', event.data);
+                revealSection(event.data.actionIndex);
+            }
+        });
+
+        // Global function for external control (REQUIRED)
+        window.revealSection = revealSection;
+
+        // Slide metadata (REQUIRED)
+        window.slideMetadata = {
+            id: "[slide-id]",
+            title: "[Slide Title]",
+            maxActions: [number],
+            type: "[title|content|transition]"
+        };
+
+        // Auto-reveal initial content
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => revealSection(0), 300);
+        });
+    </script>
 </body>
 </html>
 ```
 
 ## Content Integration Requirements
 
-### Main Window Rendering System
+### Main System Integration (script.js)
 
-**Content Loading Strategy:**
+#### 1. Slide Configuration
+The main system loads slide configurations in `loadSlideConfiguration()`:
+
 ```javascript
-async function loadSlideContent(slideId) {
-    const paths = {
-        // Text content for tabs (existing structure)
-        text: `presentation/${slideId}/`,
-        // Visual content for main display (new structure)
-        visual: `presentation/assets/${slideId}/index.html`
-    };
-
-    const content = {};
-
-    // Load text content for tabs
-    const textFiles = ['extended_analysis.md', 'speech_notes.md', 'slide_design.md', 'sources_reference.md'];
-    for (const file of textFiles) {
-        const response = await fetch(`${paths.text}${file}`);
-        content[file.replace('.md', '')] = response.ok ? await response.text() : getDefaultContent(file);
-    }
-
-    // Load visual content for main area
-    try {
-        const visualResponse = await fetch(paths.visual);
-        if (visualResponse.ok) {
-            content.visual = await visualResponse.text();
-            content.hasVisual = true;
-        } else {
-            content.visual = generateDefaultSlideHTML(slideId, content.speech);
-            content.hasVisual = false;
+async loadSlideConfiguration() {
+    this.slideConfig = {
+        1: {
+            title: "Парадокс умного незнакомца",
+            section: "Введение",
+            customSlides: true,  // Enables multi-slide mode
+            slides: [
+                {
+                    file: "presentation/assets/1/slides/1-1-title.html",
+                    title: "Титульный слайд",
+                    actions: 0  // Number of actions this slide supports
+                },
+                {
+                    file: "presentation/assets/1/slides/1-2-contrast.html",
+                    title: "Контрастный слайд",
+                    actions: 4
+                }
+            ]
+        },
+        2: {
+            title: "Standard Slide",
+            section: "Section"
+            // No customSlides = uses legacy loading
         }
-    } catch (error) {
-        content.visual = generateDefaultSlideHTML(slideId, content.speech);
-        content.hasVisual = false;
+    };
+}
+```
+
+#### 2. Content Loading Strategy
+Enhanced `loadSlideContent()` with multi-slide support:
+
+```javascript
+async loadSlideContent(slideId) {
+    if (this.slides[slideId]) {
+        return this.slides[slideId];
     }
 
-    // Parse actions from both speech notes and visual content
-    content.maxActions = Math.max(
-        parseActionsFromSpeech(content.speech),
-        parseActionsFromVisual(content.visual)
-    );
+    const config = this.slideConfig[slideId];
+    const content = {};
+    const isFileProtocol = window.location.protocol === 'file:';
+
+    // Handle custom slides (multi-slide parts)
+    if (config && config.customSlides) {
+        console.log('Loading custom slides for slide', slideId);
+
+        // Use first slide as default
+        const firstSlide = config.slides[0];
+        content.visual = firstSlide.file;
+        content.hasVisual = true;
+
+        // Calculate total actions across all slides
+        content.maxActions = config.slides.reduce((total, slide) => total + slide.actions, 0) + 1;
+        content.customSlides = config.slides;
+
+        // Load markdown content for tabs
+        await this.loadMarkdownContent(content, slideId, isFileProtocol);
+
+        this.slides[slideId] = content;
+        return content;
+    }
+
+    // Standard single slide loading (legacy)
+    await this.loadMarkdownContent(content, slideId, isFileProtocol);
+
+    // Load visual content
+    const visualPath = `presentation/assets/${slideId}/index.html`;
+    // ... rest of standard loading logic
 
     return content;
 }
@@ -107,39 +236,84 @@ async function loadSlideContent(slideId) {
 
 ### Progressive Disclosure Integration
 
-**Action Detection in Visual Content:**
+#### 3. PostMessage Communication System
+The main system uses **postMessage** instead of direct iframe access for security:
+
 ```javascript
-function parseActionsFromVisual(htmlContent) {
-    // Count data-action attributes to determine total actions
-    const actionMatches = htmlContent.match(/data-action="(\d+)"/g);
-    if (!actionMatches) return 1;
+// In ProgressiveDisclosureController class
+revealContent(actionIndex) {
+    const iframe = document.getElementById('slide-frame');
+    if (!iframe) return;
 
-    const actionNumbers = actionMatches.map(match =>
-        parseInt(match.match(/data-action="(\d+)"/)[1])
-    );
+    console.log('Revealing content for action:', actionIndex);
 
-    return Math.max(...actionNumbers) + 1; // +1 because actions are 0-indexed
+    // For custom slides, check if we need to switch slides
+    const currentSlideId = this.app.state.currentSlide;
+    const slideConfig = this.app.slideConfig[currentSlideId];
+
+    if (slideConfig && slideConfig.customSlides) {
+        // Determine which slide should be shown
+        const targetSlide = this.getTargetSlideForAction(slideConfig, actionIndex);
+        const currentSrc = iframe.src;
+
+        // Switch slides if needed
+        if (!currentSrc.includes(targetSlide.file)) {
+            console.log('Switching to slide:', targetSlide.file);
+            iframe.src = targetSlide.file;
+
+            iframe.onload = () => {
+                setTimeout(() => {
+                    this.sendRevealMessage(iframe, actionIndex);
+                }, 100);
+            };
+            return;
+        }
+    }
+
+    this.sendRevealMessage(iframe, actionIndex);
 }
 
-function revealVisualContent(actionIndex) {
-    const slideFrame = document.getElementById('slide-frame');
-    if (!slideFrame) return;
+sendRevealMessage(iframe, actionIndex) {
+    const currentSlideId = this.app.state.currentSlide;
+    const slideConfig = this.app.slideConfig[currentSlideId];
+    let slideActionIndex = actionIndex;
 
-    const slideDocument = slideFrame.contentDocument || slideFrame.contentWindow.document;
-    const sections = slideDocument.querySelectorAll('[data-action]');
+    // Map global actions to slide-specific actions
+    if (slideConfig && slideConfig.customSlides) {
+        const targetSlide = this.getTargetSlideForAction(slideConfig, actionIndex);
+        slideActionIndex = this.getSlideActionIndex(slideConfig, actionIndex, targetSlide);
+    }
 
-    sections.forEach((section, index) => {
-        const sectionAction = parseInt(section.getAttribute('data-action'));
-        if (sectionAction <= actionIndex) {
-            section.classList.add('revealed');
-            section.style.opacity = '1';
-            section.style.transform = 'translateY(0)';
-        } else {
-            section.classList.remove('revealed');
-            section.style.opacity = '0';
-            section.style.transform = 'translateY(20px)';
-        }
-    });
+    // Send postMessage to iframe
+    try {
+        iframe.contentWindow.postMessage({
+            type: 'revealSection',
+            actionIndex: slideActionIndex
+        }, '*');
+        console.log('Sent postMessage revealSection with action:', slideActionIndex);
+    } catch (e) {
+        console.log('Could not send postMessage:', e.message);
+        // Fallback to direct DOM manipulation for legacy slides
+        this.fallbackRevealContent(iframe, slideActionIndex);
+    }
+}
+
+getTargetSlideForAction(slideConfig, actionIndex) {
+    // Example for Part 1: action 0 = title, actions 1+ = contrast
+    if (actionIndex === 0) {
+        return slideConfig.slides[0];
+    } else {
+        return slideConfig.slides[1];
+    }
+}
+
+getSlideActionIndex(slideConfig, globalActionIndex, targetSlide) {
+    // Map global action to slide-specific action
+    if (targetSlide === slideConfig.slides[0]) {
+        return 0; // Title slide always action 0
+    } else {
+        return Math.max(0, globalActionIndex - 1); // Contrast slide maps 1→0, 2→1, etc.
+    }
 }
 ```
 
@@ -481,4 +655,47 @@ function generateDefaultSlideHTML(slideId, speechContent) {
 }
 ```
 
-This specification ensures that slide pages integrate seamlessly with the presentation system while maintaining visual consistency and supporting all progressive disclosure requirements.
+## Development Workflow
+
+### Testing System Requirements
+Each part **MUST** include a comprehensive testing system:
+
+```
+presentation/assets/[partId]/
+├── navigation.html           # Central hub with all links
+├── test-system.html         # Comprehensive test interface
+└── slides/ or index.html    # Actual slide content
+```
+
+### Local Development Testing
+1. **Start dev server**: `python dev-server.py`
+2. **Navigate to part**: `http://localhost:8000/presentation/assets/[partId]/navigation.html`
+3. **Test individual slides** and **full progressive disclosure**
+4. **Verify postMessage communication** in browser console
+
+### Standards Compliance Checklist
+- [ ] **PostMessage listeners** implemented in all slide files
+- [ ] **Progressive disclosure** working with data-action attributes
+- [ ] **Slide metadata** properly exposed via window.slideMetadata
+- [ ] **CSS variables** used for consistent styling
+- [ ] **Multi-slide navigation** working in main system
+- [ ] **Local test system** functional and comprehensive
+- [ ] **Console logging** clear and helpful for debugging
+- [ ] **Responsive design** working on different screen sizes
+
+### Action Mapping Examples
+```javascript
+// Part 1 (Multi-slide): 5 total actions
+// Action 0: Title slide (1-1-title.html, action 0)
+// Action 1: Contrast slide (1-2-contrast.html, action 0 - header)
+// Action 2: Contrast slide (1-2-contrast.html, action 1 - medical)
+// Action 3: Contrast slide (1-2-contrast.html, action 2 - generation)
+// Action 4: Contrast slide (1-2-contrast.html, action 3 - financial)
+
+// Part 2 (Single slide): 3 total actions
+// Action 0: Main slide (index.html, action 0)
+// Action 1: Main slide (index.html, action 1)
+// Action 2: Main slide (index.html, action 2)
+```
+
+This specification ensures that slide pages integrate seamlessly with the presentation system while maintaining visual consistency and supporting all progressive disclosure requirements through secure postMessage communication.

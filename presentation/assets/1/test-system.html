@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Part 1: Парадокс Умного Незнакомца - Test System</title>
+    <style>
+        :root {
+            --primary-color: #1e3a5f;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --background: #f8f9fa;
+            --white: #ffffff;
+            --border: #dee2e6;
+            --text-muted: #6c757d;
+
+            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--background);
+            color: var(--primary-color);
+            line-height: 1.6;
+        }
+
+        .test-header {
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 1.5rem;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .test-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .test-subtitle {
+            text-align: center;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            height: calc(100vh - 120px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--white);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .slide-nav {
+            margin-bottom: 2rem;
+        }
+
+        .nav-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .slide-button {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--border-radius);
+            color: var(--primary-color);
+            text-decoration: none;
+            text-align: left;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .slide-button:hover {
+            background: var(--background);
+            border-color: var(--primary-color);
+        }
+
+        .slide-button.active {
+            background: var(--primary-color);
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        .slide-meta {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 0.25rem;
+        }
+
+        /* Controls */
+        .controls {
+            margin-bottom: 2rem;
+        }
+
+        .action-controls {
+            margin-bottom: 1rem;
+        }
+
+        .action-button {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            margin: 0.2rem;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-button:hover {
+            background: var(--background);
+        }
+
+        .action-button.active {
+            background: var(--success-color);
+            color: var(--white);
+            border-color: var(--success-color);
+        }
+
+        .control-button {
+            width: 100%;
+            padding: 0.6rem;
+            margin-bottom: 0.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: var(--white);
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+            color: var(--primary-color);
+        }
+
+        .control-button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* Main content area */
+        .content-area {
+            background: var(--white);
+            position: relative;
+        }
+
+        .slide-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: var(--white);
+        }
+
+        .slide-overlay {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+            z-index: 10;
+        }
+
+        /* Status bar */
+        .status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 0.75rem 1.5rem;
+            font-size: 0.9rem;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-info {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success-color);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+            }
+
+            .sidebar {
+                order: 2;
+                max-height: 200px;
+                border-right: none;
+                border-top: 1px solid var(--border);
+            }
+
+            .content-area {
+                order: 1;
+            }
+        }
+
+        /* Animation for slide transitions */
+        .slide-transition {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .slide-transition.loaded {
+            opacity: 1;
+        }
+
+        /* Additional info panel */
+        .info-panel {
+            background: var(--background);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+        }
+
+        .info-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .timing-info {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="test-header">
+        <div class="test-title">Part 1: Парадокс Умного Незнакомца</div>
+        <div class="test-subtitle">Локальная тестовая система для просмотра слайдов</div>
+    </div>
+
+    <!-- Main container -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Navigation -->
+            <div class="slide-nav">
+                <div class="nav-title">📖 Слайды</div>
+
+                <button class="slide-button active" onclick="loadSlide('slides/1-1-title.html', this)" data-slide="1-1">
+                    <div>1.1 Титульный слайд</div>
+                    <div class="slide-meta">30 секунд • Приветствие</div>
+                </button>
+
+                <button class="slide-button" onclick="loadSlide('slides/1-2-contrast.html', this)" data-slide="1-2">
+                    <div>1.2 Контрастный слайд</div>
+                    <div class="slide-meta">3 минуты • Парадоксы ИИ</div>
+                </button>
+
+                <button class="slide-button" onclick="loadSlide('index.html', this)" data-slide="combined">
+                    <div>🔄 Объединённая версия</div>
+                    <div class="slide-meta">Все секции вместе</div>
+                </button>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <div class="nav-title">⚡ Управление</div>
+
+                <div class="action-controls" id="actionControls">
+                    <!-- Action buttons will be generated dynamically -->
+                </div>
+
+                <button class="control-button btn-primary" onclick="previousAction()">
+                    ← Предыдущее действие
+                </button>
+
+                <button class="control-button btn-primary" onclick="nextAction()">
+                    Следующее действие →
+                </button>
+
+                <button class="control-button btn-success" onclick="autoDemo()">
+                    🎬 Авто-демо
+                </button>
+
+                <button class="control-button btn-warning" onclick="resetSlide()">
+                    🔄 Сброс
+                </button>
+            </div>
+
+            <!-- Info panel -->
+            <div class="info-panel">
+                <div class="info-title">ℹ️ Информация</div>
+                <div id="slideInfo">
+                    <div class="timing-info">Выберите слайд для просмотра информации</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content area -->
+        <div class="content-area">
+            <div class="slide-overlay" id="slideOverlay">
+                Slide 1.1 • Action 0/0
+            </div>
+            <iframe id="slideFrame" class="slide-frame slide-transition" src="slides/1-1-title.html"></iframe>
+        </div>
+    </div>
+
+    <!-- Status bar -->
+    <div class="status-bar">
+        <div class="status-info">
+            <div class="status-item">
+                <div class="status-indicator"></div>
+                <span id="currentSlide">Слайд 1.1</span>
+            </div>
+            <div class="status-item">
+                <span id="currentAction">Действие: 0/0</span>
+            </div>
+            <div class="status-item">
+                <span id="totalDuration">Длительность: 30s</span>
+            </div>
+        </div>
+        <div class="timestamp" id="timestamp">Загружено: --:--</div>
+    </div>
+
+    <script>
+        let currentSlideMetadata = null;
+        let currentActionIndex = 0;
+        let autoRunning = false;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTimestamp();
+            // Default slide is already loaded
+            loadSlide('slides/1-1-title.html', document.querySelector('.slide-button'));
+        });
+
+        function loadSlide(slideUrl, buttonElement) {
+            // Update active button
+            document.querySelectorAll('.slide-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            buttonElement.classList.add('active');
+
+            // Load slide
+            const frame = document.getElementById('slideFrame');
+            frame.classList.remove('loaded');
+
+            frame.onload = function() {
+                setTimeout(() => {
+                    // Get metadata from loaded slide
+                    try {
+                        if (frame.contentWindow && frame.contentWindow.slideMetadata) {
+                            currentSlideMetadata = frame.contentWindow.slideMetadata;
+                        } else {
+                            // Fallback metadata based on slide URL
+                            currentSlideMetadata = getDefaultMetadata(slideUrl);
+                        }
+                        updateUI();
+                        frame.classList.add('loaded');
+                    } catch (e) {
+                        console.log('Could not access slide metadata, using fallback:', e);
+                        currentSlideMetadata = getDefaultMetadata(slideUrl);
+                        updateUI();
+                        frame.classList.add('loaded');
+                    }
+                }, 200);
+            };
+
+            frame.onerror = function() {
+                console.error('Failed to load slide:', slideUrl);
+                currentSlideMetadata = {
+                    id: 'error',
+                    title: 'Ошибка загрузки',
+                    maxActions: 0,
+                    duration: 0
+                };
+                updateUI();
+            };
+
+            frame.src = slideUrl;
+            currentActionIndex = 0;
+            updateTimestamp();
+        }
+
+        function getDefaultMetadata(slideUrl) {
+            // Default metadata based on slide URL
+            if (slideUrl.includes('1-1-title')) {
+                return {
+                    id: '1-1',
+                    title: 'Титульный слайд',
+                    maxActions: 0,
+                    duration: 30,
+                    type: 'title'
+                };
+            } else if (slideUrl.includes('1-2-contrast')) {
+                return {
+                    id: '1-2',
+                    title: 'Контрастный слайд',
+                    maxActions: 4,
+                    duration: 180,
+                    type: 'content'
+                };
+            } else if (slideUrl.includes('index.html')) {
+                return {
+                    id: 'combined',
+                    title: 'Объединённая версия',
+                    maxActions: 4,
+                    duration: 240,
+                    type: 'combined'
+                };
+            } else {
+                return {
+                    id: 'unknown',
+                    title: slideUrl,
+                    maxActions: 0,
+                    duration: 0,
+                    type: 'unknown'
+                };
+            }
+        }
+
+        function updateUI() {
+            const metadata = currentSlideMetadata;
+
+            // Update overlay
+            document.getElementById('slideOverlay').textContent =
+                `Slide ${metadata.id} • Action ${currentActionIndex}/${metadata.maxActions || 0}`;
+
+            // Update status bar
+            document.getElementById('currentSlide').textContent = `Слайд ${metadata.id}`;
+            document.getElementById('currentAction').textContent =
+                `Действие: ${currentActionIndex}/${metadata.maxActions || 0}`;
+            document.getElementById('totalDuration').textContent =
+                `Длительность: ${formatDuration(metadata.duration || 0)}`;
+
+            // Update action controls
+            updateActionControls();
+
+            // Update info panel
+            updateInfoPanel();
+        }
+
+        function updateActionControls() {
+            const container = document.getElementById('actionControls');
+            container.innerHTML = '';
+
+            if (!currentSlideMetadata || currentSlideMetadata.maxActions === 0) {
+                container.innerHTML = '<div class="timing-info">Нет доступных действий</div>';
+                return;
+            }
+
+            for (let i = 0; i <= currentSlideMetadata.maxActions; i++) {
+                const button = document.createElement('button');
+                button.className = `action-button ${i === currentActionIndex ? 'active' : ''}`;
+                button.textContent = i;
+                button.onclick = () => setAction(i);
+                container.appendChild(button);
+            }
+        }
+
+        function updateInfoPanel() {
+            const info = document.getElementById('slideInfo');
+            const metadata = currentSlideMetadata;
+
+            if (!metadata) {
+                info.innerHTML = '<div class="timing-info">Нет данных о слайде</div>';
+                return;
+            }
+
+            let html = `
+                <div><strong>ID:</strong> ${metadata.id}</div>
+                <div><strong>Тип:</strong> ${metadata.type || 'unknown'}</div>
+                <div><strong>Длительность:</strong> ${formatDuration(metadata.duration || 0)}</div>
+                <div><strong>Действий:</strong> ${metadata.maxActions || 0}</div>
+            `;
+
+            if (metadata.actions) {
+                html += '<div style="margin-top: 0.5rem;"><strong>Действия:</strong></div>';
+                metadata.actions.forEach(action => {
+                    html += `<div class="timing-info">• ${action.index}: ${action.description} (${action.timing})</div>`;
+                });
+            }
+
+            info.innerHTML = html;
+        }
+
+        function setAction(actionIndex) {
+            currentActionIndex = actionIndex;
+            console.log('Setting action to:', actionIndex);
+
+            // Call slide's reveal function
+            try {
+                const frame = document.getElementById('slideFrame');
+                console.log('Frame:', frame);
+                console.log('Frame contentWindow:', frame.contentWindow);
+
+                if (frame.contentWindow && frame.contentWindow.revealSection) {
+                    console.log('Calling revealSection with:', actionIndex);
+                    frame.contentWindow.revealSection(actionIndex);
+                } else {
+                    console.log('revealSection not available:', frame.contentWindow ? 'contentWindow exists' : 'no contentWindow');
+                }
+            } catch (e) {
+                console.log('Could not call revealSection:', e);
+            }
+
+            updateUI();
+        }
+
+        function nextAction() {
+            if (currentSlideMetadata && currentActionIndex < currentSlideMetadata.maxActions) {
+                setAction(currentActionIndex + 1);
+            }
+        }
+
+        function previousAction() {
+            if (currentActionIndex > 0) {
+                setAction(currentActionIndex - 1);
+            }
+        }
+
+        function resetSlide() {
+            setAction(0);
+        }
+
+        function autoDemo() {
+            if (autoRunning) return;
+
+            autoRunning = true;
+            resetSlide();
+
+            const totalActions = currentSlideMetadata?.maxActions || 0;
+            let currentStep = 0;
+
+            const interval = setInterval(() => {
+                if (currentStep <= totalActions) {
+                    setAction(currentStep);
+                    currentStep++;
+                } else {
+                    clearInterval(interval);
+                    autoRunning = false;
+                }
+            }, 2000); // 2 seconds between actions
+        }
+
+        function formatDuration(seconds) {
+            if (seconds < 60) return `${seconds}s`;
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return remainingSeconds > 0 ? `${minutes}m ${remainingSeconds}s` : `${minutes}m`;
+        }
+
+        function updateTimestamp() {
+            const now = new Date();
+            document.getElementById('timestamp').textContent =
+                `Загружено: ${now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}`;
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+            switch(e.key) {
+                case 'ArrowRight':
+                case ' ':
+                    e.preventDefault();
+                    nextAction();
+                    break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    previousAction();
+                    break;
+                case 'r':
+                case 'R':
+                    e.preventDefault();
+                    resetSlide();
+                    break;
+                case 'd':
+                case 'D':
+                    e.preventDefault();
+                    autoDemo();
+                    break;
+            }
+        });
+    </script>
+</body>
+</html>

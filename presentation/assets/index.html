@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Презентация: Парадокс Умного Незнакомца - Навигация</title>
+    <style>
+        :root {
+            --primary-color: #1e3a5f;
+            --success-color: #28a745;
+            --background: #f8f9fa;
+            --white: #ffffff;
+            --border: #dee2e6;
+            --text-muted: #6c757d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--background);
+            color: var(--primary-color);
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
+
+        .part-section {
+            background: var(--background);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .part-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .part-description {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .link-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .link-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .link-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .link-description {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 0.6rem 1.2rem;
+            background: var(--primary-color);
+            color: var(--white);
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .button:hover {
+            background: #16324a;
+            transform: translateY(-1px);
+        }
+
+        .button.success {
+            background: var(--success-color);
+        }
+
+        .button.success:hover {
+            background: #218838;
+        }
+
+        .status {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(40, 167, 69, 0.1);
+            border-radius: 6px;
+            color: var(--success-color);
+            font-weight: 500;
+        }
+
+        .note {
+            background: rgba(30, 58, 95, 0.1);
+            border-left: 4px solid var(--primary-color);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Парадокс Умного Незнакомца</h1>
+            <p class="subtitle">Локальная тестовая среда для презентации</p>
+        </div>
+
+        <div class="note">
+            <strong>🌐 Сервер запущен:</strong> localhost:8000<br>
+            <strong>📁 Расположение:</strong> presentation/assets/<br>
+            <strong>⚡ Статус:</strong> Все тестовые системы доступны для локального просмотра
+        </div>
+
+        <!-- Part 1 -->
+        <div class="part-section">
+            <h2 class="part-title">📖 Part 1: Парадокс Умного Незнакомца</h2>
+            <p class="part-description">
+                Знакомство с темой через контрасты возможностей и ограничений ИИ.
+                Длительность: 3.5-4 минуты • 2 слайда • 4 действия
+            </p>
+
+            <div class="links-grid">
+                <div class="link-card">
+                    <div class="link-title">🎛️ Тестовая Система</div>
+                    <div class="link-description">
+                        Полнофункциональная система управления с навигацией, действиями и метаданными
+                    </div>
+                    <a href="1/test-system.html" class="button success">Открыть систему</a>
+                </div>
+
+                <div class="link-card">
+                    <div class="link-title">🧭 Навигация</div>
+                    <div class="link-description">
+                        Центральный хаб с доступом ко всем тестовым системам и инструкциями
+                    </div>
+                    <a href="1/navigation.html" class="button">Открыть навигацию</a>
+                </div>
+
+                <div class="link-card">
+                    <div class="link-title">📋 Слайд 1.1: Титульный</div>
+                    <div class="link-description">
+                        Минималистичный титульный слайд с приветствием (30 секунд)
+                    </div>
+                    <a href="1/slides/1-1-title.html" class="button">Слайд 1.1</a>
+                </div>
+
+                <div class="link-card">
+                    <div class="link-title">📊 Слайд 1.2: Контрасты</div>
+                    <div class="link-description">
+                        Динамические парадоксы ИИ с прогрессивным раскрытием (3 минуты)
+                    </div>
+                    <a href="1/slides/1-2-contrast.html" class="button">Слайд 1.2</a>
+                </div>
+
+                <div class="link-card">
+                    <div class="link-title">🔄 Legacy: Объединённая</div>
+                    <div class="link-description">
+                        Исходная версия со всеми элементами в одном файле
+                    </div>
+                    <a href="1/index.html" class="button">Legacy версия</a>
+                </div>
+
+                <div class="link-card">
+                    <div class="link-title">🧪 Legacy: Тест</div>
+                    <div class="link-description">
+                        Старая тестовая система для сравнения подходов
+                    </div>
+                    <a href="1/test.html" class="button">Legacy тест</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Start -->
+        <div class="part-section">
+            <h2 class="part-title">🚀 Быстрый старт</h2>
+            <p class="part-description">
+                Рекомендуемая последовательность для тестирования:
+            </p>
+
+            <ol style="margin-left: 2rem; color: var(--text-muted);">
+                <li><strong>Навигация</strong> - обзор всех доступных систем</li>
+                <li><strong>Тестовая система</strong> - комплексное управление слайдами</li>
+                <li><strong>Отдельные слайды</strong> - проверка индивидуальной работы</li>
+                <li><strong>Legacy версии</strong> - сравнение подходов</li>
+            </ol>
+
+            <div style="margin-top: 1rem;">
+                <a href="1/test-system.html" class="button success">🎯 Начать с тестовой системы</a>
+                <a href="1/navigation.html" class="button">📚 Инструкции и навигация</a>
+            </div>
+        </div>
+
+        <div class="status">
+            ✅ Все системы готовы к работе • localhost:8000 активен
+        </div>
+    </div>
+
+    <script>
+        // Add current time
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            const timeElement = document.createElement('div');
+            timeElement.style.textAlign = 'center';
+            timeElement.style.marginTop = '1rem';
+            timeElement.style.color = 'var(--text-muted)';
+            timeElement.style.fontSize = '0.9rem';
+            timeElement.textContent = `Последнее обновление: ${now.toLocaleString('ru-RU')}`;
+            document.querySelector('.container').appendChild(timeElement);
+        });
+
+        // Check if running on localhost
+        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+            const warning = document.createElement('div');
+            warning.style.background = '#ff6b6b';
+            warning.style.color = 'white';
+            warning.style.padding = '1rem';
+            warning.style.textAlign = 'center';
+            warning.style.fontWeight = 'bold';
+            warning.innerHTML = '⚠️ Внимание: Рекомендуется запускать через dev-server.py на localhost:8000';
+            document.body.insertBefore(warning, document.body.firstChild);
+        }
+    </script>
+</body>
+</html>

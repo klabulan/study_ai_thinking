@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Part 2: Тайна Чёрного Ящика</title>
+    <style>
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.4rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .redirect-notice {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .redirect-notice h3 {
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+
+        .links {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .link {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .link:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            text-decoration: none;
+            color: white;
+        }
+
+        .primary-link {
+            background: rgba(40, 167, 69, 0.8);
+            border-color: rgba(40, 167, 69, 1);
+        }
+
+        .primary-link:hover {
+            background: rgba(40, 167, 69, 1);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1.1rem;
+            }
+
+            .links {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .link {
+                width: 80%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔓 Part 2</h1>
+        <div class="subtitle">Тайна Чёрного Ящика</div>
+
+        <div class="redirect-notice">
+            <h3>Multi-Slide Implementation</h3>
+            <p>This part uses the new multi-slide architecture with 4 individual slide files and progressive disclosure.</p>
+        </div>
+
+        <div class="links">
+            <a href="../../index.html" class="link primary-link">
+                🎯 Main Presentation
+            </a>
+            <a href="test-system.html" class="link">
+                🔬 Test System
+            </a>
+            <a href="navigation.html" class="link">
+                🧭 Navigation Hub
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // If loaded in an iframe (from main system), show a message
+        if (window.parent !== window) {
+            console.log('Part 2 index.html loaded in iframe - this should use multi-slide system instead');
+
+            // Attempt to communicate with parent
+            try {
+                window.parent.postMessage({
+                    type: 'slideLoaded',
+                    slideId: 2,
+                    message: 'Part 2 uses multi-slide architecture'
+                }, '*');
+            } catch (e) {
+                console.log('Could not communicate with parent:', e);
+            }
+        }
+
+        // Auto-redirect to main system if accessed directly
+        if (window.location.search.includes('redirect=main')) {
+            setTimeout(() => {
+                window.location.href = '../../index.html#slide-2';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
