@@ -1,0 +1,27 @@
+{
+  "part": {
+    "id": 13,
+    "title": "За Математикой Творчества — Когда ИИ Создаёт и Когда Ошибается",
+    "section": "Фаза 3: Генерация",
+    "customSlides": true
+  },
+  "slides": [
+    {
+      "id": "13-1",
+      "file": "slides/13-1-temperature-creativity.html",
+      "title": "Температурная Шкала Креативности и Ошибок",
+      "type": "content",
+      "maxActions": 6,
+      "duration": 240
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "created": "2025-01-29",
+    "totalDuration": 240,
+    "presenter": "Dr. Elena Cognitive",
+    "theme": "Математическая связь между температурой, креативностью и галлюцинациями",
+    "visualStyle": "Interactive temperature scale with live generation demos and business ROI focus",
+    "phaseTransition": "From generation mechanics to creativity control and business applications"
+  }
+}

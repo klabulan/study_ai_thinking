@@ -1,0 +1,43 @@
+{
+  "part": {
+    "id": 7,
+    "title": "Механизмы Внимания — Как ИИ Фокусируется на Важном",
+    "section": "Фаза 2: Размышление",
+    "customSlides": true
+  },
+  "slides": [
+    {
+      "id": "7-1",
+      "file": "slides/7-1-selective-attention.html",
+      "title": "Селективное Внимание: От Человека к ИИ",
+      "type": "content",
+      "maxActions": 4,
+      "duration": 90
+    },
+    {
+      "id": "7-2",
+      "file": "slides/7-2-attention-matrix.html",
+      "title": "Матрица Внимания — Каждое Слово Слушает Каждое",
+      "type": "content",
+      "maxActions": 4,
+      "duration": 90
+    },
+    {
+      "id": "7-3",
+      "file": "slides/7-3-layered-understanding.html",
+      "title": "Слоевое Понимание — От Простого к Сложному",
+      "type": "content",
+      "maxActions": 4,
+      "duration": 60
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "created": "2025-01-29",
+    "totalDuration": 240,
+    "presenter": "Dr. Elena Cognitive",
+    "theme": "Механизмы внимания через когнитивные аналогии",
+    "visualStyle": "Cognitive processes with attention visualization",
+    "phaseTransition": "From encoding to thinking through attention mechanisms"
+  }
+}

@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Slide 7.1: Селективное Внимание — От Человека к ИИ</title>
+    <style>
+        :root {
+            --primary-text: #2d3748;
+            --accent-color: #667eea;
+            --success-color: #00a86b;
+            --warning-color: #ff6b6b;
+            --transition-normal: 0.5s ease;
+
+            /* Updated font sizes for readability */
+            --font-size-sm: 1rem;
+            --font-size-base: 1.125rem;
+            --font-size-lg: 1.375rem;
+            --font-size-xl: 1.625rem;
+            --font-size-2xl: 2rem;
+            --font-size-3xl: 2.5rem;
+            --font-size-4xl: 3rem;
+
+            /* Attention mechanism specific colors */
+            --human-focus: #2ECC71;
+            --human-filter: #E8F5E8;
+            --noise-filter: #BDC3C7;
+            --ai-attention: #3498DB;
+            --attention-strong: #2980B9;
+            --attention-weak: #AED6F1;
+            --layer-basic: #9B59B6;
+            --layer-complex: #8E44AD;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'PT Sans', -apple-system, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            color: var(--primary-text);
+            overflow-x: hidden;
+        }
+
+        .slide-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+        }
+
+        .slide-section.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .slide-title {
+            font-size: var(--font-size-4xl);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(45deg, var(--accent-color), var(--success-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-title {
+            font-size: var(--font-size-2xl);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--human-focus);
+            text-align: center;
+        }
+
+        .cafe-scene {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cafe-scene::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--human-focus), var(--ai-attention));
+        }
+
+        .noise-elements {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .noise-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            background: rgba(189, 195, 199, 0.3);
+            border-radius: 12px;
+            font-size: var(--font-size-lg);
+            transition: all 0.5s ease;
+        }
+
+        .noise-item.filtered {
+            opacity: 0.2;
+            filter: blur(2px);
+            background: rgba(189, 195, 199, 0.1);
+        }
+
+        .focus-element {
+            background: linear-gradient(135deg, var(--human-focus), rgba(46, 204, 113, 0.8));
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin: 1rem 0;
+            box-shadow: 0 0 20px rgba(46, 204, 113, 0.3);
+            animation: focusPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes focusPulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(46, 204, 113, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(46, 204, 113, 0.6); }
+        }
+
+        .ai-comparison {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(52, 152, 219, 0.05));
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 2px solid rgba(52, 152, 219, 0.3);
+        }
+
+        .tokens-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .token {
+            background: var(--ai-attention);
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 25px;
+            font-weight: 600;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .token:hover {
+            transform: scale(1.05);
+        }
+
+        .connection-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        .connection-line {
+            stroke: var(--ai-attention);
+            stroke-width: 2;
+            fill: none;
+            opacity: 0;
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            transition: all 0.8s ease;
+        }
+
+        .connection-line.active {
+            opacity: 0.6;
+            stroke-dashoffset: 0;
+        }
+
+        .layers-section {
+            background: rgba(155, 89, 182, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 2px solid rgba(155, 89, 182, 0.3);
+        }
+
+        .layer {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-left: 5px solid var(--layer-basic);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateX(-20px);
+            opacity: 0;
+            transition: all 0.6s ease;
+        }
+
+        .layer.layer-2 {
+            border-left-color: var(--layer-complex);
+        }
+
+        .layer.layer-3 {
+            border-left-color: var(--layer-basic);
+        }
+
+        .layer.revealed {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .layer-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--layer-basic);
+        }
+
+        .layer-description {
+            font-size: var(--font-size-base);
+            line-height: 1.6;
+            color: var(--primary-text);
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 60px 1fr;
+            gap: 2rem;
+            align-items: center;
+            margin: 2rem 0;
+        }
+
+        .human-side, .ai-side {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .vs-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--accent-color);
+            font-weight: 700;
+        }
+
+        .key-difference {
+            background: linear-gradient(135deg, rgba(246, 224, 94, 0.2), rgba(246, 224, 94, 0.1));
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border-left: 5px solid #F6E05E;
+        }
+
+        .difference-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            color: #E6B800;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .difference-text {
+            font-size: var(--font-size-lg);
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+
+        .reading-analogy {
+            background: rgba(46, 204, 113, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border: 1px solid rgba(46, 204, 113, 0.3);
+        }
+
+        .simultaneous-analysis {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            margin: 2rem 0;
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+        }
+
+        .analysis-arrow {
+            font-size: 2rem;
+            color: var(--ai-attention);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-section" data-action="0">
+        <h1 class="slide-title">Селективное Внимание: От Человека к ИИ</h1>
+        <p style="text-align: center; font-size: var(--font-size-lg); color: #666; margin-bottom: 2rem;">
+            Как мозг фильтрует информацию и как это делает ИИ
+        </p>
+    </div>
+
+    <div class="slide-section" data-action="1">
+        <h2 class="section-title">🧠 Как Вы Читаете в Шумном Кафе</h2>
+        <div class="cafe-scene">
+            <div class="noise-elements">
+                <div class="noise-item"><span class="icon">🎵</span>Музыка</div>
+                <div class="noise-item"><span class="icon">👥</span>Разговоры</div>
+                <div class="noise-item"><span class="icon">☕</span>Звуки кафе</div>
+                <div class="noise-item"><span class="icon">📱</span>Уведомления</div>
+            </div>
+
+            <div style="text-align: center; margin: 2rem 0;">
+                <div style="font-size: 1.5rem; color: var(--primary-text); margin-bottom: 1rem;">
+                    ⬇️ <strong>ФИЛЬТР ВНИМАНИЯ</strong> ⬇️
+                </div>
+            </div>
+
+            <div class="focus-element">
+                <span class="icon">📖</span>
+                <strong>ФОКУС НА ТЕКСТЕ</strong>
+                <p style="margin: 0.5rem 0 0 0; font-size: var(--font-size-base);">
+                    Селективное внимание автоматически отфильтровывает ненужное
+                </p>
+            </div>
+
+            <div class="reading-analogy">
+                <p style="text-align: center; font-style: italic; margin: 0;">
+                    <strong>Это происходит на досознательном уровне</strong> — вы даже не замечаете,
+                    как мозг игнорирует всё остальное
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-section" data-action="2">
+        <div class="comparison-grid">
+            <div class="human-side">
+                <h3 style="color: var(--human-focus); margin-bottom: 1rem;">👤 Человек</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin: 0.75rem 0; font-size: var(--font-size-base);">
+                        <span class="icon">🎯</span>Фокус на <strong>одном объекте</strong>
+                    </li>
+                    <li style="margin: 0.75rem 0; font-size: var(--font-size-base);">
+                        <span class="icon">📊</span>7±2 элемента одновременно
+                    </li>
+                    <li style="margin: 0.75rem 0; font-size: var(--font-size-base);">
+                        <span class="icon">⏱️</span>Последовательная обработка
+                    </li>
+                </ul>
+            </div>
+
+            <div class="vs-indicator">VS</div>
+
+            <div class="ai-side">
+                <h3 style="color: var(--ai-attention); margin-bottom: 1rem;">🤖 ИИ</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin: 0.75rem 0; font-size: var(--font-size-base);">
+                        <span class="icon">🕸️</span><strong>Все связи</strong> одновременно
+                    </li>
+                    <li style="margin: 0.75rem 0; font-size: var(--font-size-base);">
+                        <span class="icon">🔢</span>Тысячи токенов сразу
+                    </li>
+                    <li style="margin: 0.75rem 0; font-size: var(--font-size-base);">
+                        <span class="icon">⚡</span>Параллельный анализ
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-section" data-action="3">
+        <div class="ai-comparison">
+            <h3 style="color: var(--ai-attention); text-align: center; margin-bottom: 1.5rem;">
+                🤖 Как ИИ Обрабатывает Предложение
+            </h3>
+
+            <div style="text-align: center; margin-bottom: 2rem; font-size: var(--font-size-lg); font-style: italic;">
+                "Машинное обучение революционизирует современный бизнес"
+            </div>
+
+            <div class="tokens-container">
+                <div class="token">Машинное</div>
+                <div class="token">обучение</div>
+                <div class="token">революционизирует</div>
+                <div class="token">современный</div>
+                <div class="token">бизнес</div>
+            </div>
+
+            <div class="simultaneous-analysis">
+                <span>Токен₁</span>
+                <span class="analysis-arrow">↔</span>
+                <span>Токен₂</span>
+                <span class="analysis-arrow">↔</span>
+                <span>Токен₃</span>
+                <span class="analysis-arrow">↔</span>
+                <span>Токен₄</span>
+                <span class="analysis-arrow">↔</span>
+                <span>Токен₅</span>
+            </div>
+
+            <p style="text-align: center; font-size: var(--font-size-lg); font-weight: 600; color: var(--ai-attention);">
+                ⚡ <strong>ОДНОВРЕМЕННЫЙ АНАЛИЗ ВСЕХ СВЯЗЕЙ</strong> ⚡
+            </p>
+        </div>
+    </div>
+
+    <div class="slide-section" data-action="4">
+        <div class="layers-section">
+            <h3 style="color: var(--layer-basic); text-align: center; margin-bottom: 1.5rem;">
+                🔄 Многослойная Обработка: Как Перечитывание Книги
+            </h3>
+
+            <div class="layer layer-1">
+                <div class="layer-title">📖 Слой 1: Простые связи</div>
+                <div class="layer-description">Как первое чтение — замечаете отдельные слова, части речи, базовые паттерны</div>
+            </div>
+
+            <div class="layer layer-2">
+                <div class="layer-title">🔍 Слой 2: Сложные отношения</div>
+                <div class="layer-description">Как вдумчивое чтение — понимаете связи между идеями, логику, контекст</div>
+            </div>
+
+            <div class="layer layer-3">
+                <div class="layer-title">💡 Слой 3: Общий смысл</div>
+                <div class="layer-description">Как полное понимание — формируете общую картину, можете объяснить другим</div>
+            </div>
+        </div>
+
+        <div class="key-difference">
+            <div class="difference-title">💡 Ключевая Разница</div>
+            <div class="difference-text">
+                <strong>Человек:</strong> фокусируется на одном объекте последовательно<br>
+                <strong>ИИ:</strong> одновременно анализирует все связи между всеми элементами
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let maxActions = 4;
+
+        function revealSection(actionIndex) {
+            // Reveal all sections up to current action
+            for (let i = 0; i <= actionIndex; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.add('revealed'));
+            }
+
+            // Hide future sections
+            for (let i = actionIndex + 1; i <= maxActions; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.remove('revealed'));
+            }
+
+            // Special animations for action 1 (cafe noise filtering)
+            if (actionIndex >= 1) {
+                setTimeout(() => {
+                    document.querySelectorAll('.noise-item')
+                        .forEach(item => item.classList.add('filtered'));
+                }, 1000);
+            } else {
+                document.querySelectorAll('.noise-item')
+                    .forEach(item => item.classList.remove('filtered'));
+            }
+
+            // Layer animations for action 4
+            if (actionIndex >= 4) {
+                document.querySelectorAll('.layer').forEach((layer, index) => {
+                    setTimeout(() => {
+                        layer.classList.add('revealed');
+                    }, index * 200);
+                });
+            } else {
+                document.querySelectorAll('.layer')
+                    .forEach(layer => layer.classList.remove('revealed'));
+            }
+        }
+
+        // PostMessage listener (REQUIRED)
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'revealSection') {
+                revealSection(event.data.actionIndex);
+            }
+        });
+
+        // External control (REQUIRED)
+        window.revealSection = revealSection;
+
+        // Metadata (REQUIRED)
+        window.slideMetadata = {
+            id: "7-1",
+            title: "Селективное Внимание: От Человека к ИИ",
+            maxActions: maxActions,
+            type: "content"
+        };
+
+        // Auto-reveal initial content
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => revealSection(0), 300);
+        });
+    </script>
+</body>
+</html>

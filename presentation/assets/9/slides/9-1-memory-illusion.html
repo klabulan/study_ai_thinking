@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slide 9.1: Иллюзия Постоянной Памяти</title>
+    <style>
+        :root {
+            --primary-text: #2d3748;
+            --accent-color: #667eea;
+            --success-color: #00a86b;
+            --warning-color: #ff6b6b;
+            --human-memory: #4a5568;
+            --ai-context: #667eea;
+            --illusion-color: #f6ad55;
+            --transition-normal: 0.5s ease;
+
+            --font-size-sm: 1rem;
+            --font-size-base: 1.125rem;
+            --font-size-lg: 1.375rem;
+            --font-size-xl: 1.625rem;
+            --font-size-2xl: 2rem;
+            --font-size-3xl: 2.5rem;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--primary-text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .slide-title {
+            font-size: var(--font-size-3xl);
+            font-weight: 700;
+            color: var(--primary-text);
+            margin-bottom: 0.5rem;
+        }
+
+        .slide-subtitle {
+            font-size: var(--font-size-lg);
+            color: var(--illusion-color);
+            font-weight: 600;
+        }
+
+        .main-content {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .comparison-side {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .side-header {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            padding: 1rem;
+            border-radius: 12px;
+        }
+
+        .expectation-header {
+            background: linear-gradient(135deg, var(--human-memory), #5a6c7d);
+            color: white;
+        }
+
+        .reality-header {
+            background: linear-gradient(135deg, var(--ai-context), #5b73f7);
+            color: white;
+        }
+
+        .content-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: #f8fafc;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .content-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+            min-width: 3rem;
+        }
+
+        .content-text {
+            flex: 1;
+        }
+
+        .content-title {
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .content-description {
+            font-size: var(--font-size-sm);
+            opacity: 0.8;
+            line-height: 1.4;
+        }
+
+        .slide-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+        }
+
+        .slide-section.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .chat-demo {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .chat-user {
+            color: var(--accent-color);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .chat-ai {
+            color: var(--warning-color);
+            font-weight: 600;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .clean-slate {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #fff5f5, #fed7d7);
+            border-radius: 15px;
+            border: 2px dashed var(--warning-color);
+            margin: 1rem 0;
+        }
+
+        .clean-slate-icon {
+            font-size: 3rem;
+            color: var(--warning-color);
+            margin-bottom: 1rem;
+        }
+
+        .stats-highlight {
+            background: linear-gradient(135deg, var(--illusion-color), #f4d03f);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 700;
+            font-size: var(--font-size-lg);
+            margin: 1rem 0;
+            box-shadow: 0 5px 15px rgba(246, 173, 85, 0.3);
+        }
+
+        .divider {
+            position: absolute;
+            top: 0;
+            right: -1px;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--human-memory), var(--ai-context));
+        }
+
+        .transition-arrow {
+            position: absolute;
+            top: 50%;
+            right: -2rem;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            color: var(--accent-color);
+            background: white;
+            border-radius: 50%;
+            width: 4rem;
+            height: 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .slide-title {
+                font-size: var(--font-size-2xl);
+            }
+
+            .transition-arrow {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-section" data-action="0">
+        <div class="slide-header">
+            <h1 class="slide-title">Иллюзия Постоянной Памяти</h1>
+            <p class="slide-subtitle">89% пользователей считают, что ИИ их "помнит"</p>
+        </div>
+
+        <div class="main-content">
+            <div class="comparison-side">
+                <div class="side-header expectation-header">
+                    Ожидание Пользователя
+                </div>
+
+                <div class="content-item">
+                    <div class="content-icon">💭</div>
+                    <div class="content-text">
+                        <div class="content-title">"Помнишь?"</div>
+                        <div class="content-description">Ожидание воспоминаний из прошлых разговоров</div>
+                    </div>
+                </div>
+
+                <div class="content-item">
+                    <div class="content-icon">📚</div>
+                    <div class="content-text">
+                        <div class="content-title">Накопленная память</div>
+                        <div class="content-description">Представление о непрерывном опыте общения</div>
+                    </div>
+                </div>
+
+                <div class="content-item">
+                    <div class="content-icon">🤝</div>
+                    <div class="content-text">
+                        <div class="content-title">Знакомый собеседник</div>
+                        <div class="content-description">Ощущение личной связи и истории отношений</div>
+                    </div>
+                </div>
+
+                <div class="transition-arrow">→</div>
+            </div>
+
+            <div class="comparison-side">
+                <div class="side-header reality-header">
+                    Реальность ИИ-Системы
+                </div>
+
+                <div class="content-item">
+                    <div class="content-icon">🔄</div>
+                    <div class="content-text">
+                        <div class="content-title">Новая сессия</div>
+                        <div class="content-description">Каждый разговор начинается с нуля</div>
+                    </div>
+                </div>
+
+                <div class="content-item">
+                    <div class="content-icon">📄</div>
+                    <div class="content-text">
+                        <div class="content-title">Чистый лист</div>
+                        <div class="content-description">Нет доступа к предыдущим беседам</div>
+                    </div>
+                </div>
+
+                <div class="content-item">
+                    <div class="content-icon">🤖</div>
+                    <div class="content-text">
+                        <div class="content-title">Статистическая модель</div>
+                        <div class="content-description">Обработка паттернов без личной истории</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-section" data-action="1">
+        <div class="chat-demo">
+            <div class="chat-user">👤 Пользователь: "Помнишь, на прошлой неделе мы обсуждали проект X?"</div>
+            <div class="chat-ai">🤖 ИИ: "Я не имею доступа к предыдущим беседам. Каждая наша сессия начинается заново..."</div>
+        </div>
+
+        <div class="stats-highlight">
+            89% пользователей ошибочно приписывают ИИ способность помнить между сессиями
+        </div>
+    </div>
+
+    <div class="slide-section" data-action="2">
+        <div class="clean-slate">
+            <div class="clean-slate-icon">🧹</div>
+            <h3 style="margin-bottom: 0.5rem; color: var(--warning-color);">Каждая сессия = новое начало</h3>
+            <p style="margin: 0; font-size: var(--font-size-base);">
+                Отсутствие межсессионной памяти — фундаментальная особенность архитектуры ИИ
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let maxActions = 2;
+
+        function revealSection(actionIndex) {
+            for (let i = 0; i <= actionIndex; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.add('revealed'));
+            }
+            for (let i = actionIndex + 1; i <= maxActions; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.remove('revealed'));
+            }
+        }
+
+        // PostMessage listener
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'revealSection') {
+                revealSection(event.data.actionIndex);
+            }
+        });
+
+        // External control
+        window.revealSection = revealSection;
+
+        // Metadata
+        window.slideMetadata = {
+            id: "9-1",
+            title: "Иллюзия Постоянной Памяти",
+            maxActions: maxActions,
+            type: "content"
+        };
+
+        // Auto-reveal initial content
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => revealSection(0), 300);
+        });
+
+        // Add subtle animation to comparison sides
+        document.addEventListener('DOMContentLoaded', () => {
+            const sides = document.querySelectorAll('.comparison-side');
+            sides.forEach((side, index) => {
+                setTimeout(() => {
+                    side.style.transform = 'translateY(0)';
+                    side.style.opacity = '1';
+                }, 200 + index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

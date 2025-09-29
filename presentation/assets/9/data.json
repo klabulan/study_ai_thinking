@@ -1,0 +1,43 @@
+{
+  "part": {
+    "id": 9,
+    "title": "Память и Контекст ИИ — Как Умные Машины \"Помнят\" Разговоры",
+    "section": "Фаза 2: Размышление",
+    "customSlides": true
+  },
+  "slides": [
+    {
+      "id": "9-1",
+      "file": "slides/9-1-memory-illusion.html",
+      "title": "Иллюзия Постоянной Памяти",
+      "type": "content",
+      "maxActions": 2,
+      "duration": 90
+    },
+    {
+      "id": "9-2",
+      "file": "slides/9-2-context-vs-memory.html",
+      "title": "Окно Контекста vs Человеческая Память",
+      "type": "content",
+      "maxActions": 3,
+      "duration": 90
+    },
+    {
+      "id": "9-3",
+      "file": "slides/9-3-lost-in-middle.html",
+      "title": "Проблема \"Потери в Середине\"",
+      "type": "content",
+      "maxActions": 3,
+      "duration": 90
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "created": "2025-01-29",
+    "totalDuration": 270,
+    "presenter": "Dr. Elena Cognitive",
+    "theme": "Механизмы памяти через когнитивные аналогии",
+    "visualStyle": "Memory architecture with context window visualization",
+    "phaseTransition": "From neural processing to memory limitations and practical solutions"
+  }
+}

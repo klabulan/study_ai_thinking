@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Slide 4.1: Навигация Фазы 1</title>
+    <style>
+        :root {
+            --primary-text: #2d3748;
+            --accent-color: #667eea;
+            --success-color: #00a86b;
+            --warning-color: #ff6b6b;
+            --transition-normal: 0.5s ease;
+            --bridge-color: #95A5A6;
+
+            /* Balanced font sizes for readability (Updated Jan 2025) */
+            --font-size-sm: 1rem;        /* 16px - detail text */
+            --font-size-base: 1.125rem;  /* 18px - body content */
+            --font-size-lg: 1.375rem;    /* 22px - emphasis */
+            --font-size-xl: 1.625rem;    /* 26px - headers */
+            --font-size-2xl: 2rem;       /* 32px - subtitles */
+            --font-size-3xl: 2.5rem;     /* 40px - major headers */
+            --font-size-4xl: 3rem;       /* 48px - max title size */
+        }
+
+        body {
+            margin: 0;
+            padding: 40px 60px; /* Reduced from 80px */
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: calc(100vh - 80px); /* Adjusted for reduced padding */
+            color: var(--primary-text);
+            overflow-x: hidden;
+        }
+
+        .slide-container {
+            max-width: 1760px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .slide-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+            margin-bottom: 20px; /* Reduced from 40px */
+        }
+
+        .slide-section.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .main-title {
+            font-size: var(--font-size-3xl);
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            font-size: var(--font-size-xl);
+            color: var(--primary-text);
+            margin-bottom: 60px;
+        }
+
+        .phase-diagram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            margin: 60px 0;
+        }
+
+        .phase-box {
+            padding: 20px 30px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: var(--font-size-lg);
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+
+        .phase-current {
+            background: var(--accent-color);
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .phase-future {
+            background: #e2e8f0;
+            color: var(--bridge-color);
+            border: 2px dashed var(--bridge-color);
+        }
+
+        .phase-arrow {
+            font-size: var(--font-size-2xl);
+            color: var(--bridge-color);
+            animation: pulse 2s infinite;
+        }
+
+        .current-indicator {
+            font-size: var(--font-size-base);
+            color: var(--accent-color);
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .content-list {
+            text-align: left;
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .content-list h3 {
+            font-size: var(--font-size-xl);
+            color: var(--primary-text);
+            margin-bottom: 30px;
+            border-left: 4px solid var(--accent-color);
+            padding-left: 20px;
+        }
+
+        .content-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: var(--font-size-base);
+        }
+
+        .content-item .icon {
+            font-size: var(--font-size-lg);
+            margin-right: 15px;
+            width: 30px;
+        }
+
+        .timing-info {
+            text-align: center;
+            font-size: var(--font-size-base);
+            color: var(--bridge-color);
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 40px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-in-up {
+            animation: slideInUp 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="slide-section" data-action="0">
+            <div class="main-title">🎯 ФАЗА 1: КОДИРОВАНИЕ</div>
+            <div class="subtitle">Как ИИ Читает Мир</div>
+        </div>
+
+        <div class="slide-section" data-action="1">
+            <div class="phase-diagram">
+                <div class="phase-box phase-current">
+                    <div>1. КОДИРОВАНИЕ</div>
+                    <div style="font-size: var(--font-size-base); margin-top: 10px;">Как ИИ читает мир</div>
+                </div>
+                <div class="phase-arrow">→</div>
+                <div class="phase-box phase-future">
+                    <div>2. РАЗМЫШЛЕНИЕ</div>
+                    <div style="font-size: var(--font-size-base); margin-top: 10px;">Как ИИ думает</div>
+                </div>
+                <div class="phase-arrow">→</div>
+                <div class="phase-box phase-future">
+                    <div>3. ГЕНЕРАЦИЯ</div>
+                    <div style="font-size: var(--font-size-base); margin-top: 10px;">Как ИИ говорит</div>
+                </div>
+            </div>
+            <div class="current-indicator">МЫ ЗДЕСЬ</div>
+        </div>
+
+        <div class="slide-section" data-action="2">
+            <div class="content-list">
+                <h3>📋 СОДЕРЖАНИЕ:</h3>
+                <div class="content-item">
+                    <div class="icon">🧠</div>
+                    <div>Как мозг читает → 🤖 Как ИИ кодирует → 🔤 Токенизация</div>
+                </div>
+                <div class="content-item">
+                    <div class="icon">👁️</div>
+                    <div>Механизмы внимания → 🎨 Мультимодальность</div>
+                </div>
+                <div class="content-item">
+                    <div class="icon">⚡</div>
+                    <div>Скорость обработки: человек vs ИИ (разница 1мс!)</div>
+                </div>
+                <div class="content-item">
+                    <div class="icon">🔬</div>
+                    <div>Практические выводы для лучшего взаимодействия</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="3">
+            <div class="timing-info">
+                <strong>⏱️ ВРЕМЯ: 12-15 минут</strong>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let maxActions = 3;
+
+        function revealSection(actionIndex) {
+            for (let i = 0; i <= actionIndex; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => {
+                        el.classList.add('revealed');
+                        if (i === actionIndex) {
+                            el.classList.add('slide-in-up');
+                        }
+                    });
+            }
+            for (let i = actionIndex + 1; i <= maxActions; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => {
+                        el.classList.remove('revealed');
+                        el.classList.remove('slide-in-up');
+                    });
+            }
+        }
+
+        // PostMessage listener (REQUIRED)
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'revealSection') {
+                revealSection(event.data.actionIndex);
+            }
+        });
+
+        // External control (REQUIRED)
+        window.revealSection = revealSection;
+
+        // Metadata (REQUIRED)
+        window.slideMetadata = {
+            id: "4-1",
+            title: "Навигация Фазы 1",
+            maxActions: maxActions,
+            type: "title"
+        };
+
+        // Auto-reveal initial content
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => revealSection(0), 300);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test System - Part 16: Q&A Transition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'PT Sans', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #059669 0%, #6366f1 50%, #8b5cf6 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .test-header {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .test-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .test-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .test-container {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            height: calc(100vh - 200px);
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .slide-controls {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            height: fit-content;
+        }
+
+        .control-section {
+            margin-bottom: 2rem;
+        }
+
+        .control-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #F6E05E;
+        }
+
+        .slide-list {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .slide-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .slide-button {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            text-align: left;
+            line-height: 1.4;
+        }
+
+        .slide-button:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .slide-button.active {
+            background: rgba(246, 224, 94, 0.3);
+            border-color: #F6E05E;
+        }
+
+        .action-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .action-button {
+            flex: 1;
+            min-width: 40px;
+            padding: 0.5rem;
+            background: rgba(46, 204, 113, 0.2);
+            border: 1px solid rgba(46, 204, 113, 0.5);
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .action-button:hover {
+            background: rgba(46, 204, 113, 0.4);
+        }
+
+        .action-button.active {
+            background: rgba(46, 204, 113, 0.6);
+        }
+
+        .slide-display {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .slide-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 20px;
+        }
+
+        .status-info {
+            background: rgba(0,0,0,0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #48BB78, #00a86b);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .navigation-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .nav-button {
+            flex: 1;
+            padding: 0.75rem;
+            background: rgba(155, 89, 182, 0.2);
+            border: 1px solid rgba(155, 89, 182, 0.5);
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .nav-button:hover {
+            background: rgba(155, 89, 182, 0.4);
+        }
+
+        .qa-theme {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .theme-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #6366F1;
+        }
+
+        @media (max-width: 768px) {
+            .test-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+            }
+
+            .slide-controls {
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-header">
+        <h1 class="test-title">Система Тестирования - Часть 16</h1>
+        <p class="test-subtitle">Вопросы и Ответы — От Понимания к Применению</p>
+        <p style="opacity: 0.7;">Интерактивная Сессия</p>
+    </div>
+
+    <div class="test-container">
+        <div class="slide-controls">
+            <div class="control-section">
+                <h3 class="control-title">Слайд</h3>
+                <ul class="slide-list">
+                    <li class="slide-item">
+                        <button class="slide-button active" onclick="loadSlide('16-1-qa-transition.html', this)">
+                            <strong>16.1:</strong> Переход к Q&A<br>
+                            <small style="opacity: 0.8;">Путешествие завершено — начинаем диалог</small>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="control-section">
+                <h3 class="control-title">Действия</h3>
+                <div class="action-controls">
+                    <button class="action-button active" onclick="revealAction(0, this)">0</button>
+                    <button class="action-button" onclick="revealAction(1, this)">1</button>
+                    <button class="action-button" onclick="revealAction(2, this)">2</button>
+                    <button class="action-button" onclick="revealAction(3, this)">3</button>
+                    <button class="action-button" onclick="revealAction(4, this)">4</button>
+                    <button class="action-button" onclick="revealAction(5, this)">5</button>
+                </div>
+                <div class="navigation-controls">
+                    <button onclick="prevAction()" class="nav-button" style="background: rgba(255,107,107,0.2); border-color: rgba(255,107,107,0.5);">← Назад</button>
+                    <button onclick="nextAction()" class="nav-button" style="background: rgba(46,204,113,0.2); border-color: rgba(46,204,113,0.5);">Далее →</button>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h3 class="control-title">Статус</h3>
+                <div class="status-info">
+                    <div class="status-row">
+                        <span>Текущий слайд:</span>
+                        <span id="current-slide">16.1</span>
+                    </div>
+                    <div class="status-row">
+                        <span>Действие:</span>
+                        <span id="current-action">0</span>
+                    </div>
+                    <div class="status-row">
+                        <span>Макс. действий:</span>
+                        <span id="max-actions">5</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="qa-theme">
+                <div class="theme-title">🎯 Q&A Готовность</div>
+                <div style="font-size: 0.85rem; line-height: 1.4;">
+                    • Путешествие завершено: 3 фазы изучены<br>
+                    • Практический арсенал: техники промптинга<br>
+                    • Dr. Elena готова: 50+ подготовленных ответов<br>
+                    • Открытый диалог: любые вопросы приветствуются<br>
+                    • Переход к применению знаний
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h3 class="control-title">Навигация</h3>
+                <button onclick="window.open('navigation.html', '_blank')" style="width: 100%; background: rgba(159,122,234,0.2); border: 1px solid rgba(159,122,234,0.5); color: white; padding: 0.75rem; border-radius: 8px; cursor: pointer; margin-bottom: 0.5rem;">
+                    📋 Локальная Навигация
+                </button>
+                <button onclick="window.open('../../index.html', '_blank')" style="width: 100%; background: rgba(102,126,234,0.2); border: 1px solid rgba(102,126,234,0.5); color: white; padding: 0.75rem; border-radius: 8px; cursor: pointer;">
+                    🏠 Главная Система
+                </button>
+            </div>
+        </div>
+
+        <div class="slide-display">
+            <iframe id="slide-iframe" class="slide-iframe" src="slides/16-1-qa-transition.html"></iframe>
+        </div>
+    </div>
+
+    <script>
+        let currentAction = 0;
+        let maxActions = 5;
+        let currentSlide = '16.1';
+
+        const slideConfigs = {
+            '16-1-qa-transition.html': { id: '16.1', maxActions: 5 }
+        };
+
+        function loadSlide(filename, buttonElement) {
+            // Update iframe source
+            document.getElementById('slide-iframe').src = `slides/${filename}`;
+
+            // Update active button
+            document.querySelectorAll('.slide-button').forEach(btn => btn.classList.remove('active'));
+            buttonElement.classList.add('active');
+
+            // Update current slide info
+            const config = slideConfigs[filename];
+            if (config) {
+                currentSlide = config.id;
+                maxActions = config.maxActions;
+            }
+
+            // Reset to first action
+            currentAction = 0;
+            updateStatus();
+            updateActionButtons();
+            updateActionControlsForSlide();
+        }
+
+        function updateActionControlsForSlide() {
+            const actionControls = document.querySelector('.action-controls');
+            actionControls.innerHTML = '';
+
+            for (let i = 0; i <= maxActions; i++) {
+                const button = document.createElement('button');
+                button.className = 'action-button' + (i === currentAction ? ' active' : '');
+                button.textContent = i;
+                button.onclick = () => revealAction(i, button);
+                actionControls.appendChild(button);
+            }
+        }
+
+        function revealAction(actionIndex, buttonElement = null) {
+            currentAction = actionIndex;
+
+            // Send message to iframe
+            const iframe = document.getElementById('slide-iframe');
+            iframe.contentWindow.postMessage({
+                type: 'revealSection',
+                actionIndex: actionIndex
+            }, '*');
+
+            updateStatus();
+            updateActionButtons();
+        }
+
+        function updateActionButtons() {
+            document.querySelectorAll('.action-button').forEach((btn, index) => {
+                btn.classList.toggle('active', index === currentAction);
+            });
+        }
+
+        function updateStatus() {
+            document.getElementById('current-slide').textContent = currentSlide;
+            document.getElementById('current-action').textContent = currentAction;
+            document.getElementById('max-actions').textContent = maxActions;
+
+            const progress = maxActions > 0 ? (currentAction / maxActions) * 100 : 0;
+            document.getElementById('progress-fill').style.width = `${progress}%`;
+        }
+
+        function nextAction() {
+            if (currentAction < maxActions) {
+                revealAction(currentAction + 1);
+            }
+        }
+
+        function prevAction() {
+            if (currentAction > 0) {
+                revealAction(currentAction - 1);
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(event) {
+            switch(event.key) {
+                case 'ArrowRight':
+                case ' ':
+                    event.preventDefault();
+                    nextAction();
+                    break;
+                case 'ArrowLeft':
+                    event.preventDefault();
+                    prevAction();
+                    break;
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                    event.preventDefault();
+                    const actionNum = parseInt(event.key);
+                    if (actionNum <= maxActions) {
+                        revealAction(actionNum);
+                    }
+                    break;
+            }
+        });
+
+        // Initialize
+        updateStatus();
+        updateActionControlsForSlide();
+    </script>
+</body>
+</html>

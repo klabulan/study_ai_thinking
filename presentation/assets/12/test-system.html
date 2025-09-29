@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test System - Part 12: Автогенеративная Магия</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #8b5cf6 0%, #667eea 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 1.125rem;
+        }
+
+        .controls {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .slide-selector {
+            margin-bottom: 20px;
+        }
+
+        select {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin: 0 10px;
+        }
+
+        select option {
+            background: #2d3748;
+            color: white;
+        }
+
+        .action-controls {
+            margin: 20px 0;
+        }
+
+        button {
+            background: rgba(139, 92, 246, 0.8);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 0 5px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background: rgba(139, 92, 246, 1);
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background: rgba(255, 255, 255, 0.2);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-frame-container {
+            position: relative;
+            height: calc(100vh - 200px);
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 20px 20px 0 0;
+            overflow: hidden;
+        }
+
+        #slideFrame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .info-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            min-width: 200px;
+            backdrop-filter: blur(10px);
+        }
+
+        .info-item {
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #ffd700;
+        }
+
+        .navigation-hint {
+            background: rgba(139, 92, 246, 0.2);
+            border: 1px solid rgba(139, 92, 246, 0.5);
+            padding: 15px;
+            margin: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Part 12: Автогенеративная Магия - Test System</h1>
+        <p>Как ИИ Создает Текст Слово за Словом</p>
+    </div>
+
+    <div class="controls">
+        <div class="slide-selector">
+            <select id="slideSelector">
+                <option value="slides/12-1-generation-intro.html">12-1: Парадокс Автогенерации</option>
+                <option value="slides/12-2-token-probability.html">12-2: 50,000 Вариантов за 8 Миллисекунд</option>
+                <option value="slides/12-3-temperature-control.html">12-3: Температура Креативности</option>
+            </select>
+            <button onclick="loadSlide()">Load Slide</button>
+        </div>
+
+        <div class="action-controls">
+            <button onclick="previousAction()" id="prevBtn">← Previous</button>
+            <button onclick="nextAction()" id="nextBtn">Next →</button>
+            <button onclick="resetSlide()">Reset</button>
+            <button onclick="autoPlay()">Auto Play</button>
+        </div>
+
+        <div class="navigation-hint">
+            💡 Use keyboard: ← → arrows for navigation, R for reset, Space for next action
+        </div>
+    </div>
+
+    <div class="slide-frame-container">
+        <iframe id="slideFrame" src="slides/12-1-generation-intro.html"></iframe>
+        <div class="info-panel">
+            <div class="info-item"><span class="info-label">Slide:</span> <span id="currentSlide">12-1</span></div>
+            <div class="info-item"><span class="info-label">Action:</span> <span id="currentAction">0</span> / <span id="maxActions">2</span></div>
+            <div class="info-item"><span class="info-label">Type:</span> <span id="slideType">title</span></div>
+            <div class="info-item"><span class="info-label">Status:</span> <span id="slideStatus">Ready</span></div>
+        </div>
+    </div>
+
+    <script>
+        let currentActionIndex = 0;
+        let maxActionIndex = 2;
+        let currentSlideData = null;
+        let autoPlayInterval = null;
+
+        const slides = [
+            { id: "12-1", file: "slides/12-1-generation-intro.html", title: "Парадокс Автогенерации", maxActions: 2, type: "title" },
+            { id: "12-2", file: "slides/12-2-token-probability.html", title: "50,000 Вариантов за 8 Миллисекунд", maxActions: 3, type: "content" },
+            { id: "12-3", file: "slides/12-3-temperature-control.html", title: "Температура Креативности", maxActions: 3, type: "content" }
+        ];
+
+        function loadSlide() {
+            const selector = document.getElementById('slideSelector');
+            const selectedFile = selector.value;
+            const slideFrame = document.getElementById('slideFrame');
+
+            slideFrame.src = selectedFile;
+
+            // Find slide data
+            currentSlideData = slides.find(slide => slide.file === selectedFile);
+            if (currentSlideData) {
+                maxActionIndex = currentSlideData.maxActions;
+                document.getElementById('currentSlide').textContent = currentSlideData.id;
+                document.getElementById('maxActions').textContent = maxActionIndex;
+                document.getElementById('slideType').textContent = currentSlideData.type;
+            }
+
+            currentActionIndex = 0;
+            updateUI();
+            updateStatus('Slide loaded');
+        }
+
+        function revealAction(actionIndex) {
+            const slideFrame = document.getElementById('slideFrame');
+            if (slideFrame && slideFrame.contentWindow) {
+                slideFrame.contentWindow.postMessage({
+                    type: 'revealSection',
+                    actionIndex: actionIndex
+                }, '*');
+
+                currentActionIndex = actionIndex;
+                updateUI();
+                updateStatus(`Action ${actionIndex} revealed`);
+            }
+        }
+
+        function nextAction() {
+            if (currentActionIndex < maxActionIndex) {
+                revealAction(currentActionIndex + 1);
+            }
+        }
+
+        function previousAction() {
+            if (currentActionIndex > 0) {
+                revealAction(currentActionIndex - 1);
+            }
+        }
+
+        function resetSlide() {
+            revealAction(0);
+            clearInterval(autoPlayInterval);
+            autoPlayInterval = null;
+            updateStatus('Reset to start');
+        }
+
+        function autoPlay() {
+            if (autoPlayInterval) {
+                clearInterval(autoPlayInterval);
+                autoPlayInterval = null;
+                updateStatus('Auto play stopped');
+                return;
+            }
+
+            autoPlayInterval = setInterval(() => {
+                if (currentActionIndex < maxActionIndex) {
+                    nextAction();
+                } else {
+                    clearInterval(autoPlayInterval);
+                    autoPlayInterval = null;
+                    updateStatus('Auto play completed');
+                }
+            }, 3000);
+
+            updateStatus('Auto play started (3s intervals)');
+        }
+
+        function updateUI() {
+            document.getElementById('currentAction').textContent = currentActionIndex;
+            document.getElementById('prevBtn').disabled = currentActionIndex === 0;
+            document.getElementById('nextBtn').disabled = currentActionIndex === maxActionIndex;
+        }
+
+        function updateStatus(message) {
+            document.getElementById('slideStatus').textContent = message;
+            setTimeout(() => {
+                document.getElementById('slideStatus').textContent = 'Ready';
+            }, 2000);
+        }
+
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    previousAction();
+                    break;
+                case 'ArrowRight':
+                case ' ':
+                    e.preventDefault();
+                    nextAction();
+                    break;
+                case 'r':
+                case 'R':
+                    e.preventDefault();
+                    resetSlide();
+                    break;
+                case 'a':
+                case 'A':
+                    e.preventDefault();
+                    autoPlay();
+                    break;
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSlide();
+            updateStatus('Test system ready');
+        });
+
+        // Listen for slide frame load
+        document.getElementById('slideFrame').addEventListener('load', () => {
+            setTimeout(() => {
+                resetSlide();
+            }, 500);
+        });
+
+        // Global auto play function for external access
+        window.autoPlay = autoPlay;
+    </script>
+</body>
+</html>

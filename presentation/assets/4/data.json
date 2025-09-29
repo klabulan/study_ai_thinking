@@ -1,0 +1,50 @@
+{
+  "part": {
+    "id": 4,
+    "title": "Фаза 1: Кодирование - Как ИИ Читает Мир",
+    "section": "Понимание Механизмов",
+    "customSlides": true
+  },
+  "slides": [
+    {
+      "id": "4-1",
+      "file": "slides/4-1-navigation.html",
+      "title": "Навигация Фазы 1",
+      "type": "title",
+      "maxActions": 3,
+      "duration": 45
+    },
+    {
+      "id": "4-2",
+      "file": "slides/4-2-comparison.html",
+      "title": "Процессы Чтения: Человек vs ИИ",
+      "type": "content",
+      "maxActions": 5,
+      "duration": 120
+    },
+    {
+      "id": "4-2b",
+      "file": "slides/4-2b-fascinating-facts.html",
+      "title": "Интригующие Факты",
+      "type": "content",
+      "maxActions": 3,
+      "duration": 60,
+      "description": "Fascinating facts about AI-human similarities"
+    },
+    {
+      "id": "4-3",
+      "file": "slides/4-3-tokenization-focus.html",
+      "title": "Токенизация - Как ИИ Читает",
+      "type": "content",
+      "maxActions": 4,
+      "duration": 90,
+      "description": "Focused deep-dive into tokenization with clear examples"
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "created": "2025-01-29",
+    "totalDuration": 285,
+    "description": "Фаза 1 презентации: объяснение механизмов encoding через аналогии с человеческим чтением"
+  }
+}

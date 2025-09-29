@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Part 9 Navigation - Память и Контекст ИИ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'PT Sans', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-header {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .nav-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .nav-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .slide-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide-card:hover {
+            background: rgba(255,255,255,0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .slide-number {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #F6E05E;
+            margin-bottom: 0.5rem;
+        }
+
+        .slide-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+
+        .slide-description {
+            font-size: 1rem;
+            opacity: 0.9;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .slide-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .slide-features li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .slide-features li:before {
+            content: "→";
+            margin-right: 0.75rem;
+            color: #4A5568;
+            font-weight: bold;
+        }
+
+        .slide-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: auto;
+        }
+
+        .action-button {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            background: rgba(46, 204, 113, 0.2);
+            border: 1px solid rgba(46, 204, 113, 0.5);
+            border-radius: 10px;
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .action-button:hover {
+            background: rgba(46, 204, 113, 0.4);
+            text-decoration: none;
+            color: white;
+        }
+
+        .test-button {
+            background: rgba(155, 89, 182, 0.2);
+            border-color: rgba(155, 89, 182, 0.5);
+        }
+
+        .test-button:hover {
+            background: rgba(155, 89, 182, 0.4);
+        }
+
+        .memory-theme {
+            background: linear-gradient(135deg, rgba(74, 85, 104, 0.1), rgba(102, 126, 234, 0.1));
+            border: 1px solid rgba(74, 85, 104, 0.3);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 2rem auto;
+            max-width: 800px;
+        }
+
+        .theme-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #4A5568;
+            text-align: center;
+        }
+
+        .key-concepts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .concept-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .concept-icon {
+            color: #4A5568;
+            font-weight: bold;
+            margin-top: 0.1rem;
+        }
+
+        .global-nav {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: 2rem;
+            background: rgba(0,0,0,0.1);
+        }
+
+        .global-button {
+            padding: 1rem 2rem;
+            background: rgba(102,126,234,0.2);
+            border: 1px solid rgba(102,126,234,0.5);
+            border-radius: 12px;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .global-button:hover {
+            background: rgba(102,126,234,0.4);
+            text-decoration: none;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+
+            .nav-title {
+                font-size: 2rem;
+            }
+
+            .slide-card {
+                padding: 1.5rem;
+            }
+
+            .global-nav {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-header">
+        <h1 class="nav-title">Память и Контекст ИИ</h1>
+        <p class="nav-subtitle">Как Умные Машины "Помнят" Разговоры</p>
+        <p style="opacity: 0.7;">Часть 9 • Фаза 2: Размышление</p>
+    </div>
+
+    <div class="nav-container">
+        <div class="slide-card" onclick="openSlide('slides/9-1-memory-illusion.html')">
+            <div class="slide-number">Слайд 9.1</div>
+            <div class="slide-title">Иллюзия Постоянной Памяти</div>
+            <div class="slide-description">
+                Почему 89% пользователей ошибочно считают, что ИИ помнит их между сессиями — разбор когнитивных искажений.
+            </div>
+            <ul class="slide-features">
+                <li>Ожидания vs реальность: split-screen сравнение</li>
+                <li>Чат-демонстрация типичного недопонимания</li>
+                <li>Статистика заблуждений пользователей</li>
+                <li>Фундаментальные различия архитектур</li>
+            </ul>
+            <div class="slide-actions">
+                <a href="slides/9-1-memory-illusion.html" class="action-button">Открыть слайд</a>
+            </div>
+        </div>
+
+        <div class="slide-card" onclick="openSlide('slides/9-2-context-vs-memory.html')">
+            <div class="slide-number">Слайд 9.2</div>
+            <div class="slide-title">Окно Контекста vs Человеческая Память</div>
+            <div class="slide-description">
+                Многоуровневая система человеческой памяти против единого окна контекста ИИ — архитектурное сравнение.
+            </div>
+            <ul class="slide-features">
+                <li>Три типа человеческой памяти с аналогиями</li>
+                <li>Окно контекста как конференц-зал</li>
+                <li>Технические характеристики современных моделей</li>
+                <li>Анимация вытеснения токенов</li>
+            </ul>
+            <div class="slide-actions">
+                <a href="slides/9-2-context-vs-memory.html" class="action-button">Открыть слайд</a>
+            </div>
+        </div>
+
+        <div class="slide-card" onclick="openSlide('slides/9-3-lost-in-middle.html')">
+            <div class="slide-number">Слайд 9.3</div>
+            <div class="slide-title">Проблема "Потери в Середине"</div>
+            <div class="slide-description">
+                Интерактивная демонстрация снижения качества обработки в средней части контекста с практическими решениями.
+            </div>
+            <ul class="slide-features">
+                <li>Интерактивный график внимания по позициям</li>
+                <li>Эмпирические данные: 87% → 42% → 79%</li>
+                <li>Практический пример потери информации</li>
+                <li>Стратегии эффективного размещения данных</li>
+            </ul>
+            <div class="slide-actions">
+                <a href="slides/9-3-lost-in-middle.html" class="action-button">Открыть слайд</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="memory-theme">
+        <div class="theme-title">🧠 Ключевые Концепции Части 9</div>
+        <div class="key-concepts">
+            <div class="concept-item">
+                <span class="concept-icon">•</span>
+                <span><strong>Иллюзия памяти:</strong> 89% пользователей ошибочно приписывают ИИ постоянную память</span>
+            </div>
+            <div class="concept-item">
+                <span class="concept-icon">•</span>
+                <span><strong>Архитектурные различия:</strong> многоуровневая память vs единое окно контекста</span>
+            </div>
+            <div class="concept-item">
+                <span class="concept-icon">•</span>
+                <span><strong>Ограничения размера:</strong> 150K-1M токенов в современных моделях</span>
+            </div>
+            <div class="concept-item">
+                <span class="concept-icon">•</span>
+                <span><strong>Потеря в середине:</strong> 42% точности против 87% в начале контекста</span>
+            </div>
+            <div class="concept-item">
+                <span class="concept-icon">•</span>
+                <span><strong>Практические решения:</strong> размещение ключевой информации в начале/конце</span>
+            </div>
+            <div class="concept-item">
+                <span class="concept-icon">•</span>
+                <span><strong>Межсессионная амнезия:</strong> полная потеря информации между разговорами</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="global-nav">
+        <a href="test-system.html" class="global-button test-button">🎯 Система Тестирования</a>
+        <a href="../../index.html" class="global-button">🏠 Главная Система</a>
+    </div>
+
+    <script>
+        function openSlide(slidePath) {
+            window.open(slidePath, '_blank');
+        }
+
+        // Keyboard shortcuts for quick navigation
+        document.addEventListener('keydown', function(event) {
+            switch(event.key) {
+                case '1':
+                    openSlide('slides/9-1-memory-illusion.html');
+                    break;
+                case '2':
+                    openSlide('slides/9-2-context-vs-memory.html');
+                    break;
+                case '3':
+                    openSlide('slides/9-3-lost-in-middle.html');
+                    break;
+                case 't':
+                case 'T':
+                    window.open('test-system.html', '_blank');
+                    break;
+                case 'h':
+                case 'H':
+                    window.open('../../index.html', '_blank');
+                    break;
+            }
+        });
+
+        // Add visual feedback for keyboard shortcuts
+        const shortcutInfo = document.createElement('div');
+        shortcutInfo.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
+        `;
+        shortcutInfo.innerHTML = `
+            <strong>Горячие клавиши:</strong><br>
+            1, 2, 3 - Слайды<br>
+            T - Тестирование<br>
+            H - Главная
+        `;
+        document.body.appendChild(shortcutInfo);
+
+        // Show keyboard shortcuts on hover
+        document.addEventListener('mouseover', function(event) {
+            if (event.target.closest('.slide-card') || event.target.closest('.global-button')) {
+                shortcutInfo.style.opacity = '1';
+            }
+        });
+
+        document.addEventListener('mouseout', function(event) {
+            if (!event.target.closest('.slide-card') && !event.target.closest('.global-button')) {
+                shortcutInfo.style.opacity = '0';
+            }
+        });
+    </script>
+</body>
+</html>

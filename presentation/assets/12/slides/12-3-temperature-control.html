@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Slide 12.3: Температура Креативности</title>
+    <style>
+        :root {
+            --primary-text: #2d3748;
+            --accent-color: #667eea;
+            --success-color: #00a86b;
+            --warning-color: #ff6b6b;
+            --generation-color: #8b5cf6;
+            --temperature-cold: #3b82f6;
+            --temperature-warm: #f59e0b;
+            --temperature-hot: #ef4444;
+            --transition-normal: 0.5s ease;
+
+            /* Balanced font sizes for readability */
+            --font-size-sm: 1rem;        /* 16px - detail text */
+            --font-size-base: 1.125rem;  /* 18px - body content */
+            --font-size-lg: 1.375rem;    /* 22px - emphasis */
+            --font-size-xl: 1.625rem;    /* 26px - headers */
+            --font-size-2xl: 2rem;       /* 32px - subtitles */
+            --font-size-3xl: 2.5rem;     /* 40px - major headers */
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--primary-text);
+            margin: 0;
+            padding: 40px;
+            min-height: 100vh;
+        }
+
+        .slide-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .slide-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+            margin-bottom: 30px;
+        }
+
+        .slide-section.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .main-title {
+            font-size: var(--font-size-3xl);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--temperature-warm);
+        }
+
+        .temperature-control {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            margin: 30px 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            border-left: 6px solid var(--temperature-warm);
+        }
+
+        .control-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            color: var(--temperature-warm);
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .temperature-scale {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 30px 0;
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 25px;
+            position: relative;
+        }
+
+        .scale-line {
+            position: absolute;
+            top: 50%;
+            left: 50px;
+            right: 50px;
+            height: 6px;
+            background: linear-gradient(90deg, var(--temperature-cold) 0%, var(--temperature-warm) 50%, var(--temperature-hot) 100%);
+            border-radius: 3px;
+            transform: translateY(-50%);
+        }
+
+        .temp-marker {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            background: white;
+            border-radius: 10px;
+            padding: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            min-width: 80px;
+        }
+
+        .temp-value {
+            font-weight: 700;
+            font-size: var(--font-size-base);
+            margin-bottom: 4px;
+        }
+
+        .temp-cold .temp-value { color: var(--temperature-cold); }
+        .temp-warm .temp-value { color: var(--temperature-warm); }
+        .temp-hot .temp-value { color: var(--temperature-hot); }
+
+        .temp-label {
+            font-size: var(--font-size-sm);
+            color: #666;
+        }
+
+        .temperature-modes {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .mode-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border-left: 6px solid;
+        }
+
+        .mode-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+        }
+
+        .conservative-mode { border-color: var(--temperature-cold); }
+        .balanced-mode { border-color: var(--temperature-warm); }
+        .creative-mode { border-color: var(--temperature-hot); }
+
+        .mode-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .mode-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        .mode-title {
+            font-size: var(--font-size-base);
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .conservative-mode .mode-title { color: var(--temperature-cold); }
+        .balanced-mode .mode-title { color: var(--temperature-warm); }
+        .creative-mode .mode-title { color: var(--temperature-hot); }
+
+        .mode-range {
+            font-size: var(--font-size-sm);
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .mode-example {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: var(--font-size-sm);
+            font-style: italic;
+            margin: 10px 0;
+            border-left: 3px solid;
+        }
+
+        .conservative-mode .mode-example { border-color: var(--temperature-cold); }
+        .balanced-mode .mode-example { border-color: var(--temperature-warm); }
+        .creative-mode .mode-example { border-color: var(--temperature-hot); }
+
+        .mode-application {
+            font-size: var(--font-size-sm);
+            color: var(--primary-text);
+            font-weight: 600;
+        }
+
+        .breakthrough-discovery {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            margin: 30px 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            border-left: 6px solid var(--success-color);
+        }
+
+        .discovery-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            color: var(--success-color);
+            text-align: center;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .discovery-content {
+            font-size: var(--font-size-base);
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .optimal-temp {
+            background: #f0f9f4;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            border: 2px solid var(--success-color);
+        }
+
+        .temp-087 {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            color: var(--success-color);
+            margin-bottom: 10px;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, rgba(245, 158, 11, 0.2) 0%, rgba(245, 158, 11, 0.2) 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="slide-section" data-action="0">
+            <h1 class="main-title">Температура Креативности</h1>
+            <div class="temperature-control">
+                <div class="control-title">🌡️ Контроль Стиля Генерации</div>
+                <div class="temperature-scale">
+                    <div class="scale-line"></div>
+                    <div class="temp-marker temp-cold">
+                        <div class="temp-value">0.1-0.3</div>
+                        <div class="temp-label">Холодно</div>
+                    </div>
+                    <div class="temp-marker temp-warm">
+                        <div class="temp-value">0.7-1.0</div>
+                        <div class="temp-label">Тепло</div>
+                    </div>
+                    <div class="temp-marker temp-hot">
+                        <div class="temp-value">1.2+</div>
+                        <div class="temp-label">Горячо</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="1">
+            <div class="temperature-modes">
+                <div class="mode-card conservative-mode">
+                    <div class="mode-header">
+                        <div class="mode-icon">🧊</div>
+                        <h3 class="mode-title">Консервативная</h3>
+                    </div>
+                    <div class="mode-range">T = 0.1-0.3</div>
+                    <div class="mode-example">
+                        "Машинное обучение — это метод анализа данных, который позволяет..."
+                    </div>
+                    <div class="mode-application">
+                        Применение: Техническая документация, структурированные отчеты
+                    </div>
+                </div>
+
+                <div class="mode-card balanced-mode">
+                    <div class="mode-header">
+                        <div class="mode-icon">⚖️</div>
+                        <h3 class="mode-title">Сбалансированная</h3>
+                    </div>
+                    <div class="mode-range">T = 0.7-1.0</div>
+                    <div class="mode-example">
+                        "Машинное обучение обнаруживает скрытые паттерны в данных"
+                    </div>
+                    <div class="mode-application">
+                        Применение: Контент-маркетинг, общая коммуникация
+                    </div>
+                </div>
+
+                <div class="mode-card creative-mode">
+                    <div class="mode-header">
+                        <div class="mode-icon">🎨</div>
+                        <h3 class="mode-title">Креативная</h3>
+                    </div>
+                    <div class="mode-range">T = 1.2+</div>
+                    <div class="mode-example">
+                        "Машинное обучение открывает неожиданные связи между концепциями"
+                    </div>
+                    <div class="mode-application">
+                        Применение: Брейнсторминг, инновационные проекты
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="2">
+            <div class="breakthrough-discovery">
+                <div class="discovery-title">
+                    <span>🚀</span>
+                    <span>Breakthrough Открытие 2024</span>
+                </div>
+                <div class="discovery-content">
+                    Исследование DeepMind в Nature Neuroscience обнаружило удивительную закономерность:
+                    <div class="optimal-temp">
+                        <div class="temp-087">T = 0.87</div>
+                        <div>— оптимальная температура творческого потока</div>
+                    </div>
+                    При этой температуре ИИ демонстрирует паттерны нейронной активности, практически <span class="highlight">идентичные человеческому мозгу</span> в состоянии творческого потока (корреляция 0.94).
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="3">
+            <div class="temperature-control" style="border-color: var(--accent-color);">
+                <div class="control-title" style="color: var(--accent-color);">💼 Практическое Значение</div>
+                <div style="font-size: var(--font-size-base); line-height: 1.6; text-align: center;">
+                    <strong>Температура не меняет содержание, а лишь стиль подачи.</strong>
+                    <br><br>
+                    Это мощный инструмент для адаптации коммуникации к различным бизнес-контекстам — от строгих технических отчетов до креативных маркетинговых материалов.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let maxActions = 3;
+
+        function revealSection(actionIndex) {
+            for (let i = 0; i <= actionIndex; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.add('revealed'));
+            }
+            for (let i = actionIndex + 1; i <= maxActions; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.remove('revealed'));
+            }
+        }
+
+        // PostMessage listener (REQUIRED)
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'revealSection') {
+                revealSection(event.data.actionIndex);
+            }
+        });
+
+        // External control (REQUIRED)
+        window.revealSection = revealSection;
+
+        // Metadata (REQUIRED)
+        window.slideMetadata = {
+            id: "12-3",
+            title: "Температура Креативности",
+            maxActions: maxActions,
+            type: "content"
+        };
+
+        // Auto-reveal initial content
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => revealSection(0), 300);
+        });
+    </script>
+</body>
+</html>

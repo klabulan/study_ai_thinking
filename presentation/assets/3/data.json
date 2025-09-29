@@ -16,11 +16,12 @@
     },
     {
       "id": "3-2",
-      "file": "slides/3-2-framework.html",
-      "title": "ИИ-Схема + Промпт-Инжиниринг",
+      "file": "slides/3-2-framework-simple.html",
+      "title": "ИИ-Схема (Упрощённая)",
       "type": "content",
-      "maxActions": 5,
-      "duration": 90
+      "maxActions": 3,
+      "duration": 60,
+      "description": "Streamlined framework presentation without prompt engineering details"
     }
   ],
   "metadata": {

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Slide 5.3: Эволюция Токенизации</title>
+    <style>
+        :root {
+            --primary-text: #2d3748;
+            --accent-color: #667eea;
+            --success-color: #00a86b;
+            --warning-color: #ff6b6b;
+            --transition-normal: 0.5s ease;
+
+            /* Balanced font sizes for readability */
+            --font-size-sm: 1rem;        /* 16px - detail text */
+            --font-size-base: 1.125rem;  /* 18px - body content */
+            --font-size-lg: 1.375rem;    /* 22px - emphasis */
+            --font-size-xl: 1.625rem;    /* 26px - headers */
+            --font-size-2xl: 2rem;       /* 32px - subtitles */
+            --font-size-3xl: 2.5rem;     /* 40px - major headers */
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--primary-text);
+            margin: 0;
+            padding: 40px;
+            min-height: 100vh;
+        }
+
+        .slide-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .slide-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+            margin-bottom: 40px;
+        }
+
+        .slide-section.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .main-title {
+            font-size: var(--font-size-3xl);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 40px;
+            color: var(--accent-color);
+        }
+
+        .evolution-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .era-box {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            border-left: 6px solid var(--accent-color);
+            position: relative;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+        }
+
+        .era-failed {
+            border-left-color: var(--warning-color);
+        }
+
+        .era-success {
+            border-left-color: var(--success-color);
+        }
+
+        .era-title {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--accent-color);
+        }
+
+        .era-period {
+            font-size: var(--font-size-sm);
+            color: #666;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        .era-content {
+            font-size: var(--font-size-base);
+            line-height: 1.6;
+        }
+
+        .problem-highlight {
+            background: #fef2f2;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .solution-highlight {
+            background: #f0f9f4;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .bpe-demo {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            font-family: 'Courier New', monospace;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 2px solid #e2e8f0;
+        }
+
+        .demo-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .demo-step {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .step-number {
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        .tokenization-example {
+            font-size: var(--font-size-base);
+            background: rgba(102, 126, 234, 0.2);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        .language-discrimination {
+            background: #fef2f2;
+            border: 2px solid var(--warning-color);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .discrimination-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            color: var(--warning-color);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .cost-comparison {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        .cost-box {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            flex: 1;
+            margin: 0 10px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+
+        .language {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .tokens {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            color: var(--warning-color);
+        }
+
+        .improvement-stats {
+            background: #f0f9f4;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            border: 2px solid var(--success-color);
+        }
+
+        .stats-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            color: var(--success-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .company-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .company-name {
+            font-weight: 600;
+            font-size: var(--font-size-base);
+        }
+
+        .improvement {
+            font-size: var(--font-size-lg);
+            font-weight: 700;
+            color: var(--success-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="slide-section" data-action="0">
+            <h1 class="main-title">Эволюция Токенизации: От Букв к Смысловым Атомам</h1>
+        </div>
+
+        <div class="slide-section" data-action="1">
+            <div class="evolution-timeline">
+                <div class="era-box era-failed">
+                    <div class="era-title">1️⃣ Эра Слов</div>
+                    <div class="era-period">до 2016 года</div>
+                    <div class="era-content">
+                        ИИ читал целыми словами
+                        <div class="problem-highlight">
+                            <strong>Проблема:</strong> Новое слово = непонимание<br>
+                            "подосиновик" → UNKNOWN_TOKEN
+                        </div>
+                    </div>
+                </div>
+                <div class="era-box era-failed">
+                    <div class="era-title">2️⃣ Эра Букв</div>
+                    <div class="era-period">2016-2018</div>
+                    <div class="era-content">
+                        Посимвольное чтение
+                        <div class="problem-highlight">
+                            <strong>Проблема:</strong> Слишком мелкие детали<br>
+                            "п-о-д-о-с-и-н-о-в-и-к" → потеря общего смысла
+                        </div>
+                    </div>
+                </div>
+                <div class="era-box era-success">
+                    <div class="era-title">3️⃣ Эра Субслов</div>
+                    <div class="era-period">2018-настоящее</div>
+                    <div class="era-content">
+                        Оптимальные смысловые куски
+                        <div class="solution-highlight">
+                            <strong>Решение:</strong> Автоматический поиск "смысловых атомов"<br>
+                            "подосиновик" → "под-оси-нов-ик"
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="2">
+            <div class="bpe-demo">
+                <div class="demo-title">Магия BPE: Как ИИ Находит Смысловые Атомы</div>
+                <div class="demo-step">
+                    <div class="step-number">Шаг 1: Начинаем с букв</div>
+                    <div class="tokenization-example">
+                        "машинное обучение" → ['м','а','ш','и','н','н','о','е',' ','о','б','у','ч','е','н','и','е']
+                    </div>
+                </div>
+                <div class="demo-step">
+                    <div class="step-number">Шаг 2: Находим самые частые пары</div>
+                    <div class="tokenization-example">
+                        'и'+'н' встречается часто → создаём токен 'ин'
+                    </div>
+                </div>
+                <div class="demo-step">
+                    <div class="step-number">Шаг 3: Повторяем процесс</div>
+                    <div class="tokenization-example">
+                        'обуч' + 'ение' → 'обучение' (если встречается достаточно часто)
+                    </div>
+                </div>
+                <div class="demo-step">
+                    <div class="step-number">Результат:</div>
+                    <div class="tokenization-example">
+                        "машинное обучение" → ['машин', 'ное', ' об', 'учение']
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="3">
+            <div style="background: white; padding: 30px; border-radius: 15px; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.1); border-left: 6px solid var(--success-color);">
+                <div style="font-size: var(--font-size-xl); font-weight: 600; color: var(--success-color); margin-bottom: 20px;">
+                    🎯 Почему BPE Работает?
+                </div>
+                <div style="font-size: var(--font-size-base); line-height: 1.6; color: var(--primary-text);">
+                    <strong>Статистическая магия:</strong> Алгоритм находит оптимальный баланс между детализацией и смыслом<br><br>
+                    <strong>Адаптивность:</strong> Один и тот же алгоритм работает для любого языка<br><br>
+                    <strong>Эффективность:</strong> Сжимает информацию без потери понимания
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let maxActions = 3;
+
+        function revealSection(actionIndex) {
+            for (let i = 0; i <= actionIndex; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.add('revealed'));
+            }
+            for (let i = actionIndex + 1; i <= maxActions; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.remove('revealed'));
+            }
+        }
+
+        // PostMessage listener (REQUIRED)
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'revealSection') {
+                revealSection(event.data.actionIndex);
+            }
+        });
+
+        // External control (REQUIRED)
+        window.revealSection = revealSection;
+
+        // Metadata (REQUIRED)
+        window.slideMetadata = {
+            id: "5-3",
+            title: "Эволюция Токенизации: BPE Алгоритм",
+            maxActions: 3,
+            type: "content"
+        };
+
+        // Auto-reveal initial content
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => revealSection(0), 300);
+        });
+    </script>
+</body>
+</html>

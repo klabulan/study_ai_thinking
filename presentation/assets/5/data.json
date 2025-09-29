@@ -1,0 +1,56 @@
+{
+  "part": {
+    "id": 5,
+    "title": "Разбивка Слов на Мысли: Как ИИ Превращает Язык в Математику",
+    "section": "Phase 1: Encoding - Токенизация",
+    "customSlides": true
+  },
+  "slides": [
+    {
+      "id": "5-1",
+      "file": "slides/5-1-tokenization-intro.html",
+      "title": "От Букв к Векторам: Мост Между Словами и Числами",
+      "type": "title",
+      "maxActions": 3,
+      "duration": 180
+    },
+    {
+      "id": "5-2",
+      "file": "slides/5-2-vector-space.html",
+      "title": "Многомерное Пространство Смыслов: Геометрия Понимания",
+      "type": "content",
+      "maxActions": 4,
+      "duration": 200
+    },
+    {
+      "id": "5-3",
+      "file": "slides/5-3-bpe-evolution.html",
+      "title": "Эволюция Токенизации: BPE Алгоритм",
+      "type": "content",
+      "maxActions": 3,
+      "duration": 180
+    },
+    {
+      "id": "5-4",
+      "file": "slides/5-4-practical-implications.html",
+      "title": "От Ограничений к Возможностям",
+      "type": "content",
+      "maxActions": 4,
+      "duration": 180
+    },
+    {
+      "id": "5-5",
+      "file": "slides/5-5-language-efficiency.html",
+      "title": "Языковое Неравенство и Эффективность",
+      "type": "content",
+      "maxActions": 4,
+      "duration": 200
+    }
+  ],
+  "metadata": {
+    "version": "1.1",
+    "created": "2025-01-29",
+    "updated": "2025-01-29",
+    "description": "Comprehensive exploration of how AI transforms language into mathematical vectors through tokenization, optimized for light backgrounds and better content flow"
+  }
+}

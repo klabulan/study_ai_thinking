@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Slide 8.3: ИИ-Аналоги Когнитивных Стилей</title>
+    <style>
+        :root {
+            --primary-text: #2d3748;
+            --accent-color: #667eea;
+            --success-color: #00a86b;
+            --warning-color: #ff6b6b;
+            --thinking-color: #8b5cf6;
+            --transition-normal: 0.5s ease;
+
+            /* Cognitive style colors matching previous slide */
+            --analytical-color: #3b82f6;
+            --intuitive-color: #f59e0b;
+            --critical-color: #ef4444;
+            --associative-color: #10b981;
+
+            /* Balanced font sizes for readability */
+            --font-size-sm: 1rem;        /* 16px - detail text */
+            --font-size-base: 1.125rem;  /* 18px - body content */
+            --font-size-lg: 1.375rem;    /* 22px - emphasis */
+            --font-size-xl: 1.625rem;    /* 26px - headers */
+            --font-size-2xl: 2rem;       /* 32px - subtitles */
+            --font-size-3xl: 2.5rem;     /* 40px - major headers */
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--primary-text);
+            margin: 0;
+            padding: 40px;
+            min-height: 100vh;
+        }
+
+        .slide-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .slide-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+            margin-bottom: 30px;
+        }
+
+        .slide-section.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .main-title {
+            font-size: var(--font-size-3xl);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--thinking-color);
+        }
+
+        .revelation {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px auto;
+            max-width: 900px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+            text-align: center;
+            border-left: 6px solid var(--thinking-color);
+        }
+
+        .revelation-text {
+            font-size: var(--font-size-lg);
+            line-height: 1.6;
+            color: var(--primary-text);
+            font-weight: 600;
+        }
+
+        .ai-styles-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .ai-style {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+            transition: all var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-style::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .ai-analytical::before { background: var(--analytical-color); }
+        .ai-intuitive::before { background: var(--intuitive-color); }
+        .ai-critical::before { background: var(--critical-color); }
+        .ai-associative::before { background: var(--associative-color); }
+
+        .ai-style:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+        }
+
+        .ai-style-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .ai-icon {
+            font-size: 2rem;
+            margin-right: 15px;
+        }
+
+        .ai-style-title {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .ai-analytical .ai-style-title { color: var(--analytical-color); }
+        .ai-intuitive .ai-style-title { color: var(--intuitive-color); }
+        .ai-critical .ai-style-title { color: var(--critical-color); }
+        .ai-associative .ai-style-title { color: var(--associative-color); }
+
+        .ai-technique {
+            font-size: var(--font-size-base);
+            color: #666;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+
+        .prompt-example {
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: var(--font-size-sm);
+            border-left: 3px solid;
+        }
+
+        .ai-analytical .prompt-example { border-color: var(--analytical-color); }
+        .ai-intuitive .prompt-example { border-color: var(--intuitive-color); }
+        .ai-critical .prompt-example { border-color: var(--critical-color); }
+        .ai-associative .prompt-example { border-color: var(--associative-color); }
+
+        .mechanism {
+            font-size: var(--font-size-sm);
+            color: var(--primary-text);
+            margin: 10px 0;
+        }
+
+        .mechanism-label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .best-for {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 15px;
+            font-size: var(--font-size-sm);
+            color: #666;
+        }
+
+        .best-for-label {
+            font-weight: 600;
+            color: var(--primary-text);
+        }
+
+        .breakthrough-insight {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+            border-left: 6px solid var(--success-color);
+        }
+
+        .breakthrough-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            color: var(--success-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .breakthrough-content {
+            font-size: var(--font-size-base);
+            line-height: 1.6;
+            color: var(--primary-text);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, rgba(255, 235, 59, 0.3) 0%, rgba(255, 235, 59, 0.3) 100%);
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="slide-section" data-action="0">
+            <h1 class="main-title">ИИ-Аналоги Когнитивных Стилей</h1>
+            <div class="revelation">
+                <div class="revelation-text">
+                    Поразительно, но современные ИИ демонстрируют аналоги всех четырёх человеческих стилей мышления. Разные промптинг-техники активируют разные <span class="highlight">"когнитивные режимы"</span> в LLM.
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="1">
+            <div class="ai-styles-grid">
+                <div class="ai-style ai-analytical">
+                    <div class="ai-style-header">
+                        <div class="ai-icon">🤖📊</div>
+                        <h3 class="ai-style-title">Аналитическое</h3>
+                    </div>
+                    <div class="ai-technique">Chain of Thought</div>
+                    <div class="prompt-example">
+                        Промпт: "Разберём это пошагово..."<br>
+                        Результат: ИИ разложит проблему на логические этапы
+                    </div>
+                    <div class="mechanism">
+                        <span class="mechanism-label">Механизм:</span> Активация последовательных reasoning patterns
+                    </div>
+                    <div class="best-for">
+                        <span class="best-for-label">Лучше для:</span> Финансовый анализ, техническая диагностика
+                    </div>
+                </div>
+
+                <div class="ai-style ai-intuitive">
+                    <div class="ai-style-header">
+                        <div class="ai-icon">🤖💡</div>
+                        <h3 class="ai-style-title">Интуитивное</h3>
+                    </div>
+                    <div class="ai-technique">Few-Shot Learning</div>
+                    <div class="prompt-example">
+                        Промпт: Даёте 2-3 примера без объяснений<br>
+                        Результат: ИИ "схватывает" паттерн без явных инструкций
+                    </div>
+                    <div class="mechanism">
+                        <span class="mechanism-label">Механизм:</span> Активация pattern matching через embeddings
+                    </div>
+                    <div class="best-for">
+                        <span class="best-for-label">Лучше для:</span> Креативные задачи, стилистическая адаптация
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="2">
+            <div class="ai-styles-grid">
+                <div class="ai-style ai-critical">
+                    <div class="ai-style-header">
+                        <div class="ai-icon">🤖🔍</div>
+                        <h3 class="ai-style-title">Критическое</h3>
+                    </div>
+                    <div class="ai-technique">Self-Criticism</div>
+                    <div class="prompt-example">
+                        Промпт: "Теперь найди ошибки в своём ответе..."<br>
+                        Результат: ИИ анализирует собственную логику
+                    </div>
+                    <div class="mechanism">
+                        <span class="mechanism-label">Механизм:</span> Активация error-detection layers
+                    </div>
+                    <div class="best-for">
+                        <span class="best-for-label">Лучше для:</span> Проверка решений, риск-анализ
+                    </div>
+                </div>
+
+                <div class="ai-style ai-associative">
+                    <div class="ai-style-header">
+                        <div class="ai-icon">🤖🔗</div>
+                        <h3 class="ai-style-title">Ассоциативное</h3>
+                    </div>
+                    <div class="ai-technique">Creative Prompting</div>
+                    <div class="prompt-example">
+                        Промпт: "Представь необычные связи между..."<br>
+                        Результат: ИИ генерирует неожиданные аналогии
+                    </div>
+                    <div class="mechanism">
+                        <span class="mechanism-label">Механизм:</span> Активация cross-domain associations
+                    </div>
+                    <div class="best-for">
+                        <span class="best-for-label">Лучше для:</span> Инновации, метафорическое мышление
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="3">
+            <div class="breakthrough-insight">
+                <div class="breakthrough-title">
+                    <span>🚀</span> Breakthrough Открытие Anthropic
+                </div>
+                <div class="breakthrough-content">
+                    Исследование 2024 года впервые показало: в процессе рассуждения ИИ <strong>активирует разные нейронные кластеры</strong>.
+                    <br><br>
+                    Это не случайность — это зарождающаяся <span class="highlight">специализация мышления</span>.
+                    ИИ не просто копирует человеческие паттерны — он развивает собственные когнитивные "предпочтения" в подходах к решению задач.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let maxActions = 3;
+
+        function revealSection(actionIndex) {
+            for (let i = 0; i <= actionIndex; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.add('revealed'));
+            }
+            for (let i = actionIndex + 1; i <= maxActions; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.remove('revealed'));
+            }
+        }
+
+        // PostMessage listener (REQUIRED)
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'revealSection') {
+                revealSection(event.data.actionIndex);
+            }
+        });
+
+        // External control (REQUIRED)
+        window.revealSection = revealSection;
+
+        // Metadata (REQUIRED)
+        window.slideMetadata = {
+            id: "8-3",
+            title: "ИИ-Аналоги Когнитивных Стилей",
+            maxActions: maxActions,
+            type: "content"
+        };
+
+        // Auto-reveal initial content
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => revealSection(0), 300);
+        });
+    </script>
+</body>
+</html>

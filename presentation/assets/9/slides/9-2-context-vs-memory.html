@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slide 9.2: Окно Контекста vs Человеческая Память</title>
+    <style>
+        :root {
+            --primary-text: #2d3748;
+            --accent-color: #667eea;
+            --success-color: #00a86b;
+            --warning-color: #ff6b6b;
+            --human-memory: #4a5568;
+            --ai-context: #667eea;
+            --transition-normal: 0.5s ease;
+
+            --font-size-sm: 1rem;
+            --font-size-base: 1.125rem;
+            --font-size-lg: 1.375rem;
+            --font-size-xl: 1.625rem;
+            --font-size-2xl: 2rem;
+            --font-size-3xl: 2.5rem;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--primary-text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .slide-title {
+            font-size: var(--font-size-3xl);
+            font-weight: 700;
+            color: var(--primary-text);
+            margin-bottom: 0.5rem;
+        }
+
+        .slide-subtitle {
+            font-size: var(--font-size-lg);
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .architecture-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex: 1;
+        }
+
+        .memory-system {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .system-header {
+            text-align: center;
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            border-radius: 12px;
+            color: white;
+        }
+
+        .human-header {
+            background: linear-gradient(135deg, var(--human-memory), #5a6c7d);
+        }
+
+        .ai-header {
+            background: linear-gradient(135deg, var(--ai-context), #5b73f7);
+        }
+
+        .memory-layer {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all var(--transition-normal);
+            position: relative;
+        }
+
+        .memory-layer:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .layer-title {
+            font-size: var(--font-size-base);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .layer-icon {
+            margin-right: 0.75rem;
+            font-size: 1.5rem;
+        }
+
+        .layer-description {
+            font-size: var(--font-size-sm);
+            line-height: 1.5;
+            margin-bottom: 0.75rem;
+        }
+
+        .layer-analogy {
+            font-size: 0.9rem;
+            font-style: italic;
+            color: var(--accent-color);
+            background: rgba(102, 126, 234, 0.1);
+            padding: 0.5rem;
+            border-radius: 6px;
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .context-window {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border: 3px solid var(--ai-context);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .token-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 3px;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(255,255,255,0.5);
+            border-radius: 8px;
+        }
+
+        .token {
+            width: 100%;
+            height: 20px;
+            background: var(--ai-context);
+            border-radius: 3px;
+            transition: all 0.3s ease;
+            opacity: 0.8;
+        }
+
+        .token.old {
+            background: var(--warning-color);
+            animation: fadeOut 1s ease-in-out;
+        }
+
+        .token.new {
+            background: var(--success-color);
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(0.8); }
+            100% { opacity: 0; transform: scale(0); }
+        }
+
+        @keyframes slideIn {
+            0% { opacity: 0; transform: translateX(-10px); }
+            100% { opacity: 0.8; transform: translateX(0); }
+        }
+
+        .capacity-info {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-size: var(--font-size-sm);
+        }
+
+        .capacity-title {
+            font-weight: 600;
+            color: var(--ai-context);
+            margin-bottom: 0.5rem;
+        }
+
+        .capacity-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .capacity-item {
+            padding: 0.25rem 0;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .capacity-item:last-child {
+            border-bottom: none;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fff5f5, #fed7d7);
+            border: 2px solid var(--warning-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .warning-title {
+            color: var(--warning-color);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-size: var(--font-size-base);
+        }
+
+        .slide-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+        }
+
+        .slide-section.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .comparison-arrow {
+            position: absolute;
+            top: 50%;
+            right: -2rem;
+            transform: translateY(-50%);
+            font-size: 3rem;
+            color: var(--accent-color);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .architecture-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .slide-title {
+                font-size: var(--font-size-2xl);
+            }
+
+            .comparison-arrow {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-section" data-action="0">
+        <div class="slide-header">
+            <h1 class="slide-title">Системы Памяти</h1>
+            <p class="slide-subtitle">Многоуровневая архитектура vs Единое окно контекста</p>
+        </div>
+
+        <div class="architecture-container">
+            <div class="memory-system">
+                <div class="system-header human-header">
+                    ЧЕЛОВЕК
+                </div>
+
+                <div class="memory-layer">
+                    <div class="layer-title">
+                        <span class="layer-icon">💾</span>
+                        Долговременная память
+                    </div>
+                    <div class="layer-description">
+                        Годы накопленного опыта, знаний и навыков. Постоянное хранение с возможностью извлечения.
+                    </div>
+                    <div class="layer-analogy">
+                        📊 Корпоративная база данных компании
+                    </div>
+                </div>
+
+                <div class="memory-layer">
+                    <div class="layer-title">
+                        <span class="layer-icon">📝</span>
+                        Рабочая память
+                    </div>
+                    <div class="layer-description">
+                        Активная обработка текущей информации. Ограниченная ёмкость: 7±2 элемента одновременно.
+                    </div>
+                    <div class="layer-analogy">
+                        📋 Активные заметки в блокноте
+                    </div>
+                </div>
+
+                <div class="memory-layer">
+                    <div class="layer-title">
+                        <span class="layer-icon">👁️</span>
+                        Сенсорная память
+                    </div>
+                    <div class="layer-description">
+                        Краткосрочное удержание сенсорной информации. Автоматическая фильтрация релевантного.
+                    </div>
+                    <div class="layer-analogy">
+                        🖊️ Доска для совещаний (стирается после)
+                    </div>
+                </div>
+
+                <div class="comparison-arrow">⟷</div>
+            </div>
+
+            <div class="memory-system">
+                <div class="system-header ai-header">
+                    ИСКУССТВЕННЫЙ ИНТЕЛЛЕКТ
+                </div>
+
+                <div class="context-window">
+                    <h3 style="margin: 0 0 1rem 0; color: var(--ai-context);">ОКНО КОНТЕКСТА</h3>
+
+                    <div class="capacity-info">
+                        <div class="capacity-title">Современные модели (2024-2025):</div>
+                        <ul class="capacity-list">
+                            <li class="capacity-item"><strong>GPT-5:</strong> 300,000 слов</li>
+                            <li class="capacity-item"><strong>Claude-4:</strong> 150,000 слов</li>
+                            <li class="capacity-item"><strong>Gemini 2.5 Pro:</strong> 1,000,000 слов</li>
+                        </ul>
+                    </div>
+
+                    <p style="margin: 1rem 0; font-size: var(--font-size-sm); line-height: 1.4;">
+                        🏢 <em>Конференц-зал с фиксированным количеством мест</em>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-section" data-action="1">
+        <div style="text-align: center; margin: 2rem 0;">
+            <h3 style="color: var(--ai-context); margin-bottom: 1rem;">Как работает окно контекста</h3>
+        </div>
+
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div class="context-window">
+                <div class="token-grid" id="tokenGrid">
+                    <!-- Tokens will be generated by JavaScript -->
+                </div>
+                <p style="margin: 0; font-size: var(--font-size-sm); color: var(--ai-context);">
+                    Все "участники разговора" видят друг друга одновременно
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-section" data-action="2">
+        <div style="max-width: 800px; margin: 2rem auto;">
+            <div class="context-window">
+                <h4 style="color: var(--warning-color); margin-bottom: 1rem;">Вытеснение информации</h4>
+                <div class="token-grid" id="tokenGridDisplacement">
+                    <!-- Displacement animation -->
+                </div>
+                <p style="margin: 1rem 0; font-size: var(--font-size-sm);">
+                    Когда приходит новый "участник", кто-то должен покинуть зал
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-section" data-action="3">
+        <div style="max-width: 600px; margin: 2rem auto;">
+            <div class="warning-box">
+                <div class="warning-title">⚠️ Между сессиями: ПОЛНАЯ ПОТЕРЯ</div>
+                <p style="margin: 0; font-size: var(--font-size-base);">
+                    Нет "архива" предыдущих встреч — каждая сессия начинается заново
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let maxActions = 3;
+
+        function revealSection(actionIndex) {
+            for (let i = 0; i <= actionIndex; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.add('revealed'));
+            }
+            for (let i = actionIndex + 1; i <= maxActions; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.remove('revealed'));
+            }
+
+            // Trigger specific animations based on action
+            if (actionIndex === 1) {
+                generateTokenGrid('tokenGrid', 30);
+            } else if (actionIndex === 2) {
+                animateDisplacement();
+            }
+        }
+
+        function generateTokenGrid(containerId, count) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            container.innerHTML = '';
+            for (let i = 0; i < count; i++) {
+                const token = document.createElement('div');
+                token.className = 'token';
+                token.style.animationDelay = `${i * 0.05}s`;
+                container.appendChild(token);
+            }
+        }
+
+        function animateDisplacement() {
+            const container = document.getElementById('tokenGridDisplacement');
+            if (!container) return;
+
+            generateTokenGrid('tokenGridDisplacement', 25);
+
+            setTimeout(() => {
+                // Mark some tokens as old (will be removed)
+                const tokens = container.querySelectorAll('.token');
+                for (let i = 0; i < 5; i++) {
+                    tokens[i].classList.add('old');
+                }
+
+                // Add new tokens
+                setTimeout(() => {
+                    for (let i = 0; i < 5; i++) {
+                        const newToken = document.createElement('div');
+                        newToken.className = 'token new';
+                        container.appendChild(newToken);
+                    }
+                }, 500);
+            }, 1000);
+        }
+
+        // PostMessage listener
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'revealSection') {
+                revealSection(event.data.actionIndex);
+            }
+        });
+
+        // External control
+        window.revealSection = revealSection;
+
+        // Metadata
+        window.slideMetadata = {
+            id: "9-2",
+            title: "Окно Контекста vs Человеческая Память",
+            maxActions: maxActions,
+            type: "content"
+        };
+
+        // Auto-reveal initial content
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => revealSection(0), 300);
+        });
+    </script>
+</body>
+</html>

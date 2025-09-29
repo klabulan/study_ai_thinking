@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Slide 7.2: Матрица Внимания — Каждое Слово Слушает Каждое</title>
+    <style>
+        :root {
+            --primary-text: #2d3748;
+            --accent-color: #667eea;
+            --success-color: #00a86b;
+            --warning-color: #ff6b6b;
+            --transition-normal: 0.5s ease;
+
+            /* Updated font sizes for readability */
+            --font-size-sm: 1rem;
+            --font-size-base: 1.125rem;
+            --font-size-lg: 1.375rem;
+            --font-size-xl: 1.625rem;
+            --font-size-2xl: 2rem;
+            --font-size-3xl: 2.5rem;
+            --font-size-4xl: 3rem;
+
+            /* Matrix attention colors */
+            --connection-primary: #E67E22;
+            --connection-secondary: #F39C12;
+            --connection-weak: #F8C471;
+            --matrix-background: #F8F9FA;
+            --head-grammar: #3498DB;
+            --head-semantic: #E74C3C;
+            --head-context: #2ECC71;
+            --meeting-analogy: #9B59B6;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'PT Sans', -apple-system, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            color: var(--primary-text);
+            overflow-x: hidden;
+        }
+
+        .slide-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+        }
+
+        .slide-section.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .slide-title {
+            font-size: var(--font-size-4xl);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(45deg, var(--accent-color), var(--success-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .example-sentence {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(52, 152, 219, 0.05));
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 2px solid rgba(52, 152, 219, 0.3);
+            text-align: center;
+        }
+
+        .sentence-text {
+            font-size: var(--font-size-2xl);
+            font-weight: 600;
+            font-style: italic;
+            margin-bottom: 1rem;
+            color: var(--primary-text);
+        }
+
+        .word-tokens {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .word-token {
+            background: white;
+            color: var(--primary-text);
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: var(--font-size-base);
+            border: 2px solid var(--accent-color);
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .word-token:hover {
+            transform: scale(1.05);
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .word-token.active {
+            background: var(--connection-primary);
+            color: white;
+            box-shadow: 0 0 20px rgba(230, 126, 34, 0.5);
+        }
+
+        .connections-container {
+            position: relative;
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            min-height: 300px;
+        }
+
+        .connection-visualization {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .connection-line {
+            position: absolute;
+            height: 2px;
+            background: var(--connection-primary);
+            border-radius: 1px;
+            opacity: 0;
+            transform-origin: left center;
+            transition: all 0.5s ease;
+        }
+
+        .connection-line.active {
+            opacity: 0.8;
+            animation: connectionPulse 2s ease-in-out infinite;
+        }
+
+        .connection-line.strong {
+            height: 4px;
+            background: var(--connection-primary);
+        }
+
+        .connection-line.medium {
+            height: 3px;
+            background: var(--connection-secondary);
+        }
+
+        .connection-line.weak {
+            height: 2px;
+            background: var(--connection-weak);
+        }
+
+        @keyframes connectionPulse {
+            0%, 100% { opacity: 0.8; transform: scaleX(1); }
+            50% { opacity: 1; transform: scaleX(1.05); }
+        }
+
+        .attention-heads {
+            background: rgba(155, 89, 182, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 2px solid rgba(155, 89, 182, 0.3);
+        }
+
+        .heads-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--meeting-analogy);
+        }
+
+        .heads-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .attention-head {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid var(--head-grammar);
+            transition: all 0.3s ease;
+        }
+
+        .attention-head.semantic {
+            border-left-color: var(--head-semantic);
+        }
+
+        .attention-head.context {
+            border-left-color: var(--head-context);
+        }
+
+        .attention-head:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .head-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .head-title.grammar { color: var(--head-grammar); }
+        .head-title.semantic { color: var(--head-semantic); }
+        .head-title.context { color: var(--head-context); }
+
+        .head-example {
+            font-size: var(--font-size-base);
+            font-style: italic;
+            background: rgba(0,0,0,0.05);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .meeting-analogy {
+            background: linear-gradient(135deg, rgba(155, 89, 182, 0.2), rgba(155, 89, 182, 0.1));
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border-left: 5px solid var(--meeting-analogy);
+        }
+
+        .analogy-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            color: var(--meeting-analogy);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .analogy-text {
+            font-size: var(--font-size-lg);
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .result-section {
+            background: linear-gradient(135deg, var(--success-color), rgba(0, 168, 107, 0.8));
+            color: white;
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .result-title {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .result-text {
+            font-size: var(--font-size-lg);
+            line-height: 1.6;
+        }
+
+        .interactive-demo {
+            background: var(--matrix-background);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .demo-instruction {
+            text-align: center;
+            font-size: var(--font-size-base);
+            color: var(--accent-color);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .connection-legend {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+        }
+
+        .legend-line {
+            width: 30px;
+            height: 3px;
+            border-radius: 2px;
+        }
+
+        .legend-line.strong { background: var(--connection-primary); }
+        .legend-line.medium { background: var(--connection-secondary); }
+        .legend-line.weak { background: var(--connection-weak); }
+
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+            background: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        .matrix-cell {
+            aspect-ratio: 1;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .matrix-cell.high { background: var(--connection-primary); color: white; }
+        .matrix-cell.medium { background: var(--connection-secondary); color: white; }
+        .matrix-cell.low { background: var(--connection-weak); }
+    </style>
+</head>
+<body>
+    <div class="slide-section" data-action="0">
+        <h1 class="slide-title">Матрица Внимания</h1>
+        <p style="text-align: center; font-size: var(--font-size-lg); color: #666; margin-bottom: 2rem;">
+            Каждое слово слушает каждое
+        </p>
+    </div>
+
+    <div class="slide-section" data-action="1">
+        <div class="example-sentence">
+            <h2 style="color: var(--accent-color); margin-bottom: 1rem;">🔍 Пример для Анализа</h2>
+            <div class="sentence-text">"Анна купила красивую книгу в магазине"</div>
+
+            <div class="word-tokens">
+                <div class="word-token" data-word="анна">Анна</div>
+                <div class="word-token" data-word="купила">купила</div>
+                <div class="word-token" data-word="красивую">красивую</div>
+                <div class="word-token" data-word="книгу">книгу</div>
+                <div class="word-token" data-word="магазине">магазине</div>
+            </div>
+
+            <div class="interactive-demo">
+                <div class="demo-instruction">Каждое слово анализирует связи с каждым другим словом</div>
+                <div class="connection-legend">
+                    <div class="legend-item">
+                        <div class="legend-line strong"></div>
+                        <span>Сильные связи</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-line medium"></div>
+                        <span>Средние связи</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-line weak"></div>
+                        <span>Слабые связи</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-section" data-action="2">
+        <div class="connections-container">
+            <h3 style="text-align: center; margin-bottom: 2rem; color: var(--connection-primary);">
+                🕸️ Карта Смысловых Связей
+            </h3>
+
+            <div class="matrix-grid">
+                <div class="matrix-cell" style="background: #eee; font-weight: bold;">×</div>
+                <div class="matrix-cell" style="background: #eee; font-size: 0.7rem;">Анна</div>
+                <div class="matrix-cell" style="background: #eee; font-size: 0.7rem;">купила</div>
+                <div class="matrix-cell" style="background: #eee; font-size: 0.7rem;">красивую</div>
+                <div class="matrix-cell" style="background: #eee; font-size: 0.7rem;">книгу</div>
+
+                <div class="matrix-cell" style="background: #eee; font-size: 0.7rem;">Анна</div>
+                <div class="matrix-cell low">0.1</div>
+                <div class="matrix-cell high">0.9</div>
+                <div class="matrix-cell low">0.2</div>
+                <div class="matrix-cell medium">0.4</div>
+
+                <div class="matrix-cell" style="background: #eee; font-size: 0.7rem;">купила</div>
+                <div class="matrix-cell high">0.9</div>
+                <div class="matrix-cell low">0.1</div>
+                <div class="matrix-cell low">0.3</div>
+                <div class="matrix-cell high">0.8</div>
+
+                <div class="matrix-cell" style="background: #eee; font-size: 0.7rem;">красивую</div>
+                <div class="matrix-cell low">0.2</div>
+                <div class="matrix-cell low">0.3</div>
+                <div class="matrix-cell low">0.1</div>
+                <div class="matrix-cell high">0.9</div>
+
+                <div class="matrix-cell" style="background: #eee; font-size: 0.7rem;">книгу</div>
+                <div class="matrix-cell medium">0.4</div>
+                <div class="matrix-cell high">0.8</div>
+                <div class="matrix-cell high">0.9</div>
+                <div class="matrix-cell low">0.1</div>
+            </div>
+
+            <p style="text-align: center; font-style: italic; color: #666; margin-top: 1rem;">
+                Числа показывают силу внимания между словами<br>
+                <strong>"Анна" → "купила" = 0.9</strong> (кто что делает)<br>
+                <strong>"красивую" → "книгу" = 0.9</strong> (характеристика объекта)
+            </p>
+        </div>
+    </div>
+
+    <div class="slide-section" data-action="3">
+        <div class="attention-heads">
+            <div class="heads-title">👥 Множественные "Головы Внимания" — Разные Эксперты</div>
+
+            <div class="heads-grid">
+                <div class="attention-head grammar">
+                    <div class="head-title grammar">
+                        <span>🔤</span>
+                        <span>ГОЛОВА 1: Грамматика</span>
+                    </div>
+                    <div>Анализирует грамматические отношения:</div>
+                    <div class="head-example">
+                        "Анна" (подлежащее) → "купила" (сказуемое)<br>
+                        "купила" → "книгу" (дополнение)
+                    </div>
+                </div>
+
+                <div class="attention-head semantic">
+                    <div class="head-title semantic">
+                        <span>💭</span>
+                        <span>ГОЛОВА 2: Смысл</span>
+                    </div>
+                    <div>Ищет семантические связи:</div>
+                    <div class="head-example">
+                        "красивую" (характеристика) → "книгу" (объект)<br>
+                        "купила" + "магазине" = акт покупки
+                    </div>
+                </div>
+
+                <div class="attention-head context">
+                    <div class="head-title context">
+                        <span>📍</span>
+                        <span>ГОЛОВА 3: Контекст</span>
+                    </div>
+                    <div>Отслеживает контекстные связи:</div>
+                    <div class="head-example">
+                        "магазине" (место) связано с "купила" (действие)<br>
+                        Общий контекст: история покупки
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-section" data-action="4">
+        <div class="meeting-analogy">
+            <div class="analogy-title">🧠 Аналогия с Совещанием</div>
+            <div class="analogy-text">
+                Представьте собрание, где каждый участник одновременно слушает всех остальных
+                и решает: <strong>"Кто говорит что-то важное именно для меня?"</strong>
+            </div>
+        </div>
+
+        <div class="result-section">
+            <div class="result-title">✨ Результат</div>
+            <div class="result-text">
+                Каждое слово понимается не изолированно,<br>
+                а в <strong>паутине всех возможных связей</strong> с другими словами!<br><br>
+                Это создаёт богатое, многослойное понимание смысла.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let maxActions = 4;
+
+        // Word interaction demo
+        let selectedWords = [];
+
+        document.querySelectorAll('.word-token').forEach(token => {
+            token.addEventListener('click', function() {
+                // Toggle selection
+                if (this.classList.contains('active')) {
+                    this.classList.remove('active');
+                    selectedWords = selectedWords.filter(w => w !== this.dataset.word);
+                } else {
+                    this.classList.add('active');
+                    selectedWords.push(this.dataset.word);
+                }
+
+                // Show connections between selected words
+                showConnections();
+            });
+        });
+
+        function showConnections() {
+            // This would create visual connections in a real implementation
+            // For now, we'll just highlight the selected tokens
+            console.log('Selected words:', selectedWords);
+        }
+
+        function revealSection(actionIndex) {
+            // Reveal all sections up to current action
+            for (let i = 0; i <= actionIndex; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.add('revealed'));
+            }
+
+            // Hide future sections
+            for (let i = actionIndex + 1; i <= maxActions; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.remove('revealed'));
+            }
+
+            // Special animation for matrix cells
+            if (actionIndex >= 2) {
+                setTimeout(() => {
+                    document.querySelectorAll('.matrix-cell.high, .matrix-cell.medium').forEach((cell, index) => {
+                        setTimeout(() => {
+                            cell.style.animation = 'pulse 0.5s ease-out';
+                        }, index * 100);
+                    });
+                }, 500);
+            }
+
+            // Animate attention heads
+            if (actionIndex >= 3) {
+                document.querySelectorAll('.attention-head').forEach((head, index) => {
+                    setTimeout(() => {
+                        head.style.transform = 'translateY(0)';
+                        head.style.opacity = '1';
+                    }, index * 200);
+                });
+            }
+        }
+
+        // PostMessage listener (REQUIRED)
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'revealSection') {
+                revealSection(event.data.actionIndex);
+            }
+        });
+
+        // External control (REQUIRED)
+        window.revealSection = revealSection;
+
+        // Metadata (REQUIRED)
+        window.slideMetadata = {
+            id: "7-2",
+            title: "Матрица Внимания — Каждое Слово Слушает Каждое",
+            maxActions: maxActions,
+            type: "content"
+        };
+
+        // Auto-reveal initial content
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => revealSection(0), 300);
+        });
+    </script>
+</body>
+</html>

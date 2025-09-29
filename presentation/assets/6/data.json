@@ -1,0 +1,34 @@
+{
+  "part": {
+    "id": 6,
+    "title": "За Пределами Текста — Расширяющиеся Чувства ИИ",
+    "section": "Мультимодальность и Восприятие",
+    "customSlides": true
+  },
+  "slides": [
+    {
+      "id": "6-1",
+      "file": "slides/6-1-human-ai-perception.html",
+      "title": "Человеческая Мультисенсорность и ИИ-Восприятие",
+      "type": "content",
+      "maxActions": 4,
+      "duration": 120
+    },
+    {
+      "id": "6-2",
+      "file": "slides/6-2-practical-applications.html",
+      "title": "Практические Следствия и Будущее",
+      "type": "content",
+      "maxActions": 5,
+      "duration": 90
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "created": "2025-01-29",
+    "totalDuration": 210,
+    "presenter": "Dr. Elena Cognitive",
+    "theme": "Мультимодальный ИИ через призму человеческого восприятия",
+    "visualStyle": "Professional with cognitive parallels"
+  }
+}

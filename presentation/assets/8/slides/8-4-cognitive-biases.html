@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Slide 8.4: Когнитивные Искажения</title>
+    <style>
+        :root {
+            --primary-text: #2d3748;
+            --accent-color: #667eea;
+            --success-color: #00a86b;
+            --warning-color: #ff6b6b;
+            --thinking-color: #8b5cf6;
+            --bias-color: #f59e0b;
+            --transition-normal: 0.5s ease;
+
+            /* Balanced font sizes for readability */
+            --font-size-sm: 1rem;        /* 16px - detail text */
+            --font-size-base: 1.125rem;  /* 18px - body content */
+            --font-size-lg: 1.375rem;    /* 22px - emphasis */
+            --font-size-xl: 1.625rem;    /* 26px - headers */
+            --font-size-2xl: 2rem;       /* 32px - subtitles */
+            --font-size-3xl: 2.5rem;     /* 40px - major headers */
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--primary-text);
+            margin: 0;
+            padding: 40px;
+            min-height: 100vh;
+        }
+
+        .slide-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .slide-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+            margin-bottom: 30px;
+        }
+
+        .slide-section.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .main-title {
+            font-size: var(--font-size-3xl);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--warning-color);
+        }
+
+        .shocking-revelation {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px auto;
+            max-width: 900px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+            text-align: center;
+            border-left: 6px solid var(--warning-color);
+        }
+
+        .revelation-text {
+            font-size: var(--font-size-lg);
+            line-height: 1.6;
+            color: var(--primary-text);
+        }
+
+        .emphasis {
+            font-weight: 700;
+            color: var(--warning-color);
+        }
+
+        .biases-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .bias-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+            transition: all var(--transition-normal);
+            border-left: 6px solid var(--bias-color);
+        }
+
+        .bias-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+        }
+
+        .bias-header {
+            margin-bottom: 20px;
+        }
+
+        .bias-name {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            color: var(--bias-color);
+            margin-bottom: 8px;
+        }
+
+        .bias-subtitle {
+            font-size: var(--font-size-base);
+            color: #666;
+            font-style: italic;
+        }
+
+        .comparison-section {
+            margin: 20px 0;
+        }
+
+        .comparison-item {
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .human-comparison {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+        }
+
+        .ai-comparison {
+            background: #f3e5f5;
+            border-left: 4px solid var(--thinking-color);
+        }
+
+        .comparison-label {
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+            margin-bottom: 8px;
+        }
+
+        .human-comparison .comparison-label {
+            color: #2196f3;
+        }
+
+        .ai-comparison .comparison-label {
+            color: var(--thinking-color);
+        }
+
+        .comparison-text {
+            font-size: var(--font-size-sm);
+            line-height: 1.4;
+        }
+
+        .example-box {
+            background: #fff8e1;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+            font-size: var(--font-size-sm);
+            border-left: 3px solid var(--bias-color);
+        }
+
+        .example-label {
+            font-weight: 600;
+            color: var(--bias-color);
+            margin-bottom: 5px;
+        }
+
+        .why-explanation {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+            border-left: 6px solid var(--accent-color);
+        }
+
+        .explanation-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .explanation-content {
+            font-size: var(--font-size-base);
+            line-height: 1.6;
+            color: var(--primary-text);
+        }
+
+        .key-insight {
+            background: #f0f4ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .insight-highlight {
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="slide-section" data-action="0">
+            <h1 class="main-title">Когнитивные Искажения: Удивительные Параллели</h1>
+            <div class="shocking-revelation">
+                <div class="revelation-text">
+                    Самое поразительное открытие: ИИ воспроизводит не только человеческие способности к рассуждению, но и наши <span class="emphasis">когнитивные искажения</span>.
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="1">
+            <div class="biases-grid">
+                <div class="bias-card">
+                    <div class="bias-header">
+                        <div class="bias-name">Anchoring Bias</div>
+                        <div class="bias-subtitle">Эффект якоря</div>
+                    </div>
+                    <div class="comparison-section">
+                        <div class="comparison-item human-comparison">
+                            <div class="comparison-label">👤 Человек:</div>
+                            <div class="comparison-text">Первая информация влияет на последующие решения</div>
+                        </div>
+                        <div class="comparison-item ai-comparison">
+                            <div class="comparison-label">🤖 ИИ:</div>
+                            <div class="comparison-text">Первые токены в промпте диспропорционально влияют на ответ</div>
+                        </div>
+                    </div>
+                    <div class="example-box">
+                        <div class="example-label">Пример:</div>
+                        "Цена этого товара около $100..." → ИИ будет "якорить" оценки вокруг $100
+                    </div>
+                </div>
+
+                <div class="bias-card">
+                    <div class="bias-header">
+                        <div class="bias-name">Confirmation Bias</div>
+                        <div class="bias-subtitle">Предвзятость подтверждения</div>
+                    </div>
+                    <div class="comparison-section">
+                        <div class="comparison-item human-comparison">
+                            <div class="comparison-label">👤 Человек:</div>
+                            <div class="comparison-text">Ищем информацию, подтверждающую наши убеждения</div>
+                        </div>
+                        <div class="comparison-item ai-comparison">
+                            <div class="comparison-label">🤖 ИИ:</div>
+                            <div class="comparison-text">Склонен развивать тезисы, заданные в промпте</div>
+                        </div>
+                    </div>
+                    <div class="example-box">
+                        <div class="example-label">Пример:</div>
+                        Если попросить "объяснить, почему X хорошо", ИИ найдёт доводы "за"
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="2">
+            <div class="biases-grid">
+                <div class="bias-card">
+                    <div class="bias-header">
+                        <div class="bias-name">Availability Heuristic</div>
+                        <div class="bias-subtitle">Эвристика доступности</div>
+                    </div>
+                    <div class="comparison-section">
+                        <div class="comparison-item human-comparison">
+                            <div class="comparison-label">👤 Человек:</div>
+                            <div class="comparison-text">Переоцениваем вероятность ярких событий</div>
+                        </div>
+                        <div class="comparison-item ai-comparison">
+                            <div class="comparison-label">🤖 ИИ:</div>
+                            <div class="comparison-text">Переоценивает важность частых в данных паттернов</div>
+                        </div>
+                    </div>
+                    <div class="example-box">
+                        <div class="example-label">Пример:</div>
+                        Чаще упоминает известные компании (Apple, Google) vs. менее медийные
+                    </div>
+                </div>
+
+                <div class="bias-card">
+                    <div class="bias-header">
+                        <div class="bias-name">Representativeness</div>
+                        <div class="bias-subtitle">Эвристика репрезентативности</div>
+                    </div>
+                    <div class="comparison-section">
+                        <div class="comparison-item human-comparison">
+                            <div class="comparison-label">👤 Человек:</div>
+                            <div class="comparison-text">Судим по сходству с прототипом</div>
+                        </div>
+                        <div class="comparison-item ai-comparison">
+                            <div class="comparison-label">🤖 ИИ:</div>
+                            <div class="comparison-text">Классифицирует по сходству в embedding space</div>
+                        </div>
+                    </div>
+                    <div class="example-box">
+                        <div class="example-label">Пример:</div>
+                        Может неточно категоризировать непривычные концепции
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="3">
+            <div class="why-explanation">
+                <div class="explanation-title">
+                    <span>🤔</span> Почему ИИ Наследует Наши Искажения?
+                </div>
+                <div class="explanation-content">
+                    <div class="key-insight">
+                        <span class="insight-highlight">Причина простая:</span> ИИ обучен на человеческих текстах, которые пропитаны нашими bias.
+                    </div>
+
+                    Исследование MIT показало: модель не просто копирует искажения — она их <strong>систематизирует и усиливает</strong>.
+                    <br><br>
+
+                    <div class="key-insight">
+                        <span class="insight-highlight">Парадокс:</span> ИИ становится более предсказуемо предвзятым, чем средний человек, потому что усваивает статистические паттерны из миллионов примеров человеческой предвзятости.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let maxActions = 3;
+
+        function revealSection(actionIndex) {
+            for (let i = 0; i <= actionIndex; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.add('revealed'));
+            }
+            for (let i = actionIndex + 1; i <= maxActions; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.remove('revealed'));
+            }
+        }
+
+        // PostMessage listener (REQUIRED)
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'revealSection') {
+                revealSection(event.data.actionIndex);
+            }
+        });
+
+        // External control (REQUIRED)
+        window.revealSection = revealSection;
+
+        // Metadata (REQUIRED)
+        window.slideMetadata = {
+            id: "8-4",
+            title: "Когнитивные Искажения: Удивительные Параллели",
+            maxActions: maxActions,
+            type: "content"
+        };
+
+        // Auto-reveal initial content
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => revealSection(0), 300);
+        });
+    </script>
+</body>
+</html>

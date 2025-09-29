@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Slide 4.2: Процессы Чтения: Человек vs ИИ</title>
+    <style>
+        :root {
+            --primary-text: #2d3748;
+            --accent-color: #667eea;
+            --success-color: #00a86b;
+            --warning-color: #ff6b6b;
+            --transition-normal: 0.5s ease;
+            --bridge-color: #95A5A6;
+
+            /* Human vs AI colors */
+            --human-primary: #2ECC71;
+            --human-secondary: #A8E6CF;
+            --human-accent: #27AE60;
+            --ai-primary: #667EEA;
+            --ai-secondary: #B8C6F7;
+            --ai-accent: #5A6ACF;
+
+            /* Balanced font sizes for readability (Updated Jan 2025) */
+            --font-size-sm: 1rem;        /* 16px - detail text */
+            --font-size-base: 1.125rem;  /* 18px - body content */
+            --font-size-lg: 1.375rem;    /* 22px - emphasis */
+            --font-size-xl: 1.625rem;    /* 26px - headers */
+            --font-size-2xl: 2rem;       /* 32px - subtitles */
+            --font-size-3xl: 2.5rem;     /* 40px - major headers */
+            --font-size-4xl: 3rem;       /* 48px - max title size */
+        }
+
+        body {
+            margin: 0;
+            padding: 20px 40px; /* Drastically reduced from 40px 60px */
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: calc(100vh - 40px); /* Adjusted for reduced padding */
+            color: var(--primary-text);
+            overflow: hidden; /* Prevent any scrolling */
+        }
+
+        .slide-container {
+            max-width: 1760px;
+            margin: 0 auto;
+        }
+
+        .slide-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+            margin-bottom: 10px; /* Further reduced from 20px */
+        }
+
+        .slide-section.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .main-title {
+            font-size: var(--font-size-2xl);
+            font-weight: bold;
+            color: var(--primary-text);
+            text-align: center;
+            margin-bottom: 15px; /* Further reduced from 30px */
+        }
+
+        .comparison-container {
+            display: grid;
+            grid-template-columns: 1fr 60px 1fr; /* Reduced gap column */
+            gap: 20px; /* Reduced from 40px */
+            align-items: start;
+        }
+
+        .column {
+            background: white;
+            border-radius: 12px; /* Slightly reduced */
+            padding: 15px; /* Further reduced from 20px */
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            min-height: 250px; /* Further reduced from 350px */
+        }
+
+        .human-column {
+            border-top: 4px solid var(--human-primary);
+        }
+
+        .ai-column {
+            border-top: 4px solid var(--ai-primary);
+        }
+
+        .column-header {
+            font-size: var(--font-size-xl);
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .human-header {
+            color: var(--human-primary);
+        }
+
+        .ai-header {
+            color: var(--ai-primary);
+        }
+
+        .vs-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-3xl);
+            font-weight: bold;
+            color: var(--bridge-color);
+            animation: pulse 2s infinite;
+        }
+
+        .process-step {
+            margin-bottom: 12px; /* Further reduced from 20px */
+            padding: 15px; /* Further reduced from 20px */
+            border-radius: 8px;
+            position: relative;
+            min-height: 70px; /* Drastically reduced from 100px */
+        }
+
+        .human-step {
+            background: var(--human-secondary);
+            border-left: 4px solid var(--human-primary);
+        }
+
+        .ai-step {
+            background: var(--ai-secondary);
+            border-left: 4px solid var(--ai-primary);
+        }
+
+        .step-icon {
+            font-size: var(--font-size-xl);
+            margin-bottom: 10px;
+        }
+
+        .step-title {
+            font-size: 1.5rem; /* Increased for better projection readability */
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .step-description {
+            font-size: 1.25rem; /* Increased for better projection readability */
+            line-height: 1.6;
+            color: #333; /* Darker for better contrast */
+        }
+
+        .step-metrics {
+            font-size: var(--font-size-sm);
+            color: var(--bridge-color);
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .arrow-down {
+            text-align: center;
+            font-size: var(--font-size-2xl);
+            color: var(--bridge-color);
+            margin: 10px 0;
+        }
+
+        .speed-comparison {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px; /* Reduced from 20px */
+            text-align: center;
+            margin-top: 15px; /* Reduced from 40px */
+            grid-column: 1 / -1;
+        }
+
+        .speed-title {
+            font-size: var(--font-size-lg);
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .speed-details {
+            font-size: var(--font-size-base);
+            color: #856404;
+        }
+
+        .source-info {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 30px;
+            grid-column: 1 / -1;
+        }
+
+        .fascinating-facts {
+            background: white;
+            border-radius: 8px;
+            padding: 15px; /* Drastically reduced from 25px */
+            margin-top: 10px; /* Further reduced from 20px */
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .facts-title {
+            font-size: var(--font-size-lg); /* Reduced from xl */
+            font-weight: bold;
+            color: var(--primary-text);
+            margin-bottom: 10px; /* Reduced from 20px */
+            text-align: center;
+        }
+
+        .fact-item {
+            margin-bottom: 8px; /* Reduced from 15px */
+            padding: 10px; /* Reduced from 15px */
+            background: #f8fafc;
+            border-radius: 6px;
+            border-left: 3px solid var(--accent-color); /* Thinner border */
+            font-size: 0.95rem; /* Slightly smaller text */
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .slide-in-left {
+            animation: slideInLeft 0.6s ease-out;
+        }
+
+        .slide-in-right {
+            animation: slideInRight 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="slide-section" data-action="0">
+            <div class="main-title">🧠 vs 🤖 ПРОЦЕССЫ ЧТЕНИЯ</div>
+        </div>
+
+        <div class="slide-section" data-action="1">
+            <div class="comparison-container">
+                <div class="column human-column slide-in-left">
+                    <div class="column-header human-header">
+                        🧠 ЧЕЛОВЕК
+                    </div>
+
+                    <div class="process-step human-step">
+                        <div class="step-icon">👁️</div>
+                        <div class="step-title">ВОСПРИЯТИЕ</div>
+                        <div class="step-description">3-6 фиксаций в секунду<br>7-15 символов за раз</div>
+                        <div class="step-metrics">Саккадические движения глаз</div>
+                    </div>
+                </div>
+
+                <div class="vs-divider">VS</div>
+
+                <div class="column ai-column slide-in-right">
+                    <div class="column-header ai-header">
+                        🤖 ИИ (LLM)
+                    </div>
+
+                    <div class="process-step ai-step">
+                        <div class="step-icon">📝</div>
+                        <div class="step-title">ТОКЕНИЗАЦИЯ</div>
+                        <div class="step-description">Разбивка на части<br>субсловные единицы</div>
+                        <div class="step-metrics">BPE алгоритм</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="2">
+            <div class="comparison-container">
+                <div class="process-step human-step slide-in-left">
+                    <div class="arrow-down">↓</div>
+                    <div class="step-icon">🧩</div>
+                    <div class="step-title">ПОНИМАНИЕ</div>
+                    <div class="step-description">Семантика и контекст<br>Эмоциональная окраска</div>
+                    <div class="step-metrics">Нейронные сети мозга</div>
+                </div>
+
+                <div></div>
+
+                <div class="process-step ai-step slide-in-right">
+                    <div class="arrow-down">↓</div>
+                    <div class="step-icon">🔢</div>
+                    <div class="step-title">EMBEDDING</div>
+                    <div class="step-description">Числовые векторы<br>512-4096 измерений</div>
+                    <div class="step-metrics">Векторное пространство</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="3">
+            <div class="comparison-container">
+                <div class="process-step human-step slide-in-left">
+                    <div class="arrow-down">↓</div>
+                    <div class="step-icon">🔮</div>
+                    <div class="step-title">ПРЕДСКАЗАНИЕ</div>
+                    <div class="step-description">Следующие слова<br>73% точность</div>
+                    <div class="step-metrics">Статистические ожидания</div>
+                </div>
+
+                <div></div>
+
+                <div class="process-step ai-step slide-in-right">
+                    <div class="arrow-down">↓</div>
+                    <div class="step-icon">👁️</div>
+                    <div class="step-title">ATTENTION</div>
+                    <div class="step-description">Связи между токенами<br>64 "головы внимания"</div>
+                    <div class="step-metrics">Transformer архитектура</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="4">
+            <div class="comparison-container">
+                <div class="speed-comparison">
+                    <div class="speed-title">⚡ СКОРОСТЬ ОБРАБОТКИ</div>
+                    <div class="speed-details">
+                        <strong>Человек:</strong> ~200мс &nbsp;&nbsp;&nbsp;&nbsp; <strong>ИИ:</strong> ~201мс<br>
+                        <em>Разница всего 1 миллисекунда!</em>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="5">
+            <div style="text-align: center; font-size: var(--font-size-lg); color: var(--bridge-color); background: #f8fafc; padding: 20px; border-radius: 12px; margin-top: 15px;">
+                <strong>🔄 Следующий слайд:</strong><br>
+                Интригующие факты о сходствах человека и ИИ
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let maxActions = 5; /* Updated since we removed the facts section */
+
+        function revealSection(actionIndex) {
+            for (let i = 0; i <= actionIndex; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => {
+                        el.classList.add('revealed');
+                    });
+            }
+            for (let i = actionIndex + 1; i <= maxActions; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => {
+                        el.classList.remove('revealed');
+                    });
+            }
+        }
+
+        // PostMessage listener (REQUIRED)
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'revealSection') {
+                revealSection(event.data.actionIndex);
+            }
+        });
+
+        // External control (REQUIRED)
+        window.revealSection = revealSection;
+
+        // Metadata (REQUIRED)
+        window.slideMetadata = {
+            id: "4-2",
+            title: "Процессы Чтения: Человек vs ИИ",
+            maxActions: maxActions,
+            type: "content"
+        };
+
+        // Auto-reveal initial content
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => revealSection(0), 300);
+        });
+    </script>
+</body>
+</html>

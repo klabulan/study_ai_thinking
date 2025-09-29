@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Slide 5.1: От Букв к Векторам</title>
+    <style>
+        :root {
+            --primary-text: #2d3748;
+            --accent-color: #667eea;
+            --success-color: #00a86b;
+            --warning-color: #ff6b6b;
+            --transition-normal: 0.5s ease;
+
+            /* Balanced font sizes for readability */
+            --font-size-sm: 1rem;        /* 16px - detail text */
+            --font-size-base: 1.125rem;  /* 18px - body content */
+            --font-size-lg: 1.375rem;    /* 22px - emphasis */
+            --font-size-xl: 1.625rem;    /* 26px - headers */
+            --font-size-2xl: 2rem;       /* 32px - subtitles */
+            --font-size-3xl: 2.5rem;     /* 40px - major headers */
+            --font-size-4xl: 3rem;       /* 48px - max title size */
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--primary-text);
+            margin: 0;
+            padding: 40px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide-container {
+            width: 100%;
+            max-width: 1200px;
+            text-align: center;
+        }
+
+        .slide-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+            margin-bottom: 40px;
+        }
+
+        .slide-section.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .main-title {
+            font-size: var(--font-size-4xl);
+            font-weight: 700;
+            margin-bottom: 30px;
+            line-height: 1.2;
+            color: var(--accent-color);
+        }
+
+        .subtitle {
+            font-size: var(--font-size-2xl);
+            font-weight: 300;
+            margin-bottom: 50px;
+            color: #666;
+        }
+
+        .paradox-box {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px auto;
+            max-width: 800px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border-left: 6px solid var(--warning-color);
+        }
+
+        .paradox-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            color: var(--warning-color);
+            margin-bottom: 20px;
+        }
+
+        .paradox-content {
+            font-size: var(--font-size-lg);
+            line-height: 1.6;
+        }
+
+        .key-insight {
+            background: white;
+            border-left: 6px solid var(--success-color);
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 0 15px 15px 0;
+            text-align: left;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+
+        .insight-label {
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--success-color);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .vector-visualization {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .word-token {
+            background: var(--accent-color);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 25px;
+            margin: 10px;
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+        }
+
+        .arrow {
+            font-size: var(--font-size-2xl);
+            color: var(--accent-color);
+            margin: 0 20px;
+        }
+
+        .vector-representation {
+            background: #f1f5f9;
+            border: 2px solid #e2e8f0;
+            padding: 20px;
+            border-radius: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: var(--font-size-base);
+            max-width: 400px;
+            word-break: break-all;
+            color: var(--primary-text);
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="slide-section" data-action="0">
+            <h1 class="main-title">От Букв к Векторам</h1>
+            <p class="subtitle">Как ИИ Превращает Язык в Математику</p>
+        </div>
+
+        <div class="slide-section" data-action="1">
+            <div class="paradox-box">
+                <div class="paradox-title">Парадокс Понимания</div>
+                <div class="paradox-content">
+                    Человек читает <strong>смыслами</strong><br>
+                    ИИ читает <strong>математическими векторами</strong><br>
+                    в многомерном пространстве
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="2">
+            <div class="key-insight">
+                <div class="insight-label">Ключевое понимание</div>
+                <div><strong>Токен = Вектор.</strong> Каждый смысловой атом немедленно превращается в список из тысяч чисел — вектор размерности 4096. Именно поэтому векторы такие "большие" — они должны содержать всю возможную информацию о токене: грамматику, семантику, эмоции, контекст.</div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="3">
+            <div class="vector-visualization">
+                <div class="word-token">"Париж"</div>
+                <div class="arrow">→</div>
+                <div class="vector-representation">
+                    [0.234, -0.891, 0.456, 0.123, -0.678, 0.789, ..., 0.345]
+                    <br><br>
+                    <em>4096 чисел<br>
+                    Позиция в пространстве смыслов</em>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let maxActions = 3;
+
+        function revealSection(actionIndex) {
+            for (let i = 0; i <= actionIndex; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.add('revealed'));
+            }
+            for (let i = actionIndex + 1; i <= maxActions; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.remove('revealed'));
+            }
+        }
+
+        // PostMessage listener (REQUIRED)
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'revealSection') {
+                revealSection(event.data.actionIndex);
+            }
+        });
+
+        // External control (REQUIRED)
+        window.revealSection = revealSection;
+
+        // Metadata (REQUIRED)
+        window.slideMetadata = {
+            id: "5-1",
+            title: "От Букв к Векторам: Мост Между Словами и Числами",
+            maxActions: maxActions,
+            type: "title"
+        };
+
+        // Auto-reveal initial content
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => revealSection(0), 300);
+        });
+    </script>
+</body>
+</html>

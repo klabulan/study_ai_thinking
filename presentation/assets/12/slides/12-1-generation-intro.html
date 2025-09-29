@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Slide 12.1: Парадокс Автогенерации</title>
+    <style>
+        :root {
+            --primary-text: #2d3748;
+            --accent-color: #667eea;
+            --success-color: #00a86b;
+            --warning-color: #ff6b6b;
+            --generation-color: #8b5cf6;
+            --transition-normal: 0.5s ease;
+
+            /* Balanced font sizes for readability */
+            --font-size-sm: 1rem;        /* 16px - detail text */
+            --font-size-base: 1.125rem;  /* 18px - body content */
+            --font-size-lg: 1.375rem;    /* 22px - emphasis */
+            --font-size-xl: 1.625rem;    /* 26px - headers */
+            --font-size-2xl: 2rem;       /* 32px - subtitles */
+            --font-size-3xl: 2.5rem;     /* 40px - major headers */
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--primary-text);
+            margin: 0;
+            padding: 40px;
+            min-height: 100vh;
+        }
+
+        .slide-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: calc(100vh - 80px);
+        }
+
+        .slide-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+            margin-bottom: 30px;
+        }
+
+        .slide-section.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .main-title {
+            font-size: var(--font-size-3xl);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--generation-color);
+        }
+
+        .phase-indicator {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .phase-badge {
+            background: var(--generation-color);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .paradox-introduction {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            margin: 30px auto;
+            max-width: 1000px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            text-align: center;
+            border-left: 6px solid var(--generation-color);
+        }
+
+        .paradox-question {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            color: var(--generation-color);
+            margin-bottom: 25px;
+            line-height: 1.4;
+        }
+
+        .paradox-explanation {
+            font-size: var(--font-size-lg);
+            line-height: 1.6;
+            color: var(--primary-text);
+            margin-bottom: 25px;
+        }
+
+        .visual-metaphor {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            margin: 30px 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            border-left: 6px solid var(--accent-color);
+        }
+
+        .metaphor-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            color: var(--accent-color);
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .word-chain {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .word-box {
+            background: #f1f5f9;
+            border: 2px solid var(--generation-color);
+            border-radius: 15px;
+            padding: 15px 25px;
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            color: var(--primary-text);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .word-box.active {
+            background: var(--generation-color);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .arrow {
+            font-size: var(--font-size-lg);
+            color: var(--generation-color);
+            font-weight: 700;
+        }
+
+        .generation-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 20px;
+            border-left: 4px solid var(--success-color);
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .stat-number {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            color: var(--success-color);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: var(--font-size-base);
+            color: var(--primary-text);
+            font-weight: 600;
+        }
+
+        .key-insight {
+            background: #f0f9ff;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            border-left: 4px solid var(--accent-color);
+            font-size: var(--font-size-base);
+            line-height: 1.6;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, rgba(139, 92, 246, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="slide-section" data-action="0">
+            <div class="phase-indicator">
+                <div class="phase-badge">Phase 3: Генерация</div>
+            </div>
+            <h1 class="main-title">Парадокс Автогенерации</h1>
+            <div class="paradox-introduction">
+                <div class="paradox-question">
+                    Как ИИ создает связный, логичный текст, выбирая каждое слово отдельно, без плана?
+                </div>
+                <div class="paradox-explanation">
+                    Современные языковые модели генерируют текст <span class="highlight">автогенеративно</span> — слово за словом, без предварительного планирования структуры или содержания.
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="1">
+            <div class="visual-metaphor">
+                <div class="metaphor-title">🎯 Процесс Автогенерации</div>
+                <div class="word-chain">
+                    <div class="word-box active">Машинное</div>
+                    <div class="arrow">→</div>
+                    <div class="word-box">обучение</div>
+                    <div class="arrow">→</div>
+                    <div class="word-box">может</div>
+                    <div class="arrow">→</div>
+                    <div class="word-box">?</div>
+                </div>
+                <div class="generation-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">50,000+</span>
+                        <span class="stat-label">вариантов на выбор</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">8 мс</span>
+                        <span class="stat-label">на один токен</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">адаптивность</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="2">
+            <div class="key-insight">
+                <strong>Ключевое понимание:</strong> ИИ не планирует текст заранее — он создает его в реальном времени, используя статистические паттерны из обучающих данных. Каждое следующее слово выбирается на основе вероятностного распределения по всему словарю модели.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let maxActions = 2;
+
+        function revealSection(actionIndex) {
+            for (let i = 0; i <= actionIndex; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.add('revealed'));
+            }
+            for (let i = actionIndex + 1; i <= maxActions; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.remove('revealed'));
+            }
+        }
+
+        // PostMessage listener (REQUIRED)
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'revealSection') {
+                revealSection(event.data.actionIndex);
+            }
+        });
+
+        // External control (REQUIRED)
+        window.revealSection = revealSection;
+
+        // Metadata (REQUIRED)
+        window.slideMetadata = {
+            id: "12-1",
+            title: "Парадокс Автогенерации",
+            maxActions: maxActions,
+            type: "title"
+        };
+
+        // Auto-reveal initial content
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => revealSection(0), 300);
+        });
+
+        // Animate word chain
+        setInterval(() => {
+            const wordBoxes = document.querySelectorAll('.word-box');
+            const currentActive = document.querySelector('.word-box.active');
+            const currentIndex = Array.from(wordBoxes).indexOf(currentActive);
+            const nextIndex = (currentIndex + 1) % wordBoxes.length;
+
+            if (currentActive) currentActive.classList.remove('active');
+            wordBoxes[nextIndex].classList.add('active');
+        }, 2000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "part": {
+    "id": 16,
+    "title": "Вопросы и Ответы — От Понимания к Применению",
+    "section": "Интерактивная Сессия",
+    "customSlides": true
+  },
+  "slides": [
+    {
+      "id": "16-1",
+      "file": "slides/16-1-qa-transition.html",
+      "title": "Переход к Q&A — Путешествие Завершено",
+      "type": "transition",
+      "maxActions": 5,
+      "duration": 120
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "created": "2025-01-29",
+    "totalDuration": 120,
+    "presenter": "Dr. Elena Cognitive",
+    "theme": "Завершение образовательного путешествия и переход к интерактивному диалогу",
+    "visualStyle": "Journey completion with call-to-action for interactive Q&A session",
+    "phaseTransition": "From structured presentation to open dialogue and practical application"
+  }
+}

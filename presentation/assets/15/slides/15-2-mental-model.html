@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Slide 15.2: Ментальная Модель: Где мы похожи, где различны</title>
+    <style>
+        :root {
+            --primary-text: #2d3748;
+            --accent-color: #667eea;
+            --success-color: #00a86b;
+            --warning-color: #ff6b6b;
+            --human-color: #6366f1;
+            --ai-color: #dc2626;
+            --similarity-color: #10b981;
+            --difference-color: #f59e0b;
+            --transition-normal: 0.5s ease;
+
+            /* Balanced font sizes for readability */
+            --font-size-sm: 1rem;        /* 16px - detail text */
+            --font-size-base: 1.125rem;  /* 18px - body content */
+            --font-size-lg: 1.375rem;    /* 22px - emphasis */
+            --font-size-xl: 1.625rem;    /* 26px - headers */
+            --font-size-2xl: 2rem;       /* 32px - subtitles */
+            --font-size-3xl: 2.5rem;     /* 40px - major headers */
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--primary-text);
+            margin: 0;
+            padding: 40px;
+            min-height: 100vh;
+        }
+
+        .slide-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .slide-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+            margin-bottom: 30px;
+        }
+
+        .slide-section.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .main-title {
+            font-size: var(--font-size-3xl);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--accent-color);
+        }
+
+        .three-phase-overview {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            border-left: 6px solid var(--accent-color);
+        }
+
+        .overview-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            color: var(--accent-color);
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .phases-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 25px;
+            margin: 25px 0;
+        }
+
+        .phase-column {
+            text-align: center;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 15px;
+            border: 2px solid var(--accent-color);
+        }
+
+        .phase-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .phase-title {
+            font-size: var(--font-size-lg);
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        .phase-description {
+            font-size: var(--font-size-base);
+            color: #666;
+        }
+
+        .comparison-matrix {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            border-left: 6px solid var(--primary-text);
+        }
+
+        .matrix-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            color: var(--primary-text);
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .comparison-column {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .column-header {
+            font-size: var(--font-size-base);
+            font-weight: 700;
+            color: var(--primary-text);
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+        }
+
+        .process-section {
+            margin-bottom: 20px;
+        }
+
+        .process-label {
+            font-size: var(--font-size-sm);
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .human-process { color: var(--human-color); }
+        .ai-process { color: var(--ai-color); }
+
+        .process-steps {
+            font-size: var(--font-size-sm);
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .process-steps div {
+            margin: 4px 0;
+        }
+
+        .similarities-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            border-left: 6px solid var(--similarity-color);
+        }
+
+        .similarities-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            color: var(--similarity-color);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .similarities-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .similarity-item {
+            background: #f0f9f4;
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 4px solid var(--similarity-color);
+            font-size: var(--font-size-base);
+        }
+
+        .differences-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            border-left: 6px solid var(--difference-color);
+        }
+
+        .differences-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            color: var(--difference-color);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .differences-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .difference-item {
+            background: #fff8e1;
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid var(--difference-color);
+        }
+
+        .difference-category {
+            font-size: var(--font-size-base);
+            font-weight: 700;
+            color: var(--difference-color);
+            margin-bottom: 10px;
+        }
+
+        .difference-explanation {
+            font-size: var(--font-size-base);
+            color: var(--primary-text);
+            line-height: 1.4;
+        }
+
+        .research-citation {
+            background: #f0f9ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid var(--accent-color);
+            font-size: var(--font-size-sm);
+            color: #666;
+            text-align: center;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, rgba(102, 126, 234, 0.2) 0%, rgba(102, 126, 234, 0.2) 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="slide-section" data-action="0">
+            <h1 class="main-title">Ментальная Модель: Где мы похожи, где различны</h1>
+            <div class="three-phase-overview">
+                <div class="overview-title">🧠 Трёхэтапная Когнитивная Структура</div>
+                <div class="phases-grid">
+                    <div class="phase-column">
+                        <div class="phase-icon">📝</div>
+                        <div class="phase-title">КОДИРОВАНИЕ</div>
+                        <div class="phase-description">Как обрабатывается информация</div>
+                    </div>
+                    <div class="phase-column">
+                        <div class="phase-icon">🤔</div>
+                        <div class="phase-title">РАЗМЫШЛЕНИЕ</div>
+                        <div class="phase-description">Как строится понимание</div>
+                    </div>
+                    <div class="phase-column">
+                        <div class="phase-icon">💬</div>
+                        <div class="phase-title">ГЕНЕРАЦИЯ</div>
+                        <div class="phase-description">Как создаются ответы</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="1">
+            <div class="comparison-matrix">
+                <div class="matrix-title">👤 vs 🤖 Детальное Сравнение Процессов</div>
+                <div class="comparison-grid">
+                    <div class="comparison-column">
+                        <div class="column-header">КОДИРОВАНИЕ</div>
+                        <div class="process-section">
+                            <div class="process-label human-process">
+                                <span>🧠</span> ЧЕЛОВЕК:
+                            </div>
+                            <div class="process-steps">
+                                <div>• Восприятие</div>
+                                <div>• Селективное внимание</div>
+                                <div>• Интеграция чувств</div>
+                            </div>
+                        </div>
+                        <div class="process-section">
+                            <div class="process-label ai-process">
+                                <span>🤖</span> ИИ:
+                            </div>
+                            <div class="process-steps">
+                                <div>• Токенизация</div>
+                                <div>• Attention механизм</div>
+                                <div>• Мультимодальность</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="comparison-column">
+                        <div class="column-header">РАЗМЫШЛЕНИЕ</div>
+                        <div class="process-section">
+                            <div class="process-label human-process">
+                                <span>🧠</span> ЧЕЛОВЕК:
+                            </div>
+                            <div class="process-steps">
+                                <div>• Многоуровневое мышление</div>
+                                <div>• Логические связи</div>
+                                <div>• Долгосрочная память</div>
+                            </div>
+                        </div>
+                        <div class="process-section">
+                            <div class="process-label ai-process">
+                                <span>🤖</span> ИИ:
+                            </div>
+                            <div class="process-steps">
+                                <div>• Слоевая обработка</div>
+                                <div>• Паттерн-матчинг</div>
+                                <div>• Контекстная память</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="comparison-column">
+                        <div class="column-header">ГЕНЕРАЦИЯ</div>
+                        <div class="process-section">
+                            <div class="process-label human-process">
+                                <span>🧠</span> ЧЕЛОВЕК:
+                            </div>
+                            <div class="process-steps">
+                                <div>• Идея-фраза</div>
+                                <div>• Осознанный выбор</div>
+                                <div>• Эмоциональная модуляция</div>
+                            </div>
+                        </div>
+                        <div class="process-section">
+                            <div class="process-label ai-process">
+                                <span>🤖</span> ИИ:
+                            </div>
+                            <div class="process-steps">
+                                <div>• Слово за словом</div>
+                                <div>• Вероятностный выбор</div>
+                                <div>• Температурный контроль</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="2">
+            <div class="similarities-section">
+                <div class="similarities-title">✅ Удивительные Сходства</div>
+                <div class="similarities-list">
+                    <div class="similarity-item">
+                        <strong>Селективное внимание:</strong> Оба используют фокусировку на важных элементах
+                    </div>
+                    <div class="similarity-item">
+                        <strong>Слоевые абстракции:</strong> Оба строят понимание через уровни сложности
+                    </div>
+                    <div class="similarity-item">
+                        <strong>Контекстная генерация:</strong> Оба используют контекст для формулировки ответов
+                    </div>
+                    <div class="similarity-item">
+                        <strong>Временные характеристики:</strong> Различие всего ~1 миллисекунда в обработке
+                    </div>
+                </div>
+                <div class="research-citation">
+                    📊 Исследование Nature Communications 2024: вычислительные параллели между мозгом и ИИ
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="3">
+            <div class="differences-section">
+                <div class="differences-title">⚠️ Критические Различия</div>
+                <div class="differences-grid">
+                    <div class="difference-item">
+                        <div class="difference-category">КОДИРОВАНИЕ: Концепты vs Токены</div>
+                        <div class="difference-explanation">
+                            ИИ работает с суб-словными единицами ("понима", "ние"), человек с концептами ("понимание ИИ")
+                        </div>
+                    </div>
+
+                    <div class="difference-item">
+                        <div class="difference-category">РАЗМЫШЛЕНИЕ: Причинность vs Паттерны</div>
+                        <div class="difference-explanation">
+                            ИИ находит статистические паттерны без понимания причин, человек интегрирует логику и этику
+                        </div>
+                    </div>
+
+                    <div class="difference-item">
+                        <div class="difference-category">ГЕНЕРАЦИЯ: Мышление vs Предсказание</div>
+                        <div class="difference-explanation">
+                            ИИ предсказывает наиболее вероятные токены, человек выражает <span class="highlight">сформированные мысли</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="4">
+            <div class="research-citation">
+                <strong>Ключевое понимание:</strong> Понимание этих различий — основа для создания эффективных промптов. <span class="highlight">67% пользователей антропоморфизируют ИИ</span>, что снижает эффективность взаимодействия на 34%.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let maxActions = 4;
+
+        function revealSection(actionIndex) {
+            for (let i = 0; i <= actionIndex; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.add('revealed'));
+            }
+            for (let i = actionIndex + 1; i <= maxActions; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.remove('revealed'));
+            }
+        }
+
+        // PostMessage listener (REQUIRED)
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'revealSection') {
+                revealSection(event.data.actionIndex);
+            }
+        });
+
+        // External control (REQUIRED)
+        window.revealSection = revealSection;
+
+        // Metadata (REQUIRED)
+        window.slideMetadata = {
+            id: "15-2",
+            title: "Ментальная Модель: Где мы похожи, где различны",
+            maxActions: maxActions,
+            type: "content"
+        };
+
+        // Auto-reveal initial content
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => revealSection(0), 300);
+        });
+    </script>
+</body>
+</html>

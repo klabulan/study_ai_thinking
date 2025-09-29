@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Test - Phase Organization</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .test-container {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .test-title {
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #F6E05E;
+        }
+        .nav-sections {
+            /* Copy styles from main CSS */
+        }
+        .section {
+            margin-bottom: 1rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .section summary {
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 1rem 1.5rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: white;
+            transition: all 0.3s ease;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .section summary:hover {
+            background: rgba(246, 224, 94, 0.2);
+        }
+        .slides {
+            padding: 1rem 0;
+        }
+        .slide-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            color: rgba(255,255,255,0.9);
+            border-radius: 8px;
+            margin: 2px 0;
+            transition: all 0.3s ease;
+            gap: 1rem;
+        }
+        .slide-link:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        .slide-number {
+            min-width: 28px;
+            height: 28px;
+            background: rgba(102,126,234,0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: white;
+        }
+        .slide-title-nav {
+            flex: 1;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .progress-dots-nav {
+            font-size: 0.75rem;
+            color: #00a86b;
+        }
+        .test-info {
+            background: rgba(0,0,0,0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .open-main {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #48BB78, #00a86b);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            text-decoration: none;
+            text-align: center;
+        }
+        .open-main:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1 class="test-title">🧪 Navigation Test - Phase Organization</h1>
+
+        <div class="test-info">
+            <h3>Expected Phase Structure:</h3>
+            <ul>
+                <li><strong>🏁 Act I: Основы</strong> - Parts 1, 2, 3</li>
+                <li><strong>🔍 Фаза 1: Кодирование</strong> - Parts 4, 5, 6</li>
+                <li><strong>🧠 Фаза 2: Размышление</strong> - Parts 7, 8 (when created)</li>
+                <li><strong>✨ Фаза 3: Генерация</strong> - Parts 9, 10 (when created)</li>
+                <li><strong>🎯 Act III: Практика</strong> - Parts 11, 12 (when created)</li>
+            </ul>
+        </div>
+
+        <div class="nav-sections" id="nav-sections">
+            <!-- Navigation will be populated by JavaScript -->
+        </div>
+
+        <a href="index.html" class="open-main">
+            🚀 Open Main Presentation System
+        </a>
+    </div>
+
+    <script>
+        // Simulate the slideConfig data structure
+        const mockSlideConfig = {
+            1: { title: "Парадокс Умного Незнакомца", section: "Introduction" },
+            2: { title: "Тайна Чёрного Ящика", section: "Problem" },
+            3: { title: "Дорожная карта - Три шага", section: "Framework" },
+            4: { title: "Токенизация и Кодирование", section: "Encoding" },
+            5: { title: "Внимание и Фокусировка", section: "Attention" },
+            6: { title: "За Пределами Текста", section: "Multimodality" }
+        };
+
+        // Copy the new buildNavigationTree logic
+        function testNavigationTree() {
+            const navSections = document.getElementById('nav-sections');
+            if (!navSections) return;
+
+            // Define phase mapping
+            const phaseMapping = {
+                1: { phase: 'Act I: Основы', icon: '🏁', order: 1 },
+                2: { phase: 'Act I: Основы', icon: '🏁', order: 1 },
+                3: { phase: 'Act I: Основы', icon: '🏁', order: 1 },
+                4: { phase: 'Фаза 1: Кодирование', icon: '🔍', order: 2 },
+                5: { phase: 'Фаза 1: Кодирование', icon: '🔍', order: 2 },
+                6: { phase: 'Фаза 1: Кодирование', icon: '🔍', order: 2 },
+                7: { phase: 'Фаза 2: Размышление', icon: '🧠', order: 3 },
+                8: { phase: 'Фаза 2: Размышление', icon: '🧠', order: 3 },
+                9: { phase: 'Фаза 3: Генерация', icon: '✨', order: 4 },
+                10: { phase: 'Фаза 3: Генерация', icon: '✨', order: 4 },
+                11: { phase: 'Act III: Практика', icon: '🎯', order: 5 },
+                12: { phase: 'Act III: Практика', icon: '🎯', order: 5 }
+            };
+
+            // Group slides by phase
+            const phases = {};
+            Object.entries(mockSlideConfig).forEach(([id, config]) => {
+                const slideId = parseInt(id);
+                const mapping = phaseMapping[slideId] || { phase: 'Другое', icon: '📋', order: 6 };
+
+                if (!phases[mapping.phase]) {
+                    phases[mapping.phase] = {
+                        slides: [],
+                        icon: mapping.icon,
+                        order: mapping.order
+                    };
+                }
+                phases[mapping.phase].slides.push({ id: slideId, ...config });
+            });
+
+            // Sort phases by order and slides by ID
+            const sortedPhases = Object.entries(phases)
+                .sort(([,a], [,b]) => a.order - b.order)
+                .map(([phaseName, phaseData]) => [
+                    phaseName,
+                    {
+                        ...phaseData,
+                        slides: phaseData.slides.sort((a, b) => a.id - b.id)
+                    }
+                ]);
+
+            // Build HTML
+            let html = '';
+            sortedPhases.forEach(([phaseName, phaseData]) => {
+                const completedCount = 0; // Will be updated dynamically
+                html += `
+                    <details class="section" open>
+                        <summary>${phaseData.icon} ${phaseName} (${completedCount}/${phaseData.slides.length})</summary>
+                        <div class="slides">
+                `;
+
+                phaseData.slides.forEach(slide => {
+                    html += `
+                        <div class="slide-link">
+                            <span class="slide-number">${slide.id}</span>
+                            <span class="slide-title-nav">${slide.title}</span>
+                            <span class="progress-dots-nav">○○○</span>
+                        </div>
+                    `;
+                });
+
+                html += `
+                        </div>
+                    </details>
+                `;
+            });
+
+            navSections.innerHTML = html;
+        }
+
+        // Run test when page loads
+        document.addEventListener('DOMContentLoaded', testNavigationTree);
+    </script>
+</body>
+</html>

@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slide 16.1: Вопросы и Ответы — От Понимания к Применению</title>
+    <style>
+        :root {
+            --primary-text: #2d3748;
+            --completion: #059669;
+            --interaction: #6366f1;
+            --expertise: #1f2937;
+            --practical-value: #8b5cf6;
+            --next-steps: #dc2626;
+            --transition-normal: 0.5s ease;
+
+            --font-size-sm: 1rem;
+            --font-size-base: 1.125rem;
+            --font-size-lg: 1.375rem;
+            --font-size-xl: 1.625rem;
+            --font-size-2xl: 2rem;
+            --font-size-3xl: 2.5rem;
+            --font-size-4xl: 3rem;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            background: linear-gradient(135deg, #059669 0%, #6366f1 50%, #8b5cf6 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .slide-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .slide-title {
+            font-size: var(--font-size-4xl);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ffffff, #f0f9ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .slide-subtitle {
+            font-size: var(--font-size-xl);
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        .main-content {
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .journey-completion {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .completion-header {
+            text-align: center;
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: #f0f9ff;
+        }
+
+        .phase-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .phase-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phase-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            border-radius: 2px;
+        }
+
+        .phase-card.encoding::before {
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+        }
+
+        .phase-card.thinking::before {
+            background: linear-gradient(90deg, #059669, #047857);
+        }
+
+        .phase-card.generation::before {
+            background: linear-gradient(90deg, #dc2626, #991b1b);
+        }
+
+        .phase-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .phase-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .phase-title {
+            font-size: var(--font-size-lg);
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .phase-description {
+            font-size: var(--font-size-sm);
+            opacity: 0.9;
+            line-height: 1.4;
+            margin-bottom: 1rem;
+        }
+
+        .phase-topics {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            line-height: 1.3;
+        }
+
+        .checkmark {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            color: var(--completion);
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: checkBounce 0.6s ease-out;
+        }
+
+        @keyframes checkBounce {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .question-categories {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .categories-header {
+            text-align: center;
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #f0f9ff;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .category-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.25rem;
+            border-left: 4px solid;
+            transition: all var(--transition-normal);
+        }
+
+        .category-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(5px);
+        }
+
+        .category-item.business {
+            border-left-color: #059669;
+        }
+
+        .category-item.technical {
+            border-left-color: #6366f1;
+        }
+
+        .category-item.ethical {
+            border-left-color: #8b5cf6;
+        }
+
+        .category-item.existential {
+            border-left-color: #dc2626;
+        }
+
+        .category-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-size: var(--font-size-base);
+        }
+
+        .category-examples {
+            font-size: var(--font-size-sm);
+            opacity: 0.9;
+            line-height: 1.3;
+        }
+
+        .practical-toolkit {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .toolkit-header {
+            text-align: center;
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #f0f9ff;
+        }
+
+        .toolkit-items {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .toolkit-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+            transition: all var(--transition-normal);
+        }
+
+        .toolkit-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+        }
+
+        .toolkit-icon {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .toolkit-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-size: var(--font-size-base);
+        }
+
+        .toolkit-description {
+            font-size: var(--font-size-sm);
+            opacity: 0.9;
+            line-height: 1.3;
+        }
+
+        .final-cta {
+            text-align: center;
+            margin: 3rem 0;
+            position: relative;
+        }
+
+        .cta-container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 3rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: rotate 8s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes rotate {
+            100% { transform: rotate(360deg); }
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-title {
+            font-size: var(--font-size-3xl);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ffffff, #f0f9ff, #dbeafe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .cta-subtitle {
+            font-size: var(--font-size-xl);
+            margin-bottom: 1.5rem;
+            opacity: 0.95;
+        }
+
+        .cta-action {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            color: #f0f9ff;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .floating-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.6; }
+            50% { transform: translateY(-20px) rotate(180deg); opacity: 1; }
+        }
+
+        .slide-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+        }
+
+        .slide-section.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .phase-summary {
+                grid-template-columns: 1fr;
+            }
+
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .toolkit-items {
+                grid-template-columns: 1fr;
+            }
+
+            .slide-title {
+                font-size: var(--font-size-3xl);
+            }
+
+            .cta-title {
+                font-size: var(--font-size-2xl);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-particles">
+        <!-- Particles will be generated by JavaScript -->
+    </div>
+
+    <div class="slide-section" data-action="0">
+        <div class="slide-header">
+            <h1 class="slide-title">ВОПРОСЫ И ОТВЕТЫ</h1>
+            <p class="slide-subtitle">От понимания к применению</p>
+        </div>
+
+        <div class="main-content">
+            <div class="journey-completion">
+                <h3 class="completion-header">📍 ПУТЕШЕСТВИЕ ЗАВЕРШЕНО</h3>
+
+                <div class="phase-summary">
+                    <div class="phase-card encoding">
+                        <span class="checkmark">✅</span>
+                        <div class="phase-icon">🔄</div>
+                        <div class="phase-title">КОДИРОВАНИЕ</div>
+                        <div class="phase-description">Как ИИ читает и обрабатывает информацию</div>
+                        <div class="phase-topics">Токенизация • Attention • Мультимодальность</div>
+                    </div>
+
+                    <div class="phase-card thinking">
+                        <span class="checkmark">✅</span>
+                        <div class="phase-icon">🧠</div>
+                        <div class="phase-title">РАЗМЫШЛЕНИЕ</div>
+                        <div class="phase-description">Как ИИ строит понимание и находит паттерны</div>
+                        <div class="phase-topics">Слои • Контекст • Ограничения логики</div>
+                    </div>
+
+                    <div class="phase-card generation">
+                        <span class="checkmark">✅</span>
+                        <div class="phase-icon">⚡</div>
+                        <div class="phase-title">ГЕНЕРАЦИЯ</div>
+                        <div class="phase-description">Как ИИ создаёт ответы и контролирует креативность</div>
+                        <div class="phase-topics">Предсказание • Температура • Контроль качества</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-section" data-action="1">
+        <div class="question-categories">
+            <h3 class="categories-header">🎯 ГОТОВЫ ОБСУДИТЬ ЛЮБЫЕ ВОПРОСЫ</h3>
+
+            <div class="categories-grid">
+                <div class="category-item business">
+                    <div class="category-title">💼 Бизнес-Практика</div>
+                    <div class="category-examples">
+                        ROI измерения • Внедрение в процессы • Выбор инструментов • Управление рисками
+                    </div>
+                </div>
+
+                <div class="category-item technical">
+                    <div class="category-title">⚙️ Технические Детали</div>
+                    <div class="category-examples">
+                        Attention механизмы • Ограничения контекста • Архитектура моделей • Промпт инжиниринг
+                    </div>
+                </div>
+
+                <div class="category-item ethical">
+                    <div class="category-title">⚖️ Этика и Право</div>
+                    <div class="category-examples">
+                        Ответственность за ошибки • Защита от предвзятости • Конфиденциальность данных
+                    </div>
+                </div>
+
+                <div class="category-item existential">
+                    <div class="category-title">🤖 Будущее ИИ</div>
+                    <div class="category-examples">
+                        Замена профессий • AGI перспективы • Технологическая независимость • Безопасность
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-section" data-action="2">
+        <div class="practical-toolkit">
+            <h3 class="toolkit-header">🛠️ ВАШ ПРАКТИЧЕСКИЙ АРСЕНАЛ</h3>
+
+            <div class="toolkit-items">
+                <div class="toolkit-item">
+                    <div class="toolkit-icon">📝</div>
+                    <div class="toolkit-title">Техники Промптинга</div>
+                    <div class="toolkit-description">Контекст → Задача → Формат<br>Экономия времени 30-40%</div>
+                </div>
+
+                <div class="toolkit-item">
+                    <div class="toolkit-icon">🎯</div>
+                    <div class="toolkit-title">Температурный Контроль</div>
+                    <div class="toolkit-description">T=0.87 оптимальный баланс<br>Управление креативностью</div>
+                </div>
+
+                <div class="toolkit-item">
+                    <div class="toolkit-icon">📊</div>
+                    <div class="toolkit-title">ROI Метрики</div>
+                    <div class="toolkit-description">Измеримые результаты<br>2.1x multiplier возможен</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-section" data-action="3">
+        <div style="text-align: center; margin: 2rem 0;">
+            <div style="background: rgba(255,255,255,0.1); border-radius: 15px; padding: 1.5rem; backdrop-filter: blur(10px);">
+                <h3 style="font-size: var(--font-size-xl); margin-bottom: 1rem; color: #f0f9ff;">
+                    🎓 Dr. Elena Cognitive готова к диалогу
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; font-size: var(--font-size-sm);">
+                    <div>✅ 20+ источников верифицированы</div>
+                    <div>✅ 50+ типичных вопросов подготовлены</div>
+                    <div>✅ 12 бизнес-кейсов в арсенале</div>
+                    <div>✅ Справочные слайды доступны</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-section" data-action="4">
+        <div class="final-cta">
+            <div class="cta-container">
+                <div class="cta-content">
+                    <h2 class="cta-title">🙋‍♀️ ВАШИ ВОПРОСЫ?</h2>
+                    <p class="cta-subtitle">Каждый вопрос — возможность углубить понимание</p>
+                    <div class="cta-action">⚡ Начинаем диалог!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-section" data-action="5">
+        <div style="text-align: center; background: rgba(255,255,255,0.1); border-radius: 15px; padding: 2rem; backdrop-filter: blur(10px); margin-top: 2rem;">
+            <h3 style="font-size: var(--font-size-xl); margin-bottom: 1rem; color: #f0f9ff;">
+                💡 ПОМНИТЕ
+            </h3>
+            <p style="font-size: var(--font-size-lg); line-height: 1.4; margin-bottom: 1rem;">
+                Понимание механизмов ИИ превращается в <strong>конкурентное преимущество</strong>
+            </p>
+            <p style="font-size: var(--font-size-base); opacity: 0.9;">
+                Начните применять полученные знания уже завтра!
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let maxActions = 5;
+
+        function revealSection(actionIndex) {
+            for (let i = 0; i <= actionIndex; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.add('revealed'));
+            }
+            for (let i = actionIndex + 1; i <= maxActions; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.remove('revealed'));
+            }
+
+            // Special animations for different actions
+            if (actionIndex >= 0) {
+                animatePhaseCards();
+            }
+            if (actionIndex >= 4) {
+                createParticles();
+            }
+        }
+
+        function animatePhaseCards() {
+            const cards = document.querySelectorAll('.phase-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.transform = 'translateY(0)';
+                    card.style.opacity = '1';
+
+                    // Animate checkmark
+                    const checkmark = card.querySelector('.checkmark');
+                    if (checkmark) {
+                        setTimeout(() => {
+                            checkmark.style.animation = 'checkBounce 0.6s ease-out';
+                        }, 300);
+                    }
+                }, index * 200);
+            });
+        }
+
+        function createParticles() {
+            const container = document.querySelector('.floating-particles');
+            const particleCount = 15;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (4 + Math.random() * 4) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // PostMessage listener
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'revealSection') {
+                revealSection(event.data.actionIndex);
+            }
+        });
+
+        // External control
+        window.revealSection = revealSection;
+
+        // Metadata
+        window.slideMetadata = {
+            id: "16-1",
+            title: "Вопросы и Ответы — От Понимания к Применению",
+            maxActions: maxActions,
+            type: "transition"
+        };
+
+        // Auto-reveal initial content
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set initial state for phase cards
+            const cards = document.querySelectorAll('.phase-card');
+            cards.forEach(card => {
+                card.style.transform = 'translateY(20px)';
+                card.style.opacity = '0.8';
+                card.style.transition = 'all 0.6s ease';
+            });
+
+            setTimeout(() => revealSection(0), 300);
+        });
+
+        // Add hover effects for interactivity
+        document.addEventListener('DOMContentLoaded', () => {
+            const categoryItems = document.querySelectorAll('.category-item');
+            categoryItems.forEach(item => {
+                item.addEventListener('mouseenter', () => {
+                    item.style.transform = 'translateX(5px)';
+                    item.style.background = 'rgba(255, 255, 255, 0.15)';
+                });
+
+                item.addEventListener('mouseleave', () => {
+                    item.style.transform = 'translateX(0)';
+                    item.style.background = 'rgba(255, 255, 255, 0.1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

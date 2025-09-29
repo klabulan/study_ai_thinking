@@ -320,14 +320,14 @@ class PresentationApp {
         const availableParts = [];
         const isFileProtocol = window.location.protocol === 'file:';
 
-        // For file:// protocol, assume parts 1-8 exist
+        // For file:// protocol, assume parts 1-16 exist (extended range)
         if (isFileProtocol) {
             console.info('🖥️ File protocol detected - using fallback part detection');
-            return [1, 2, 3, 4, 5, 6, 7, 8];
+            return [1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 15, 16];
         }
 
-        // For HTTP/HTTPS, try to detect parts dynamically
-        for (let i = 1; i <= 10; i++) {
+        // For HTTP/HTTPS, try to detect parts dynamically (extended range)
+        for (let i = 1; i <= 20; i++) {
             try {
                 // Check if data.json exists
                 const dataResponse = await fetch(`presentation/assets/${i}/data.json`);
@@ -346,7 +346,7 @@ class PresentationApp {
             }
         }
 
-        return availableParts.length > 0 ? availableParts : [1, 2, 3, 4, 5, 6, 7, 8];
+        return availableParts.length > 0 ? availableParts : [1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 15, 16];
     }
 
     async loadPartConfiguration(partId) {
@@ -451,25 +451,61 @@ class PresentationApp {
         const navSections = document.getElementById('nav-sections');
         if (!navSections) return;
 
-        // Group slides by section
-        const sections = {};
+        // Define phase mapping
+        const phaseMapping = {
+            1: { phase: 'Act I: Основы', icon: '🏁', order: 1 },
+            2: { phase: 'Act I: Основы', icon: '🏁', order: 1 },
+            3: { phase: 'Act I: Основы', icon: '🏁', order: 1 },
+            4: { phase: 'Фаза 1: Кодирование', icon: '🔍', order: 2 },
+            5: { phase: 'Фаза 1: Кодирование', icon: '🔍', order: 2 },
+            6: { phase: 'Фаза 1: Кодирование', icon: '🔍', order: 2 },
+            7: { phase: 'Фаза 2: Размышление', icon: '🧠', order: 3 },
+            8: { phase: 'Фаза 2: Размышление', icon: '🧠', order: 3 },
+            9: { phase: 'Фаза 2: Размышление', icon: '🧠', order: 3 },
+            12: { phase: 'Фаза 3: Генерация', icon: '✨', order: 4 },
+            13: { phase: 'Фаза 3: Генерация', icon: '✨', order: 4 },
+            15: { phase: 'Act III: Практика', icon: '🎯', order: 5 },
+            16: { phase: 'Интерактивная Сессия', icon: '🙋‍♀️', order: 6 }
+        };
+
+        // Group slides by phase
+        const phases = {};
         Object.entries(this.slideConfig).forEach(([id, config]) => {
-            if (!sections[config.section]) {
-                sections[config.section] = [];
+            const slideId = parseInt(id);
+            const mapping = phaseMapping[slideId] || { phase: 'Другое', icon: '📋', order: 6 };
+
+            if (!phases[mapping.phase]) {
+                phases[mapping.phase] = {
+                    slides: [],
+                    icon: mapping.icon,
+                    order: mapping.order
+                };
             }
-            sections[config.section].push({ id: parseInt(id), ...config });
+            phases[mapping.phase].slides.push({ id: slideId, ...config });
         });
+
+        // Sort phases by order and slides by ID
+        const sortedPhases = Object.entries(phases)
+            .sort(([,a], [,b]) => a.order - b.order)
+            .map(([phaseName, phaseData]) => [
+                phaseName,
+                {
+                    ...phaseData,
+                    slides: phaseData.slides.sort((a, b) => a.id - b.id)
+                }
+            ]);
 
         // Build HTML
         let html = '';
-        Object.entries(sections).forEach(([sectionName, slides]) => {
+        sortedPhases.forEach(([phaseName, phaseData]) => {
+            const completedCount = 0; // Will be updated dynamically
             html += `
                 <details class="section" open>
-                    <summary>📁 ${sectionName} (0/${slides.length})</summary>
+                    <summary>${phaseData.icon} ${phaseName} (${completedCount}/${phaseData.slides.length})</summary>
                     <div class="slides">
             `;
 
-            slides.forEach(slide => {
+            phaseData.slides.forEach(slide => {
                 html += `
                     <a href="#slide-${slide.id}" class="slide-link" data-slide="${slide.id}" onclick="app.goToSlide(${slide.id})">
                         <span class="slide-number">${slide.id}</span>
@@ -775,6 +811,20 @@ Content not available. Expected location: \`presentation/${slideId}/${type}.md\`
     }
 
     convertMarkdownToHTML(text) {
+        // Configure marked for GitHub-flavored markdown
+        if (typeof marked !== 'undefined') {
+            marked.setOptions({
+                gfm: true,         // GitHub Flavored Markdown
+                breaks: true,      // Convert \n to <br>
+                pedantic: false,   // Don't be overly strict
+                sanitize: false,   // Allow HTML (we control the content)
+                smartLists: true,  // Use smarter list behavior
+                smartypants: false // Don't use smart quotes
+            });
+            return marked.parse(text);
+        }
+
+        // Fallback to simple parser if marked is not loaded
         return text
             .replace(/^### (.+)$/gm, '<h3>$1</h3>')
             .replace(/^## (.+)$/gm, '<h2>$1</h2>')

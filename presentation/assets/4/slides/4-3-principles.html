@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Slide 4.3: Принципы LLM Encoding</title>
+    <style>
+        :root {
+            --primary-text: #2d3748;
+            --accent-color: #667eea;
+            --success-color: #00a86b;
+            --warning-color: #ff6b6b;
+            --transition-normal: 0.5s ease;
+            --bridge-color: #95A5A6;
+
+            /* Balanced font sizes for readability (Updated Jan 2025) */
+            --font-size-sm: 1rem;        /* 16px - detail text */
+            --font-size-base: 1.125rem;  /* 18px - body content */
+            --font-size-lg: 1.375rem;    /* 22px - emphasis */
+            --font-size-xl: 1.625rem;    /* 26px - headers */
+            --font-size-2xl: 2rem;       /* 32px - subtitles */
+            --font-size-3xl: 2.5rem;     /* 40px - major headers */
+            --font-size-4xl: 3rem;       /* 48px - max title size */
+        }
+
+        body {
+            margin: 0;
+            padding: 80px;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: calc(100vh - 160px);
+            color: var(--primary-text);
+        }
+
+        .slide-container {
+            max-width: 1760px;
+            margin: 0 auto;
+        }
+
+        .slide-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+            margin-bottom: 40px;
+        }
+
+        .slide-section.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .main-title {
+            font-size: var(--font-size-2xl);
+            font-weight: bold;
+            color: var(--accent-color);
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .content-container {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: var(--font-size-xl);
+            font-weight: bold;
+            color: var(--primary-text);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .encoding-step {
+            margin-bottom: 40px;
+            padding: 30px;
+            border-radius: 12px;
+            background: #f8fafc;
+            border-left: 6px solid var(--accent-color);
+            position: relative;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: var(--accent-color);
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: var(--font-size-lg);
+            margin-bottom: 15px;
+        }
+
+        .step-title {
+            font-size: var(--font-size-xl);
+            font-weight: bold;
+            color: var(--primary-text);
+            margin-bottom: 15px;
+        }
+
+        .step-example {
+            font-family: 'Courier New', monospace;
+            background: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: var(--font-size-base);
+            margin: 15px 0;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .step-description {
+            font-size: var(--font-size-base);
+            line-height: 1.6;
+            color: var(--primary-text);
+        }
+
+        .step-bullets {
+            list-style: none;
+            padding: 0;
+            margin: 15px 0;
+        }
+
+        .step-bullets li {
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+            font-size: var(--font-size-base);
+        }
+
+        .step-bullets li::before {
+            content: "•";
+            color: var(--accent-color);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .key-insight {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 16px;
+            margin: 40px 0;
+            text-align: center;
+        }
+
+        .insight-icon {
+            font-size: var(--font-size-3xl);
+            margin-bottom: 15px;
+        }
+
+        .insight-title {
+            font-size: var(--font-size-xl);
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .insight-text {
+            font-size: var(--font-size-lg);
+            line-height: 1.5;
+        }
+
+        .practical-value {
+            background: var(--success-color);
+            color: white;
+            padding: 30px;
+            border-radius: 16px;
+            margin: 40px 0;
+            text-align: center;
+        }
+
+        .next-section {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            color: #856404;
+        }
+
+        .next-section-title {
+            font-size: var(--font-size-lg);
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes highlight {
+            0% { background-color: transparent; }
+            50% { background-color: rgba(102, 126, 234, 0.1); }
+            100% { background-color: transparent; }
+        }
+
+        .highlight-animation {
+            animation: highlight 1.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="slide-section" data-action="0">
+            <div class="main-title">🔬 ОСНОВЫ LLM ENCODING</div>
+        </div>
+
+        <div class="slide-section" data-action="1">
+            <div class="content-container">
+                <div class="section-title">ЧТО ПРОИСХОДИТ ВНУТРИ LLM ПРИ КОДИРОВАНИИ:</div>
+
+                <div class="encoding-step fade-in-up">
+                    <div class="step-number">1️⃣</div>
+                    <div class="step-title">ТОКЕНИЗАЦИЯ</div>
+                    <div class="step-example">"читающий" → ["чит", "ающ", "ий"]</div>
+                    <ul class="step-bullets">
+                        <li>Разбивка на обрабатываемые части</li>
+                        <li>Учёт частотности в обучающих данных</li>
+                        <li>Субсловные единицы для эффективности</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="2">
+            <div class="content-container">
+                <div class="encoding-step fade-in-up">
+                    <div class="step-number">2️⃣</div>
+                    <div class="step-title">EMBEDDING</div>
+                    <div class="step-description">токены → векторы в 4096-мерном пространстве</div>
+                    <ul class="step-bullets">
+                        <li>Каждое слово = точка в многомерном пространстве</li>
+                        <li>Близость = семантическое сходство</li>
+                        <li>Математическая карта смысла</li>
+                        <li>Контекстные векторы для разных значений</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="3">
+            <div class="content-container">
+                <div class="encoding-step fade-in-up">
+                    <div class="step-number">3️⃣</div>
+                    <div class="step-title">ATTENTION</div>
+                    <div class="step-description">поиск связей между всеми токенами</div>
+                    <ul class="step-bullets">
+                        <li>64 "головы внимания" работают параллельно</li>
+                        <li>Каждая ищет свой тип связей</li>
+                        <li>Синтаксические и семантические отношения</li>
+                        <li>Динамическое формирование контекста</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="4">
+            <div class="key-insight">
+                <div class="insight-icon">💡</div>
+                <div class="insight-title">ГЛАВНОЕ ПОНИМАНИЕ</div>
+                <div class="insight-text">
+                    Encoding — это не просто "чтение", это создание<br>
+                    математической карты смысла для дальнейшей обработки
+                </div>
+            </div>
+
+            <div class="practical-value">
+                <div class="insight-title">🎯 ПРАКТИЧЕСКАЯ ЦЕННОСТЬ</div>
+                <div class="insight-text">
+                    Понимание encoding → лучшие промпты → лучшие результаты
+                </div>
+            </div>
+
+            <div class="next-section">
+                <div class="next-section-title">🔤 Следующий этап:</div>
+                <div>Детали токенизации и практические применения</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let maxActions = 4;
+
+        function revealSection(actionIndex) {
+            for (let i = 0; i <= actionIndex; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => {
+                        el.classList.add('revealed');
+                        // Add highlight animation for key insights
+                        if (i === actionIndex && actionIndex === 4) {
+                            setTimeout(() => {
+                                el.querySelector('.key-insight')?.classList.add('highlight-animation');
+                            }, 300);
+                        }
+                    });
+            }
+            for (let i = actionIndex + 1; i <= maxActions; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => {
+                        el.classList.remove('revealed');
+                    });
+            }
+        }
+
+        // PostMessage listener (REQUIRED)
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'revealSection') {
+                revealSection(event.data.actionIndex);
+            }
+        });
+
+        // External control (REQUIRED)
+        window.revealSection = revealSection;
+
+        // Metadata (REQUIRED)
+        window.slideMetadata = {
+            id: "4-3",
+            title: "Принципы LLM Encoding",
+            maxActions: maxActions,
+            type: "content"
+        };
+
+        // Auto-reveal initial content
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => revealSection(0), 300);
+        });
+    </script>
+</body>
+</html>

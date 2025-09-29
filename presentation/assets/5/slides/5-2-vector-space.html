@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Slide 5.2: Многомерное Пространство Смыслов</title>
+    <style>
+        :root {
+            --primary-text: #2d3748;
+            --accent-color: #667eea;
+            --success-color: #00a86b;
+            --warning-color: #ff6b6b;
+            --transition-normal: 0.5s ease;
+
+            /* Balanced font sizes for readability */
+            --font-size-sm: 1rem;        /* 16px - detail text */
+            --font-size-base: 1.125rem;  /* 18px - body content */
+            --font-size-lg: 1.375rem;    /* 22px - emphasis */
+            --font-size-xl: 1.625rem;    /* 26px - headers */
+            --font-size-2xl: 2rem;       /* 32px - subtitles */
+            --font-size-3xl: 2.5rem;     /* 40px - major headers */
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--primary-text);
+            margin: 0;
+            padding: 40px;
+            min-height: 100vh;
+        }
+
+        .slide-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .slide-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+            margin-bottom: 40px;
+        }
+
+        .slide-section.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .main-title {
+            font-size: var(--font-size-3xl);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 40px;
+            color: var(--accent-color);
+        }
+
+        .concept-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 40px 0;
+        }
+
+        .concept-box {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border-left: 6px solid var(--accent-color);
+        }
+
+        .concept-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .concept-content {
+            font-size: var(--font-size-base);
+            line-height: 1.6;
+        }
+
+        .analogy-highlight {
+            background: #f0f9f4;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .distance-demo {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            font-family: 'Courier New', monospace;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+            border: 2px solid #e2e8f0;
+        }
+
+        .distance-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .similarity-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: #f1f5f9;
+            border-radius: 8px;
+        }
+
+        .words {
+            font-size: var(--font-size-base);
+            font-weight: 600;
+        }
+
+        .score {
+            font-size: var(--font-size-lg);
+            font-weight: 700;
+            color: var(--success-color);
+        }
+
+        .dimensions-visual {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .dimension-example {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 4px solid var(--accent-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .dimension-number {
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        .curse-warning {
+            background: #fef2f2;
+            border: 2px solid var(--warning-color);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .warning-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            color: var(--warning-color);
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="slide-section" data-action="0">
+            <h1 class="main-title">Геометрия Смысла: Многомерное Пространство Понимания</h1>
+        </div>
+
+        <div class="slide-section" data-action="1">
+            <div class="concept-grid">
+                <div class="concept-box">
+                    <div class="concept-title">🧠 Человеческая Память</div>
+                    <div class="concept-content">
+                        <div class="analogy-highlight">
+                            В вашей памяти "собака" хранится в сети связей:<br>
+                            животное → млекопитающее → домашнее → лает → друг человека → требует прогулок
+                        </div>
+                        <p>Интуитивная сеть ассоциаций</p>
+                    </div>
+                </div>
+                <div class="concept-box">
+                    <div class="concept-title">🤖 ИИ Векторы</div>
+                    <div class="concept-content">
+                        <div class="analogy-highlight">
+                            "собака" = [0.2, -0.7, 0.4, ..., 0.1]<br>
+                            4096 чисел определяют позицию в пространстве смыслов
+                        </div>
+                        <p>Математически точная геометрия</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="2">
+            <div class="distance-demo">
+                <div class="distance-title">Измерение Близости Смыслов</div>
+                <div class="similarity-row">
+                    <div class="words">Сходство("врач", "доктор")</div>
+                    <div class="score">0.89</div>
+                </div>
+                <div class="similarity-row">
+                    <div class="words">Сходство("врач", "болезнь")</div>
+                    <div class="score">0.62</div>
+                </div>
+                <div class="similarity-row">
+                    <div class="words">Сходство("врач", "банан")</div>
+                    <div class="score">0.02</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="3">
+            <div class="dimensions-visual">
+                <h3 style="color: #ffd700; font-size: var(--font-size-xl);">Зачем 4096 Измерений?</h3>
+                <div class="dimension-example">
+                    <span class="dimension-number">Измерение 1:</span> "Это живое существо?" (Да=1, Нет=0, Частично=0.5)
+                </div>
+                <div class="dimension-example">
+                    <span class="dimension-number">Измерение 2:</span> "Это связано с едой?"
+                </div>
+                <div class="dimension-example">
+                    <span class="dimension-number">Измерение 3:</span> "Это вызывает положительные эмоции?"
+                </div>
+                <div class="dimension-example">
+                    <span class="dimension-number">...</span>
+                </div>
+                <div class="dimension-example">
+                    <span class="dimension-number">Измерение 4096:</span> "Это используется в деловом контексте?"
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="4">
+            <div class="curse-warning">
+                <div class="warning-title">⚠️ Проклятие Размерности</div>
+                <div style="font-size: var(--font-size-base);">
+                    В 4096-мерном пространстве интуиция не работает.<br>
+                    Все точки кажутся примерно одинаково далёкими друг от друга.<br>
+                    <em>Это фундаментальное ограничение высокоразмерных пространств.</em>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let maxActions = 4;
+
+        function revealSection(actionIndex) {
+            for (let i = 0; i <= actionIndex; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.add('revealed'));
+            }
+            for (let i = actionIndex + 1; i <= maxActions; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.remove('revealed'));
+            }
+        }
+
+        // PostMessage listener (REQUIRED)
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'revealSection') {
+                revealSection(event.data.actionIndex);
+            }
+        });
+
+        // External control (REQUIRED)
+        window.revealSection = revealSection;
+
+        // Metadata (REQUIRED)
+        window.slideMetadata = {
+            id: "5-2",
+            title: "Многомерное Пространство Смыслов: Геометрия Понимания",
+            maxActions: maxActions,
+            type: "content"
+        };
+
+        // Auto-reveal initial content
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => revealSection(0), 300);
+        });
+    </script>
+</body>
+</html>

@@ -1,7 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Read(//c/Users/PREDATOR/OneDrive/Pictures/Screenshots/**)",
+      "Bash(mkdir:*)",
+      "Bash(dir:*)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:sindresorhus.com)"
     ],
     "deny": [],
     "ask": []

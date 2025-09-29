@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Slide 4.2b: Интригующие Факты</title>
+    <style>
+        :root {
+            --primary-text: #2d3748;
+            --accent-color: #667eea;
+            --success-color: #00a86b;
+            --warning-color: #ff6b6b;
+            --transition-normal: 0.5s ease;
+            --bridge-color: #95A5A6;
+
+            /* Balanced font sizes for readability */
+            --font-size-sm: 1rem;
+            --font-size-base: 1.125rem;
+            --font-size-lg: 1.375rem;
+            --font-size-xl: 1.625rem;
+            --font-size-2xl: 2rem;
+            --font-size-3xl: 2.5rem;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px 40px;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: calc(100vh - 40px);
+            color: var(--primary-text);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .slide-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .slide-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+            margin-bottom: 10px;
+        }
+
+        .slide-section.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .main-title {
+            font-size: var(--font-size-3xl);
+            font-weight: bold;
+            color: var(--primary-text);
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .fascinating-facts {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin: 0 auto;
+            max-width: 1000px;
+        }
+
+        .facts-title {
+            font-size: var(--font-size-2xl);
+            font-weight: bold;
+            color: var(--primary-text);
+            margin-bottom: 30px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .fact-item {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border-left: 4px solid var(--accent-color);
+            font-size: var(--font-size-base);
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        .fact-item:hover {
+            background: #edf2f7;
+            transform: translateX(5px);
+        }
+
+        .fact-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background: var(--accent-color);
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .fact-content {
+            flex: 1;
+        }
+
+        .fact-item {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .source-info {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 30px;
+            font-size: var(--font-size-base);
+            color: var(--bridge-color);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="slide-section" data-action="0">
+            <div class="main-title">🔬 ИНТРИГУЮЩИЕ ФАКТЫ</div>
+        </div>
+
+        <div class="slide-section" data-action="1">
+            <div class="fascinating-facts fade-in-up">
+                <div class="fact-item">
+                    <div class="fact-number">1</div>
+                    <div class="fact-content">
+                        ИИ обрабатывает каждый токен через 175B параметров одновременно
+                    </div>
+                </div>
+                <div class="fact-item">
+                    <div class="fact-number">2</div>
+                    <div class="fact-content">
+                        Transformer архитектура была вдохновлена механизмами внимания мозга
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="2">
+            <div class="fascinating-facts">
+                <div class="fact-item">
+                    <div class="fact-number">3</div>
+                    <div class="fact-content">
+                        GPT-4 "видит" 32,000 токенов одновременно vs 7-15 символов у человека
+                    </div>
+                </div>
+                <div class="fact-item">
+                    <div class="fact-number">4</div>
+                    <div class="fact-content">
+                        Оба используют статистические закономерности языка для понимания
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-section" data-action="3">
+            <div class="source-info">
+                <strong>📚 Источники:</strong> Nature Communications 2024, MIT Cognitive Lab, Anthropic Research
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let maxActions = 3;
+
+        function revealSection(actionIndex) {
+            for (let i = 0; i <= actionIndex; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.add('revealed'));
+            }
+            for (let i = actionIndex + 1; i <= maxActions; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.remove('revealed'));
+            }
+        }
+
+        // PostMessage listener (REQUIRED)
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'revealSection') {
+                revealSection(event.data.actionIndex);
+            }
+        });
+
+        // External control (REQUIRED)
+        window.revealSection = revealSection;
+
+        // Metadata (REQUIRED)
+        window.slideMetadata = {
+            id: "4-2b",
+            title: "Интригующие Факты",
+            maxActions: maxActions,
+            type: "content"
+        };
+
+        // Auto-reveal initial content
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => revealSection(0), 300);
+        });
+    </script>
+</body>
+</html>

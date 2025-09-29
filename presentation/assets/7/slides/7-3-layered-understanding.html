@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Slide 7.3: Слоевое Понимание — От Простого к Сложному</title>
+    <style>
+        :root {
+            --primary-text: #2d3748;
+            --accent-color: #667eea;
+            --success-color: #00a86b;
+            --warning-color: #ff6b6b;
+            --transition-normal: 0.5s ease;
+
+            /* Updated font sizes for readability */
+            --font-size-sm: 1rem;
+            --font-size-base: 1.125rem;
+            --font-size-lg: 1.375rem;
+            --font-size-xl: 1.625rem;
+            --font-size-2xl: 2rem;
+            --font-size-3xl: 2.5rem;
+            --font-size-4xl: 3rem;
+
+            /* Layer understanding colors */
+            --layer-basic: #3498DB;
+            --layer-complex: #E67E22;
+            --layer-final: #2ECC71;
+            --understanding-1: #E8F8F5;
+            --understanding-2: #A9DFBF;
+            --understanding-3: #27AE60;
+            --residual-connection: #9B59B6;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'PT Sans', -apple-system, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            color: var(--primary-text);
+            overflow-x: hidden;
+        }
+
+        .slide-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+        }
+
+        .slide-section.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .slide-title {
+            font-size: var(--font-size-4xl);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(45deg, var(--accent-color), var(--success-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .reading-analogy {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(52, 152, 219, 0.05));
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 2px solid rgba(52, 152, 219, 0.3);
+        }
+
+        .analogy-title {
+            font-size: var(--font-size-2xl);
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--layer-basic);
+        }
+
+        .comparison-container {
+            display: grid;
+            grid-template-columns: 1fr 80px 1fr;
+            gap: 2rem;
+            align-items: center;
+            margin: 2rem 0;
+        }
+
+        .human-side, .ai-side {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            min-height: 400px;
+        }
+
+        .side-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--layer-basic);
+        }
+
+        .reading-layer {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-left: 5px solid var(--layer-basic);
+            transform: translateX(-20px);
+            opacity: 0;
+            transition: all 0.6s ease;
+        }
+
+        .reading-layer.layer-2 {
+            border-left-color: var(--layer-complex);
+        }
+
+        .reading-layer.layer-3 {
+            border-left-color: var(--layer-final);
+        }
+
+        .reading-layer.revealed {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .layer-icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+
+        .layer-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .layer-description {
+            font-size: var(--font-size-base);
+            line-height: 1.5;
+            color: var(--primary-text);
+        }
+
+        .layer-examples {
+            list-style: none;
+            padding: 0;
+            margin: 0.75rem 0;
+        }
+
+        .layer-examples li {
+            margin: 0.5rem 0;
+            font-size: var(--font-size-sm);
+            color: #666;
+        }
+
+        .layer-examples li::before {
+            content: '•';
+            color: var(--layer-basic);
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .ai-layers .layer-examples.layer-2 li::before {
+            color: var(--layer-complex);
+        }
+
+        .ai-layers .layer-examples.layer-3 li::before {
+            color: var(--layer-final);
+        }
+
+        .arrow-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--accent-color);
+            font-weight: 700;
+        }
+
+        .residual-connections {
+            background: rgba(155, 89, 182, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 2px solid rgba(155, 89, 182, 0.3);
+            text-align: center;
+        }
+
+        .residual-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            color: var(--residual-connection);
+            margin-bottom: 1.5rem;
+        }
+
+        .residual-explanation {
+            font-size: var(--font-size-lg);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .residual-diagram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .layer-box {
+            background: white;
+            border: 2px solid var(--layer-basic);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .layer-box.layer-2 {
+            border-color: var(--layer-complex);
+            color: var(--layer-complex);
+        }
+
+        .layer-box.layer-3 {
+            border-color: var(--layer-final);
+            color: var(--layer-final);
+        }
+
+        .residual-arrow {
+            font-size: 1.5rem;
+            color: var(--residual-connection);
+            animation: flowPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes flowPulse {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+
+        .key-insight {
+            background: linear-gradient(135deg, var(--success-color), rgba(0, 168, 107, 0.8));
+            color: white;
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            margin: 2rem 0;
+            box-shadow: 0 10px 30px rgba(0, 168, 107, 0.3);
+        }
+
+        .insight-title {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .insight-text {
+            font-size: var(--font-size-lg);
+            line-height: 1.6;
+        }
+
+        .progression-flow {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .flow-step {
+            background: white;
+            border: 2px solid var(--layer-basic);
+            border-radius: 25px;
+            padding: 1rem 2rem;
+            font-weight: 600;
+            color: var(--layer-basic);
+            transition: all 0.3s ease;
+        }
+
+        .flow-step.step-2 {
+            border-color: var(--layer-complex);
+            color: var(--layer-complex);
+        }
+
+        .flow-step.step-3 {
+            border-color: var(--layer-final);
+            color: var(--layer-final);
+        }
+
+        .flow-arrow {
+            font-size: 1.5rem;
+            color: var(--accent-color);
+        }
+
+        .understanding-accumulation {
+            background: linear-gradient(
+                to right,
+                var(--understanding-1) 0%,
+                var(--understanding-2) 50%,
+                var(--understanding-3) 100%
+            );
+            height: 20px;
+            border-radius: 10px;
+            margin: 1rem 0;
+            position: relative;
+            animation: understandingGrow 3s ease-out;
+        }
+
+        @keyframes understandingGrow {
+            0% { width: 10%; }
+            33% { width: 40%; }
+            66% { width: 70%; }
+            100% { width: 100%; }
+        }
+
+        .understanding-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: var(--font-size-sm);
+            color: var(--primary-text);
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .conclusion-section {
+            background: rgba(246, 224, 94, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border-left: 5px solid #F6E05E;
+            text-align: center;
+        }
+
+        .conclusion-title {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            color: #E6B800;
+            margin-bottom: 1rem;
+        }
+
+        .conclusion-text {
+            font-size: var(--font-size-lg);
+            line-height: 1.6;
+            color: var(--primary-text);
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-section" data-action="0">
+        <h1 class="slide-title">От Простого к Сложному</h1>
+        <p style="text-align: center; font-size: var(--font-size-lg); color: #666; margin-bottom: 2rem;">
+            Как слои строят прогрессивное понимание
+        </p>
+    </div>
+
+    <div class="slide-section" data-action="1">
+        <div class="reading-analogy">
+            <div class="analogy-title">📚 Аналогия: Чтение Сложной Научной Статьи</div>
+
+            <div class="comparison-container">
+                <div class="human-side">
+                    <div class="side-title">👤 Человек</div>
+
+                    <div class="reading-layer layer-1">
+                        <div class="layer-title">
+                            <span class="layer-icon">📖</span>
+                            ПЕРВОЕ ЧТЕНИЕ
+                        </div>
+                        <div class="layer-description">
+                            Замечаете основные элементы:
+                        </div>
+                        <ul class="layer-examples">
+                            <li>Знакомые термины</li>
+                            <li>Структура предложений</li>
+                            <li>Незнакомые слова</li>
+                            <li>Общая тема</li>
+                        </ul>
+                    </div>
+
+                    <div class="reading-layer layer-2">
+                        <div class="layer-title">
+                            <span class="layer-icon">🔍</span>
+                            ВТОРОЕ ЧТЕНИЕ
+                        </div>
+                        <div class="layer-description">
+                            Понимаете отношения:
+                        </div>
+                        <ul class="layer-examples">
+                            <li>Связи между идеями</li>
+                            <li>Логика аргументации</li>
+                            <li>Связь с известными фактами</li>
+                        </ul>
+                    </div>
+
+                    <div class="reading-layer layer-3">
+                        <div class="layer-title">
+                            <span class="layer-icon">💡</span>
+                            ТРЕТЬЕ ЧТЕНИЕ
+                        </div>
+                        <div class="layer-description">
+                            Формируете понимание:
+                        </div>
+                        <ul class="layer-examples">
+                            <li>Общий смысл текста</li>
+                            <li>Выводы и следствия</li>
+                            <li>Можете объяснить другим</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="arrow-indicator">⇔</div>
+
+                <div class="ai-side">
+                    <div class="side-title">🤖 ИИ-Трансформер</div>
+
+                    <div class="reading-layer layer-1 ai-layers">
+                        <div class="layer-title">
+                            <span class="layer-icon">🔢</span>
+                            СЛОИ 1-4
+                        </div>
+                        <div class="layer-description">
+                            Базовые паттерны:
+                        </div>
+                        <ul class="layer-examples layer-1">
+                            <li>Части речи</li>
+                            <li>Простые связи</li>
+                            <li>Локальные зависимости</li>
+                            <li>Морфологический анализ</li>
+                        </ul>
+                    </div>
+
+                    <div class="reading-layer layer-2 ai-layers">
+                        <div class="layer-title">
+                            <span class="layer-icon">🧠</span>
+                            СЛОИ 5-8
+                        </div>
+                        <div class="layer-description">
+                            Сложные отношения:
+                        </div>
+                        <ul class="layer-examples layer-2">
+                            <li>Семантические связи</li>
+                            <li>Роли в предложении</li>
+                            <li>Тематические паттерны</li>
+                        </ul>
+                    </div>
+
+                    <div class="reading-layer layer-3 ai-layers">
+                        <div class="layer-title">
+                            <span class="layer-icon">🎯</span>
+                            СЛОИ 9-12
+                        </div>
+                        <div class="layer-description">
+                            Итоговое понимание:
+                        </div>
+                        <ul class="layer-examples layer-3">
+                            <li>Интеграция для задачи</li>
+                            <li>Контекстное понимание</li>
+                            <li>Подготовка к генерации</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-section" data-action="2">
+        <div class="residual-connections">
+            <div class="residual-title">🔗 Residual Connections: Память Слоёв</div>
+            <div class="residual-explanation">
+                Каждый новый слой <strong>НЕ забывает</strong> предыдущие,<br>
+                а <strong>ДОБАВЛЯЕТ</strong> к ним новое понимание
+            </div>
+
+            <div class="residual-diagram">
+                <div class="layer-box">Слой 1<br><small>Базовые паттерны</small></div>
+                <div class="residual-arrow">+</div>
+                <div class="layer-box layer-2">Слой 2<br><small>+ Сложные связи</small></div>
+                <div class="residual-arrow">+</div>
+                <div class="layer-box layer-3">Слой 3<br><small>+ Общее понимание</small></div>
+            </div>
+
+            <div style="margin: 2rem 0;">
+                <div style="font-size: var(--font-size-base); font-weight: 600; margin-bottom: 1rem;">
+                    Прогресс Понимания:
+                </div>
+                <div class="understanding-accumulation"></div>
+                <div class="understanding-labels">
+                    <span>Простые паттерны</span>
+                    <span>Сложные связи</span>
+                    <span>Полное понимание</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-section" data-action="3">
+        <div class="progression-flow">
+            <div class="flow-step step-1">Простые паттерны</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step step-2">Сложные связи</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step step-3">Итоговое понимание</div>
+        </div>
+
+        <div class="key-insight">
+            <div class="insight-title">🎯 Ключевая Идея</div>
+            <div class="insight-text">
+                <strong>Внимание + Слои = Прогрессивное Понимание</strong><br><br>
+                Механизмы внимания работают на каждом слое,<br>
+                постепенно создавая всё более глубокое понимание текста
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-section" data-action="4">
+        <div class="conclusion-section">
+            <div class="conclusion-title">✨ Так Внимание Превращается в Понимание</div>
+            <div class="conclusion-text">
+                От фильтрации шума в кафе до построения сложных смысловых связей —
+                <strong>внимание лежит в основе разумного поведения</strong>
+                как у человека, так и у ИИ.<br><br>
+                <em>Теперь вы знаете, как ИИ учится думать!</em>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let maxActions = 4;
+
+        function revealSection(actionIndex) {
+            // Reveal all sections up to current action
+            for (let i = 0; i <= actionIndex; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.add('revealed'));
+            }
+
+            // Hide future sections
+            for (let i = actionIndex + 1; i <= maxActions; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.remove('revealed'));
+            }
+
+            // Progressive layer revelation for action 1
+            if (actionIndex >= 1) {
+                document.querySelectorAll('.reading-layer').forEach((layer, index) => {
+                    setTimeout(() => {
+                        layer.classList.add('revealed');
+                    }, index * 300);
+                });
+            } else {
+                document.querySelectorAll('.reading-layer')
+                    .forEach(layer => layer.classList.remove('revealed'));
+            }
+
+            // Understanding accumulation animation for action 2
+            if (actionIndex >= 2) {
+                setTimeout(() => {
+                    const accumulator = document.querySelector('.understanding-accumulation');
+                    if (accumulator) {
+                        accumulator.style.animation = 'understandingGrow 3s ease-out forwards';
+                    }
+                }, 500);
+            }
+
+            // Flow step highlighting for action 3
+            if (actionIndex >= 3) {
+                document.querySelectorAll('.flow-step').forEach((step, index) => {
+                    setTimeout(() => {
+                        step.style.transform = 'scale(1.05)';
+                        step.style.boxShadow = '0 5px 15px rgba(0,0,0,0.2)';
+                    }, index * 400);
+                });
+            } else {
+                document.querySelectorAll('.flow-step').forEach(step => {
+                    step.style.transform = 'scale(1)';
+                    step.style.boxShadow = 'none';
+                });
+            }
+        }
+
+        // PostMessage listener (REQUIRED)
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'revealSection') {
+                revealSection(event.data.actionIndex);
+            }
+        });
+
+        // External control (REQUIRED)
+        window.revealSection = revealSection;
+
+        // Metadata (REQUIRED)
+        window.slideMetadata = {
+            id: "7-3",
+            title: "Слоевое Понимание — От Простого к Сложному",
+            maxActions: maxActions,
+            type: "content"
+        };
+
+        // Auto-reveal initial content
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => revealSection(0), 300);
+        });
+    </script>
+</body>
+</html>
