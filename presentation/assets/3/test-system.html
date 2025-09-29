@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test System - Part 3: Three Steps Framework</title>
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #00a86b;
+            --danger-color: #ff6b6b;
+            --bg-color: #f8fafc;
+            --text-color: #2d3748;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            margin: 0 0 10px 0;
+            color: var(--primary-color);
+            font-size: 2rem;
+        }
+
+        .header p {
+            margin: 0;
+            color: #666;
+        }
+
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .controls h2 {
+            margin: 0 0 20px 0;
+            color: var(--text-color);
+        }
+
+        .control-group {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            min-width: 120px;
+        }
+
+        select, button, input[type="range"] {
+            padding: 8px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        select {
+            min-width: 200px;
+        }
+
+        button {
+            background: var(--primary-color);
+            color: white;
+            border: 2px solid var(--primary-color);
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #5a6fd8;
+        }
+
+        button:disabled {
+            background: #cbd5e0;
+            border-color: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .action-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .slide-viewer {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        .slide-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .slide-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+
+        .slide-frame {
+            width: 100%;
+            height: 600px;
+            border: none;
+            display: block;
+        }
+
+        .slide-info {
+            padding: 15px 20px;
+            background: #f8fafc;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .slide-info p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status.loaded {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        @media (min-width: 1200px) {
+            .slide-viewer {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Part 3 Test System</h1>
+            <p>Testing interface for "Three Steps Framework" slides - Dорожная карта к пониманию ИИ</p>
+        </div>
+
+        <div class="controls">
+            <h2>Slide Controls</h2>
+
+            <div class="control-group">
+                <label>Active Slide:</label>
+                <select id="slideSelector">
+                    <option value="3-1">3.1: Знакомые Параллели (Человек + Бизнес)</option>
+                    <option value="3-2">3.2: ИИ-Схема + Промпт-Инжиниринг</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Action Control:</label>
+                <div class="action-controls">
+                    <button id="prevAction">← Prev</button>
+                    <span id="actionDisplay">Action: 0</span>
+                    <button id="nextAction">Next →</button>
+                    <input type="range" id="actionSlider" min="0" max="5" value="0" step="1">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>Quick Actions:</label>
+                <button id="resetSlide">Reset to Start</button>
+                <button id="showAll">Show All</button>
+            </div>
+        </div>
+
+        <div class="slide-viewer">
+            <div class="slide-container">
+                <div class="slide-header" id="slideTitle">
+                    3.1: Знакомые Параллели (Человек + Бизнес)
+                </div>
+                <iframe id="slideFrame" class="slide-frame" src="slides/3-1-parallels.html"></iframe>
+                <div class="slide-info">
+                    <p><strong>Status:</strong> <span class="status loaded" id="slideStatus">Loaded</span></p>
+                    <p><strong>Max Actions:</strong> <span id="maxActions">3</span></p>
+                    <p><strong>Duration:</strong> <span id="duration">60s</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Slide configuration
+        const slides = {
+            '3-1': {
+                file: 'slides/3-1-parallels.html',
+                title: '3.1: Знакомые Параллели (Человек + Бизнес)',
+                maxActions: 3,
+                duration: '60s'
+            },
+            '3-2': {
+                file: 'slides/3-2-framework.html',
+                title: '3.2: ИИ-Схема + Промпт-Инжиниринг',
+                maxActions: 5,
+                duration: '90s'
+            }
+        };
+
+        // DOM elements
+        const slideSelector = document.getElementById('slideSelector');
+        const slideFrame = document.getElementById('slideFrame');
+        const slideTitle = document.getElementById('slideTitle');
+        const slideStatus = document.getElementById('slideStatus');
+        const maxActionsSpan = document.getElementById('maxActions');
+        const durationSpan = document.getElementById('duration');
+        const actionDisplay = document.getElementById('actionDisplay');
+        const actionSlider = document.getElementById('actionSlider');
+        const prevButton = document.getElementById('prevAction');
+        const nextButton = document.getElementById('nextAction');
+        const resetButton = document.getElementById('resetSlide');
+        const showAllButton = document.getElementById('showAll');
+
+        let currentSlide = '3-1';
+        let currentAction = 0;
+        let frameReady = false;
+
+        // Initialize
+        function init() {
+            loadSlide(currentSlide);
+            updateControls();
+            attachEventListeners();
+        }
+
+        function loadSlide(slideId) {
+            const slide = slides[slideId];
+            if (!slide) return;
+
+            slideFrame.src = slide.file;
+            slideTitle.textContent = slide.title;
+            maxActionsSpan.textContent = slide.maxActions;
+            durationSpan.textContent = slide.duration;
+
+            currentSlide = slideId;
+            currentAction = 0;
+            frameReady = false;
+
+            slideStatus.textContent = 'Loading...';
+            slideStatus.className = 'status';
+
+            updateControls();
+
+            // Wait for iframe to load
+            slideFrame.onload = () => {
+                setTimeout(() => {
+                    frameReady = true;
+                    slideStatus.textContent = 'Loaded';
+                    slideStatus.className = 'status loaded';
+                    revealAction(0);
+                }, 100);
+            };
+        }
+
+        function revealAction(actionIndex) {
+            if (!frameReady) return;
+
+            const slide = slides[currentSlide];
+            const maxActions = slide.maxActions;
+
+            actionIndex = Math.max(0, Math.min(actionIndex, maxActions));
+            currentAction = actionIndex;
+
+            try {
+                slideFrame.contentWindow.postMessage({
+                    type: 'revealSection',
+                    actionIndex: actionIndex
+                }, '*');
+            } catch (e) {
+                console.error('Failed to communicate with slide:', e);
+            }
+
+            updateControls();
+        }
+
+        function updateControls() {
+            const slide = slides[currentSlide];
+            const maxActions = slide.maxActions;
+
+            actionDisplay.textContent = `Action: ${currentAction} / ${maxActions}`;
+            actionSlider.max = maxActions;
+            actionSlider.value = currentAction;
+
+            prevButton.disabled = currentAction === 0;
+            nextButton.disabled = currentAction === maxActions;
+        }
+
+        function attachEventListeners() {
+            slideSelector.addEventListener('change', (e) => {
+                loadSlide(e.target.value);
+            });
+
+            prevButton.addEventListener('click', () => {
+                if (currentAction > 0) {
+                    revealAction(currentAction - 1);
+                }
+            });
+
+            nextButton.addEventListener('click', () => {
+                const maxActions = slides[currentSlide].maxActions;
+                if (currentAction < maxActions) {
+                    revealAction(currentAction + 1);
+                }
+            });
+
+            actionSlider.addEventListener('input', (e) => {
+                revealAction(parseInt(e.target.value));
+            });
+
+            resetButton.addEventListener('click', () => {
+                revealAction(0);
+            });
+
+            showAllButton.addEventListener('click', () => {
+                const maxActions = slides[currentSlide].maxActions;
+                revealAction(maxActions);
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+
+                switch(e.key) {
+                    case 'ArrowLeft':
+                        e.preventDefault();
+                        if (currentAction > 0) revealAction(currentAction - 1);
+                        break;
+                    case 'ArrowRight':
+                        e.preventDefault();
+                        const maxActions = slides[currentSlide].maxActions;
+                        if (currentAction < maxActions) revealAction(currentAction + 1);
+                        break;
+                    case 'Home':
+                        e.preventDefault();
+                        revealAction(0);
+                        break;
+                    case 'End':
+                        e.preventDefault();
+                        revealAction(slides[currentSlide].maxActions);
+                        break;
+                }
+            });
+        }
+
+        // Initialize the test system
+        init();
+    </script>
+</body>
+</html>

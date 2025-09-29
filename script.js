@@ -278,64 +278,173 @@ class PresentationApp {
         }));
     }
 
-    // ===== Slide Configuration =====
+    // ===== Slide Configuration (Dynamic Loading from data.json) =====
     async loadSlideConfiguration() {
-        // Define slide structure (can be loaded from JSON in the future)
-        this.slideConfig = {
-            1: {
-                title: "Парадокс умного незнакомца",
-                section: "Введение",
-                customSlides: true,
-                slides: [
-                    {
-                        file: "presentation/assets/1/slides/1-1-title.html",
-                        title: "Титульный слайд",
-                        actions: 0
-                    },
-                    {
-                        file: "presentation/assets/1/slides/1-2-contrast.html",
-                        title: "Контрастный слайд",
-                        actions: 4
-                    }
-                ]
-            },
-            2: {
-                title: "Тайна чёрного ящика",
-                section: "Введение",
-                customSlides: true,
-                slides: [
-                    {
-                        file: "presentation/assets/2/slides/2-1-investment-gap.html",
-                        title: "Разрыв использования и понимания",
-                        actions: 3
-                    },
-                    {
-                        file: "presentation/assets/2/slides/2-2-russian-cases.html",
-                        title: "Российские кейсы",
-                        actions: 3
-                    },
-                    {
-                        file: "presentation/assets/2/slides/2-3-cost-of-ignorance.html",
-                        title: "Цена непонимания",
-                        actions: 3
-                    },
-                    {
-                        file: "presentation/assets/2/slides/2-4-black-box-opening.html",
-                        title: "Открытие чёрного ящика",
-                        actions: 2
-                    }
-                ]
-            },
-            3: { title: "Три шага к пониманию", section: "Введение" },
-            4: { title: "Человеческое чтение", section: "Кодирование" },
-            5: { title: "Токенизация", section: "Кодирование" },
-            6: { title: "Мультимодальность", section: "Кодирование" },
-            7: { title: "Механизмы внимания", section: "Кодирование" },
-            8: { title: "Слои понимания", section: "Размышление" }
-        };
+        this.slideConfig = {};
+
+        try {
+            // Auto-detect available parts by scanning assets directory
+            const availableParts = await this.detectAvailableParts();
+            console.log('Detected available parts:', availableParts);
+
+            // Load configuration for each detected part
+            for (const partId of availableParts) {
+                try {
+                    const partConfig = await this.loadPartConfiguration(partId);
+                    this.slideConfig[partId] = partConfig;
+                    console.log(`✅ Loaded configuration for part ${partId}:`, partConfig.title);
+                } catch (error) {
+                    console.warn(`⚠️ Failed to load configuration for part ${partId}:`, error.message);
+                    // Create fallback configuration
+                    this.slideConfig[partId] = this.createFallbackConfig(partId);
+                }
+            }
+
+            // Ensure we have at least some slides
+            if (Object.keys(this.slideConfig).length === 0) {
+                console.warn('No parts detected, creating fallback configurations');
+                this.createFallbackSlides();
+            }
+
+        } catch (error) {
+            console.error('Failed to load slide configuration:', error);
+            // Create emergency fallback
+            this.createFallbackSlides();
+        }
 
         // Build navigation tree
         this.buildNavigationTree();
+    }
+
+    async detectAvailableParts() {
+        const availableParts = [];
+        const isFileProtocol = window.location.protocol === 'file:';
+
+        // For file:// protocol, assume parts 1-8 exist
+        if (isFileProtocol) {
+            console.info('🖥️ File protocol detected - using fallback part detection');
+            return [1, 2, 3, 4, 5, 6, 7, 8];
+        }
+
+        // For HTTP/HTTPS, try to detect parts dynamically
+        for (let i = 1; i <= 10; i++) {
+            try {
+                // Check if data.json exists
+                const dataResponse = await fetch(`presentation/assets/${i}/data.json`);
+                if (dataResponse.ok) {
+                    availableParts.push(i);
+                    continue;
+                }
+
+                // Fallback: check if directory has any content
+                const indexResponse = await fetch(`presentation/assets/${i}/index.html`);
+                if (indexResponse.ok) {
+                    availableParts.push(i);
+                }
+            } catch (error) {
+                // Part doesn't exist, continue silently
+            }
+        }
+
+        return availableParts.length > 0 ? availableParts : [1, 2, 3, 4, 5, 6, 7, 8];
+    }
+
+    async loadPartConfiguration(partId) {
+        const dataPath = `presentation/assets/${partId}/data.json`;
+        const isFileProtocol = window.location.protocol === 'file:';
+
+        if (isFileProtocol) {
+            // For file protocol, return fallback config
+            return this.createFallbackConfig(partId);
+        }
+
+        const response = await fetch(dataPath);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch ${dataPath}: ${response.status}`);
+        }
+
+        const partData = await response.json();
+        return this.transformDataToConfig(partData, partId);
+    }
+
+    transformDataToConfig(partData, partId) {
+        // Handle different data.json formats
+        const isNewFormat = partData.part && partData.slides;
+        const isLegacyFormat = partData.partId && partData.slides;
+
+        if (isNewFormat) {
+            // Part 2+ format
+            return {
+                title: partData.part.title,
+                section: partData.part.section || "Unknown",
+                customSlides: partData.part.customSlides || false,
+                slides: partData.slides.map(slide => ({
+                    file: `presentation/assets/${partData.part.id}/${slide.file}`,
+                    title: slide.title,
+                    actions: slide.maxActions || 0,
+                    duration: slide.duration || 60,
+                    type: slide.type || "content",
+                    id: slide.id
+                }))
+            };
+        } else if (isLegacyFormat) {
+            // Part 1 format
+            return {
+                title: partData.partTitle,
+                section: "Введение", // Could be extracted from partData if added
+                customSlides: partData.structure === "multi-slide",
+                slides: partData.slides.map(slide => ({
+                    file: `presentation/assets/${partData.partId}/${slide.file}`,
+                    title: slide.title,
+                    actions: slide.maxActions || 0,
+                    duration: slide.duration || 60,
+                    type: slide.type || "content",
+                    id: slide.id
+                }))
+            };
+        } else {
+            // Unknown format, create basic config
+            return this.createFallbackConfig(partId);
+        }
+    }
+
+    createFallbackConfig(partId) {
+        const fallbackTitles = {
+            1: "Парадокс умного незнакомца",
+            2: "Тайна чёрного ящика",
+            3: "Три шага к пониманию",
+            4: "Человеческое чтение",
+            5: "Токенизация",
+            6: "Мультимодальность",
+            7: "Механизмы внимания",
+            8: "Слои понимания"
+        };
+
+        const fallbackSections = {
+            1: "Введение", 2: "Введение", 3: "Введение",
+            4: "Кодирование", 5: "Кодирование", 6: "Кодирование", 7: "Кодирование",
+            8: "Размышление"
+        };
+
+        return {
+            title: fallbackTitles[partId] || `Part ${partId}`,
+            section: fallbackSections[partId] || "Unknown",
+            customSlides: false // Will use legacy loading
+        };
+    }
+
+    createFallbackSlides() {
+        // Emergency fallback configuration
+        this.slideConfig = {
+            1: this.createFallbackConfig(1),
+            2: this.createFallbackConfig(2),
+            3: this.createFallbackConfig(3),
+            4: this.createFallbackConfig(4),
+            5: this.createFallbackConfig(5),
+            6: this.createFallbackConfig(6),
+            7: this.createFallbackConfig(7),
+            8: this.createFallbackConfig(8)
+        };
     }
 
     buildNavigationTree() {
@@ -389,9 +498,9 @@ class PresentationApp {
         const content = {};
         const isFileProtocol = window.location.protocol === 'file:';
 
-        // Handle custom slides (like our Part 1 assets)
-        if (config && config.customSlides) {
-            console.log('Loading custom slides for slide', slideId);
+        // Handle custom slides (loaded from data.json)
+        if (config && config.customSlides && config.slides && config.slides.length > 0) {
+            console.log('Loading custom slides for slide', slideId, '- slides found:', config.slides.length);
 
             // For custom slides, we use the first slide by default
             const firstSlide = config.slides[0];
@@ -399,9 +508,18 @@ class PresentationApp {
             content.hasVisual = true;
 
             // Calculate total actions across all slides in the part
-            // For Part 1: 1 action for title + 4 actions for contrast = 5 total (0-4)
-            content.maxActions = config.slides.reduce((total, slide) => total + slide.actions, 0) + 1;
+            // Each slide's maxActions represents the highest action index (0-based)
+            // So maxActions: 2 means actions 0, 1, 2 (3 total actions)
+            content.maxActions = config.slides.reduce((total, slide) => {
+                const slideActionCount = (slide.actions || 0) + 1; // +1 because maxActions is 0-based
+                return total + slideActionCount;
+            }, 0);
+
+            // Ensure minimum of 1 action
+            content.maxActions = Math.max(content.maxActions, 1);
             content.customSlides = config.slides;
+
+            console.log(`Part ${slideId}: Total actions calculated:`, content.maxActions);
 
             // Load markdown content for tabs (fallback to default structure)
             await this.loadMarkdownContent(content, slideId, isFileProtocol);
@@ -451,10 +569,12 @@ class PresentationApp {
             }
         }
 
-        // Parse actions from content
+        // Parse actions from content (for legacy slides without data.json)
         content.speechActions = this.parseActionsFromText(content.speech);
         content.visualActions = this.parseActionsFromHTML(content.visual);
         content.maxActions = Math.max(content.speechActions, content.visualActions, 1);
+
+        console.log(`Part ${slideId} (legacy): Actions from speech: ${content.speechActions}, visual: ${content.visualActions}, max: ${content.maxActions}`);
 
         // Cache the content
         this.slides[slideId] = content;
@@ -763,11 +883,18 @@ Content not available. Expected location: \`presentation/${slideId}/${type}.md\`
     }
 
     injectGlobalStyles(htmlContent) {
+        // Check if content already has custom styling
+        if (htmlContent.includes(':root {') || htmlContent.includes('font-size:') || htmlContent.includes('<style>')) {
+            // Content has custom styling, don't inject our styles
+            return htmlContent;
+        }
+
         const globalStyles = `
             <style>
                 :root {
-                    --primary-text: #2d3748;
-                    --secondary-text: #718096;
+                    /* Enhanced colors for big screen visibility */
+                    --primary-text: #1a202c;
+                    --secondary-text: #4a5568;
                     --accent-color: #667eea;
                     --success-color: #00a86b;
                     --warning-color: #ff6b6b;
@@ -775,11 +902,27 @@ Content not available. Expected location: \`presentation/${slideId}/${type}.md\`
                     --background-secondary: #f7fafc;
                     --border-color: #e2e8f0;
                     --font-family-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-                    --spacing-xs: 0.25rem;
-                    --spacing-sm: 0.5rem;
-                    --spacing-md: 1rem;
-                    --spacing-lg: 1.5rem;
-                    --spacing-xl: 2rem;
+
+                    /* Balanced spacing for slide content */
+                    --spacing-xs: 0.5rem;
+                    --spacing-sm: 0.75rem;
+                    --spacing-md: 1.2rem;
+                    --spacing-lg: 1.8rem;
+                    --spacing-xl: 2.4rem;
+
+                    /* Font sizes - only for auto-generated content */
+                    --font-size-xs: 1rem;
+                    --font-size-sm: 1.125rem;
+                    --font-size-base: 1.25rem;
+                    --font-size-lg: 1.4rem;
+                    --font-size-xl: 1.75rem;
+                    --font-size-2xl: 2.25rem;
+                    --font-size-3xl: 3rem;
+                    --font-size-4xl: 4rem;
+
+                    /* Enhanced brightness for slide content */
+                    --text-brightness: 1.1;
+
                     --transition-normal: 0.3s ease;
                 }
 
@@ -790,6 +933,9 @@ Content not available. Expected location: \`presentation/${slideId}/${type}.md\`
                     margin: 0;
                     padding: var(--spacing-xl);
                     background: var(--background);
+                    font-size: var(--font-size-base);
+                    font-weight: 500;
+                    filter: brightness(var(--text-brightness));
                 }
 
                 .slide-section {
@@ -810,51 +956,138 @@ Content not available. Expected location: \`presentation/${slideId}/${type}.md\`
                 }
 
                 .slide-title {
-                    font-size: 2.5rem;
-                    font-weight: 600;
+                    font-size: var(--font-size-4xl);
+                    font-weight: 800;
                     color: var(--primary-text);
                     margin-bottom: var(--spacing-lg);
-                    line-height: 1.2;
+                    line-height: 1.1;
+                    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
                 }
 
                 .slide-subtitle {
-                    font-size: 1.25rem;
+                    font-size: var(--font-size-2xl);
+                    font-weight: 500;
                     color: var(--secondary-text);
                     margin-bottom: var(--spacing-xl);
+                    filter: brightness(var(--text-brightness));
                 }
 
                 .business-metric {
                     background: rgba(0, 168, 107, 0.1);
-                    border-left: 4px solid var(--success-color);
-                    padding: var(--spacing-lg);
-                    margin: var(--spacing-lg) 0;
-                    border-radius: 0 8px 8px 0;
+                    border-left: 6px solid var(--success-color);
+                    padding: var(--spacing-md);
+                    margin: var(--spacing-md) 0;
+                    border-radius: 0 6px 6px 0;
+                    font-size: var(--font-size-lg);
+                    font-weight: 600;
                 }
 
                 .tech-concept {
                     background: rgba(255, 107, 107, 0.05);
-                    border: 1px solid rgba(255, 107, 107, 0.2);
-                    padding: var(--spacing-lg);
-                    border-radius: 8px;
-                    margin: var(--spacing-lg) 0;
+                    border: 2px solid rgba(255, 107, 107, 0.2);
+                    padding: var(--spacing-md);
+                    border-radius: 6px;
+                    margin: var(--spacing-md) 0;
+                    font-size: var(--font-size-lg);
+                    font-weight: 600;
                 }
 
                 .highlight {
-                    background: rgba(102, 126, 234, 0.1);
-                    padding: var(--spacing-xs) var(--spacing-sm);
-                    border-radius: 4px;
+                    background: rgba(102, 126, 234, 0.15);
+                    padding: var(--spacing-sm) var(--spacing-md);
+                    border-radius: 6px;
                     color: var(--accent-color);
-                    font-weight: 500;
+                    font-weight: 700;
+                    font-size: 1.2em;
                 }
 
-                h1, h2, h3 { color: var(--primary-text); }
-                strong { color: var(--accent-color); }
-                em { color: var(--secondary-text); }
+                /* Only apply to auto-generated slides */
+                .auto-generated-content {
+                    font-size: var(--font-size-base);
+                    line-height: 1.5;
+                }
+
+                .auto-generated-content h1 { font-size: var(--font-size-4xl); }
+                .auto-generated-content h2 { font-size: var(--font-size-3xl); }
+                .auto-generated-content h3 { font-size: var(--font-size-2xl); }
+                .auto-generated-content h4 { font-size: var(--font-size-xl); }
+                .auto-generated-content p { font-size: var(--font-size-base); }
+                .auto-generated-content li { font-size: var(--font-size-base); }
+                .auto-generated-content ul, .auto-generated-content ol {
+                    margin: var(--spacing-sm) 0;
+                    padding-left: var(--spacing-lg);
+                }
+
+                /* Only enhance specific utility classes if they exist */
+                .slide-description { font-size: var(--font-size-sm); }
+                .slide-comment { font-size: var(--font-size-sm); }
+                .slide-note { font-size: var(--font-size-sm); }
+
+                h1 {
+                    font-size: var(--font-size-4xl);
+                    font-weight: 800;
+                    color: var(--primary-text);
+                    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    margin-bottom: var(--spacing-lg);
+                    line-height: 1.2;
+                }
+                h2 {
+                    font-size: var(--font-size-3xl);
+                    font-weight: 700;
+                    color: var(--primary-text);
+                    margin-bottom: var(--spacing-lg);
+                    line-height: 1.3;
+                }
+                h3 {
+                    font-size: var(--font-size-2xl);
+                    font-weight: 600;
+                    color: var(--primary-text);
+                    margin-bottom: var(--spacing-md);
+                    line-height: 1.4;
+                }
+                h4 {
+                    font-size: var(--font-size-xl);
+                    font-weight: 600;
+                    color: var(--primary-text);
+                    margin-bottom: var(--spacing-md);
+                    line-height: 1.4;
+                }
+                h5 {
+                    font-size: var(--font-size-lg);
+                    font-weight: 600;
+                    color: var(--primary-text);
+                    margin-bottom: var(--spacing-sm);
+                    line-height: 1.5;
+                }
+                h6 {
+                    font-size: var(--font-size-base);
+                    font-weight: 600;
+                    color: var(--secondary-text);
+                    margin-bottom: var(--spacing-sm);
+                    line-height: 1.5;
+                }
+                p {
+                    font-size: var(--font-size-base);
+                    font-weight: 500;
+                    line-height: 1.6;
+                    margin-bottom: var(--spacing-sm);
+                }
+                strong {
+                    color: var(--accent-color);
+                    font-weight: 700;
+                }
+                em {
+                    color: var(--secondary-text);
+                    font-style: italic;
+                    font-weight: 500;
+                }
                 code {
                     background: var(--background-secondary);
-                    padding: 2px 4px;
-                    border-radius: 3px;
+                    padding: 6px 10px;
+                    border-radius: 6px;
                     font-family: monospace;
+                    font-size: var(--font-size-base);
+                    font-weight: 600;
                 }
             </style>
         `;
@@ -1326,67 +1559,49 @@ class ProgressiveDisclosureController {
     }
 
     getTargetSlideForAction(slideConfig, actionIndex) {
-        const currentSlideId = this.app.state.currentSlide;
-
-        if (currentSlideId === 1) {
-            // Part 1: action 0 = title slide, actions 1+ = contrast slide
-            if (actionIndex === 0) {
-                return slideConfig.slides[0]; // Title slide
-            } else {
-                return slideConfig.slides[1]; // Contrast slide
-            }
-        } else if (currentSlideId === 2) {
-            // Part 2: distribute actions across 4 slides
-            // Slide 2-1 (Investment gap): actions 0-2 (3 actions: 0,1,2)
-            // Slide 2-2 (Russian cases): actions 3-5 (3 actions: 0,1,2)
-            // Slide 2-3 (Cost of ignorance): actions 6-8 (3 actions: 0,1,2)
-            // Slide 2-4 (Black box opening): actions 9-11 (2 actions: 0,1)
-            if (actionIndex <= 2) {
-                return slideConfig.slides[0]; // Investment gap (actions 0-2)
-            } else if (actionIndex <= 5) {
-                return slideConfig.slides[1]; // Russian cases (actions 3-5)
-            } else if (actionIndex <= 8) {
-                return slideConfig.slides[2]; // Cost of ignorance (actions 6-8)
-            } else {
-                return slideConfig.slides[3]; // Black box opening (actions 9-11)
-            }
+        if (!slideConfig.slides || slideConfig.slides.length === 0) {
+            return null;
         }
 
-        // Default fallback
-        return slideConfig.slides[0];
+        // Dynamic calculation based on slide action counts
+        let cumulativeActions = 0;
+
+        for (const slide of slideConfig.slides) {
+            const slideActionCount = (slide.actions || 0) + 1; // +1 for initial state (action 0)
+
+            if (actionIndex < cumulativeActions + slideActionCount) {
+                return slide;
+            }
+
+            cumulativeActions += slideActionCount;
+        }
+
+        // Default to last slide if actionIndex exceeds total
+        return slideConfig.slides[slideConfig.slides.length - 1];
     }
 
     getSlideActionIndex(slideConfig, globalActionIndex, targetSlide) {
-        const currentSlideId = this.app.state.currentSlide;
-
-        if (currentSlideId === 1) {
-            // Part 1 mapping
-            if (targetSlide === slideConfig.slides[0]) {
-                // Title slide: always action 0
-                return 0;
-            } else {
-                // Contrast slide: map actions 1+ to 0-3
-                return Math.max(0, globalActionIndex - 1);
-            }
-        } else if (currentSlideId === 2) {
-            // Part 2 mapping
-            if (targetSlide === slideConfig.slides[0]) {
-                // Investment gap slide: global actions 0-2 → slide actions 0-2
-                return Math.min(globalActionIndex, 2);
-            } else if (targetSlide === slideConfig.slides[1]) {
-                // Russian cases slide: global actions 3-5 → slide actions 0-2
-                return Math.max(0, Math.min(globalActionIndex - 3, 2));
-            } else if (targetSlide === slideConfig.slides[2]) {
-                // Cost of ignorance slide: global actions 6-8 → slide actions 0-2
-                return Math.max(0, Math.min(globalActionIndex - 6, 2));
-            } else if (targetSlide === slideConfig.slides[3]) {
-                // Black box opening slide: global actions 9-11 → slide actions 0-1
-                return Math.max(0, Math.min(globalActionIndex - 9, 1));
-            }
+        if (!slideConfig.slides || slideConfig.slides.length === 0 || !targetSlide) {
+            return Math.max(0, globalActionIndex);
         }
 
-        // Default fallback
-        return Math.max(0, globalActionIndex);
+        // Dynamic calculation based on slide positions and action counts
+        let cumulativeActions = 0;
+
+        for (const slide of slideConfig.slides) {
+            const slideActionCount = (slide.actions || 0) + 1;
+
+            if (slide === targetSlide) {
+                // Return the local action index within this slide
+                const localActionIndex = globalActionIndex - cumulativeActions;
+                return Math.max(0, Math.min(localActionIndex, slide.actions || 0));
+            }
+
+            cumulativeActions += slideActionCount;
+        }
+
+        // Fallback: return 0 if slide not found
+        return 0;
     }
 
     sendRevealMessage(iframe, actionIndex) {

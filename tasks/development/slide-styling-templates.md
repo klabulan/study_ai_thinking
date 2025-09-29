@@ -4,6 +4,82 @@
 
 This document provides comprehensive styling templates and guidelines for creating consistent, professional slide content that integrates seamlessly with the presentation system.
 
+## Updated Typography Guidelines (January 2025)
+
+### Font Size Strategy
+
+**Custom Slide Files (Recommended)**:
+- Individual slide files (`presentation/assets/[id]/slides/[slide].html`) should define their own optimal font sizes
+- Main titles: 4-6rem for maximum visibility on projection screens
+- Content text: 1.4-2rem for comfortable reading during presentations
+- Descriptions/comments: 1.25-1.4rem for detailed information
+- UI elements: Use existing slide's font variables for consistency
+
+**Auto-Generated Content (Fallback)**:
+- JavaScript injection provides minimal baseline styling for slides without custom design
+- Respects existing slide styling - won't override well-designed content
+- Only applies to slides that lack custom :root variables or <style> blocks
+- Base font size: 1.25rem with proportional scaling
+
+**Web Navigation (Separate Scale)**:
+- Navigation elements use smaller, web-friendly fonts (0.75rem - 1.125rem)
+- Keeps interface compact while slide content remains large for presentation
+- Sidebar, tabs, and controls optimized for desktop/mobile web usage
+
+### Implementation Best Practices
+
+1. **Custom slides should include balanced font scales**:
+   ```css
+   :root {
+       /* Balanced font sizes for projection and web viewing */
+       --font-size-sm: 1rem;        /* 16px - small text */
+       --font-size-base: 1.125rem;  /* 18px - descriptions, body */
+       --font-size-lg: 1.375rem;    /* 22px - content text */
+       --font-size-xl: 1.625rem;    /* 26px - section headers */
+       --font-size-2xl: 2rem;       /* 32px - subtitles */
+       --font-size-3xl: 2.5rem;     /* 40px - major headers */
+       --font-size-4xl: 3rem;       /* 48px - slide titles */
+       /* Avoid sizes above 4rem - causes readability issues */
+   }
+   ```
+
+2. **Use semantic classes with appropriate font sizes**:
+   ```html
+   <div class="item-description">1.125rem text for readability</div>
+   <div class="slide-comment">1rem for detailed comments</div>
+   <div class="item-metric">1.625rem for key metrics</div>
+   <div class="slide-title">3rem maximum for main titles</div>
+   ```
+
+3. **Responsive considerations**:
+   - Include mobile breakpoints for smaller screens
+   - Test font sizes on actual projection equipment
+   - Ensure sufficient contrast ratios for visibility
+   - **Critical**: Avoid fonts larger than 3rem for main content
+   - **Web viewing**: Keep fonts readable at 100% zoom level
+
+### Fixed Font Size Issues (January 2025)
+
+**Problem Resolved**: Original slide templates had oversized fonts (5-6rem titles) that were:
+- Too large for comfortable web viewing
+- Causing layout issues on standard monitors
+- Creating inconsistent user experience
+
+**Solution Implemented**:
+- **Slide 1-1**: Title reduced from 6rem to 4rem
+- **Slide 1-2**: Headers reduced from 5rem to 3rem, content from 1.75rem to 1.125rem
+- **All slides**: Balanced font scale implemented (1rem - 3rem range)
+- **System logic**: Custom slides load directly without font injection
+
+**Current Best Practice**:
+```css
+/* Maximum recommended font sizes for slides */
+.slide-title { font-size: 3rem; }      /* Main slide titles */
+.section-header { font-size: 2rem; }   /* Section headers */
+.content-text { font-size: 1.125rem; } /* Body content */
+.detail-text { font-size: 1rem; }      /* Descriptions */
+```
+
 ## Core Styling Framework
 
 ### Base Template Structure

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Slide 3.2: ИИ-Схема + Промпт-Инжиниринг</title>
+    <style>
+        :root {
+            --primary-text: #2d3748;
+            --accent-color: #667eea;
+            --encoding-color: #00a86b;
+            --thinking-color: #667eea;
+            --generation-color: #ff6b6b;
+            --advice-bg: #f7fafc;
+            --transition-normal: 0.5s ease;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            color: var(--primary-text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .slide-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+        }
+
+        .slide-section.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .main-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 40px;
+            color: var(--primary-text);
+        }
+
+        .ai-process-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .ai-process-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+            margin-bottom: 30px;
+        }
+
+        .ai-stage {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            margin: 0 10px;
+            position: relative;
+        }
+
+        .ai-stage.encoding {
+            border-left: 5px solid var(--encoding-color);
+        }
+
+        .ai-stage.thinking {
+            border-left: 5px solid var(--thinking-color);
+        }
+
+        .ai-stage.generation {
+            border-left: 5px solid var(--generation-color);
+        }
+
+        .ai-stage h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.4rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .ai-stage.encoding h3 { color: var(--encoding-color); }
+        .ai-stage.thinking h3 { color: var(--thinking-color); }
+        .ai-stage.generation h3 { color: var(--generation-color); }
+
+        .ai-stage .description {
+            font-size: 0.95rem;
+            line-height: 1.4;
+            color: #555;
+        }
+
+        .arrow {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin: 0 5px;
+            align-self: center;
+        }
+
+        .advice-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+            margin-top: 20px;
+        }
+
+        .advice-box {
+            flex: 1;
+            background: var(--advice-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 0 10px;
+            border: 2px solid #e2e8f0;
+            text-align: left;
+        }
+
+        .advice-box h4 {
+            margin: 0 0 12px 0;
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--primary-text);
+        }
+
+        .advice-box ul {
+            margin: 0;
+            padding-left: 16px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #555;
+        }
+
+        .advice-box li {
+            margin-bottom: 5px;
+        }
+
+        .roi-highlight {
+            text-align: center;
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            margin: 30px auto;
+            max-width: 600px;
+            border-left: 5px solid var(--accent-color);
+        }
+
+        .roi-number {
+            font-size: 2rem;
+            color: var(--encoding-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-section" data-action="0">
+        <h1 class="main-title">ТРЁХЭТАПНАЯ МОДЕЛЬ ИИ</h1>
+    </div>
+
+    <div class="slide-section" data-action="1">
+        <div class="ai-process-container">
+            <div class="ai-process-flow">
+                <div class="ai-stage encoding">
+                    <h3>Кодирование</h3>
+                    <div class="description">
+                        токены,<br>
+                        векторы,<br>
+                        внимание
+                    </div>
+                </div>
+                <div class="arrow">→</div>
+                <div class="ai-stage thinking">
+                    <h3>Размышление</h3>
+                    <div class="description">
+                        70-180 слоёв<br>
+                        анализа,<br>
+                        специализация
+                    </div>
+                </div>
+                <div class="arrow">→</div>
+                <div class="ai-stage generation">
+                    <h3>Генерация</h3>
+                    <div class="description">
+                        токен за<br>
+                        токеном,<br>
+                        вероятности
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-section" data-action="2">
+        <div class="ai-process-container">
+            <div class="advice-flow">
+                <div class="advice-box">
+                    <h4>Кодирование:</h4>
+                    <ul>
+                        <li>Структурируйте входные данные</li>
+                        <li>Используйте ясные форматы</li>
+                        <li>Предоставляйте контекст</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-section" data-action="3">
+        <div class="ai-process-container">
+            <div class="advice-flow">
+                <div class="advice-box">
+                    <h4>Кодирование:</h4>
+                    <ul>
+                        <li>Структурируйте входные данные</li>
+                        <li>Используйте ясные форматы</li>
+                        <li>Предоставляйте контекст</li>
+                    </ul>
+                </div>
+                <div class="advice-box">
+                    <h4>Размышление:</h4>
+                    <ul>
+                        <li>Предоставляйте контекст</li>
+                        <li>Разбивайте сложные задачи</li>
+                        <li>Задавайте примеры</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-section" data-action="4">
+        <div class="ai-process-container">
+            <div class="advice-flow">
+                <div class="advice-box">
+                    <h4>Кодирование:</h4>
+                    <ul>
+                        <li>Структурируйте входные данные</li>
+                        <li>Используйте ясные форматы</li>
+                        <li>Предоставляйте контекст</li>
+                    </ul>
+                </div>
+                <div class="advice-box">
+                    <h4>Размышление:</h4>
+                    <ul>
+                        <li>Предоставляйте контекст</li>
+                        <li>Разбивайте сложные задачи</li>
+                        <li>Задавайте примеры</li>
+                    </ul>
+                </div>
+                <div class="advice-box">
+                    <h4>Генерация:</h4>
+                    <ul>
+                        <li>Задавайте формат вывода</li>
+                        <li>Контролируйте креативность</li>
+                        <li>Проверяйте результаты</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-section" data-action="5">
+        <div class="roi-highlight">
+            Компании с пониманием ИИ получают<br>
+            <span class="roi-number">2.3x</span> более высокий ROI
+            <br><small>(McKinsey Research 2024)</small>
+        </div>
+    </div>
+
+    <script>
+        let maxActions = 5;
+
+        function revealSection(actionIndex) {
+            for (let i = 0; i <= actionIndex; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.add('revealed'));
+            }
+            for (let i = actionIndex + 1; i <= maxActions; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.remove('revealed'));
+            }
+        }
+
+        // PostMessage listener (REQUIRED)
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'revealSection') {
+                revealSection(event.data.actionIndex);
+            }
+        });
+
+        // External control (REQUIRED)
+        window.revealSection = revealSection;
+
+        // Metadata (REQUIRED)
+        window.slideMetadata = {
+            id: "3-2",
+            title: "ИИ-Схема + Промпт-Инжиниринг",
+            maxActions: maxActions,
+            type: "content"
+        };
+
+        // Auto-reveal initial content
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => revealSection(0), 300);
+        });
+    </script>
+</body>
+</html>

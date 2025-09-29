@@ -1,0 +1,30 @@
+{
+  "part": {
+    "id": "3",
+    "title": "Дорожная карта - Три шага к пониманию",
+    "section": "Framework Introduction",
+    "customSlides": true
+  },
+  "slides": [
+    {
+      "id": "3-1",
+      "file": "slides/3-1-parallels.html",
+      "title": "Знакомые Параллели (Человек + Бизнес)",
+      "type": "content",
+      "maxActions": 3,
+      "duration": 60
+    },
+    {
+      "id": "3-2",
+      "file": "slides/3-2-framework.html",
+      "title": "ИИ-Схема + Промпт-Инжиниринг",
+      "type": "content",
+      "maxActions": 5,
+      "duration": 90
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "created": "2025-01-29"
+  }
+}

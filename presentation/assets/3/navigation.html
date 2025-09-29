@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Part 3 Navigation - Three Steps Framework</title>
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #00a86b;
+            --danger-color: #ff6b6b;
+            --warning-color: #ffa726;
+            --bg-color: #f8fafc;
+            --text-color: #2d3748;
+            --border-color: #e2e8f0;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--bg-color) 0%, #edf2f7 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0 0 10px 0;
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        .header .subtitle {
+            margin: 0 0 20px 0;
+            color: #666;
+            font-size: 1.2rem;
+            font-style: italic;
+        }
+
+        .header .description {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .nav-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .nav-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-card.slide-1 {
+            border-left: 5px solid var(--secondary-color);
+        }
+
+        .nav-card.slide-2 {
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .nav-card.test-system {
+            border-left: 5px solid var(--warning-color);
+        }
+
+        .nav-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%);
+        }
+
+        .nav-header h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+
+        .nav-header .slide-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .nav-content {
+            padding: 20px;
+        }
+
+        .nav-content p {
+            margin: 0 0 15px 0;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+        }
+
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #00965f;
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #ff9800;
+        }
+
+        .overview-section {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+        }
+
+        .overview-section h2 {
+            margin: 0 0 20px 0;
+            color: var(--primary-color);
+            font-size: 1.8rem;
+        }
+
+        .framework-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .step-card {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid;
+            text-align: center;
+        }
+
+        .step-card.encoding {
+            border-left-color: var(--secondary-color);
+        }
+
+        .step-card.thinking {
+            border-left-color: var(--primary-color);
+        }
+
+        .step-card.generation {
+            border-left-color: var(--danger-color);
+        }
+
+        .step-card h4 {
+            margin: 0 0 10px 0;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .step-card.encoding h4 { color: var(--secondary-color); }
+        .step-card.thinking h4 { color: var(--primary-color); }
+        .step-card.generation h4 { color: var(--danger-color); }
+
+        .back-link {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .back-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link a:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Part 3: Three Steps Framework</h1>
+            <div class="subtitle">Дорожная карта - Три шага к пониманию</div>
+            <div class="description">
+                Framework introduction: Universal stages of thinking (Human → Business → AI)<br>
+                Streamlined approach combining cognitive parallels with practical prompt engineering
+            </div>
+        </div>
+
+        <div class="overview-section">
+            <h2>Framework Overview</h2>
+            <p>This part introduces the three-stage model for understanding AI through familiar parallels:</p>
+
+            <div class="framework-steps">
+                <div class="step-card encoding">
+                    <h4>1. Кодирование</h4>
+                    <p>How AI reads and processes input data</p>
+                </div>
+                <div class="step-card thinking">
+                    <h4>2. Размышление</h4>
+                    <p>Multi-layer analysis and reasoning</p>
+                </div>
+                <div class="step-card generation">
+                    <h4>3. Генерация</h4>
+                    <p>Step-by-step response creation</p>
+                </div>
+            </div>
+
+            <p><strong>Key Innovation:</strong> Uses human thinking and corporate process parallels to make AI mechanisms intuitively graspable for Russian tech audience.</p>
+        </div>
+
+        <div class="nav-grid">
+            <div class="nav-card slide-1">
+                <div class="nav-header">
+                    <h3>Slide 3.1: Знакомые Параллели</h3>
+                    <div class="slide-meta">
+                        <span>🕒 ~60s</span>
+                        <span>👥 Human + Business</span>
+                        <span>📊 3 actions</span>
+                    </div>
+                </div>
+                <div class="nav-content">
+                    <p>Establishes cognitive foundation by showing parallel information processing stages in human thinking and corporate processes.</p>
+                    <p><strong>Key Elements:</strong></p>
+                    <ul>
+                        <li>Human: Восприятие → Размышление → Выражение</li>
+                        <li>Business: Входящие данные → Анализ → Решение</li>
+                        <li>Bridge: "ИИ uses same logic, just differently"</li>
+                    </ul>
+
+                    <div class="nav-actions">
+                        <a href="slides/3-1-parallels.html" class="btn btn-secondary" target="_blank">Open Slide</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-card slide-2">
+                <div class="nav-header">
+                    <h3>Slide 3.2: ИИ-Схема + Промпт-Инжиниринг</h3>
+                    <div class="slide-meta">
+                        <span>🕒 ~90s</span>
+                        <span>🤖 AI Framework</span>
+                        <span>📊 5 actions</span>
+                    </div>
+                </div>
+                <div class="nav-content">
+                    <p>Detailed AI process breakdown with practical prompt engineering advice under each stage.</p>
+                    <p><strong>Key Elements:</strong></p>
+                    <ul>
+                        <li>Three AI stages with technical details</li>
+                        <li>Progressive disclosure of practical advice</li>
+                        <li>ROI statistic: 2.3x higher returns (McKinsey 2024)</li>
+                    </ul>
+
+                    <div class="nav-actions">
+                        <a href="slides/3-2-framework.html" class="btn btn-primary" target="_blank">Open Slide</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-card test-system">
+                <div class="nav-header">
+                    <h3>Test System Interface</h3>
+                    <div class="slide-meta">
+                        <span>🧪 Testing</span>
+                        <span>🎮 Interactive</span>
+                        <span>⚡ Live Control</span>
+                    </div>
+                </div>
+                <div class="nav-content">
+                    <p>Comprehensive testing interface for all Part 3 slides with action-by-action control.</p>
+                    <p><strong>Features:</strong></p>
+                    <ul>
+                        <li>Slide switching between 3.1 and 3.2</li>
+                        <li>Action progression control (slider + buttons)</li>
+                        <li>Keyboard shortcuts (←/→ arrows, Home/End)</li>
+                        <li>Real-time slide metadata display</li>
+                    </ul>
+
+                    <div class="nav-actions">
+                        <a href="test-system.html" class="btn btn-warning" target="_blank">Launch Test System</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="overview-section">
+            <h2>Usage Guidelines</h2>
+            <p><strong>Presentation Flow:</strong></p>
+            <ol>
+                <li><strong>3.1 Parallels (60s):</strong> Build cognitive bridge through familiar analogies</li>
+                <li><strong>3.2 Framework (90s):</strong> Introduce AI model with immediate practical value</li>
+                <li><strong>Total Time:</strong> ~2.5 minutes + Q&A buffer</li>
+            </ol>
+
+            <p><strong>Technical Notes:</strong></p>
+            <ul>
+                <li>All slides implement PostMessage communication for external control</li>
+                <li>Progressive disclosure system with configurable action counts</li>
+                <li>Consistent color coding: Encoding (green), Thinking (purple), Generation (red)</li>
+                <li>Responsive design optimized for presentation screens</li>
+            </ul>
+        </div>
+
+        <div class="back-link">
+            <a href="../../">← Back to Main Presentation</a>
+        </div>
+    </div>
+</body>
+</html>

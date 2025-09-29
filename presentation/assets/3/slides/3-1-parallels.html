@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Slide 3.1: Знакомые Параллели (Человек + Бизнес)</title>
+    <style>
+        :root {
+            --primary-text: #2d3748;
+            --accent-color: #667eea;
+            --human-color: #00a86b;
+            --business-color: #4a5568;
+            --transition-normal: 0.5s ease;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            color: var(--primary-text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .slide-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+        }
+
+        .slide-section.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .main-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 50px;
+            color: var(--primary-text);
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.3rem;
+            font-style: italic;
+            margin-bottom: 40px;
+            color: var(--accent-color);
+        }
+
+        .process-container {
+            margin: 30px auto;
+            max-width: 900px;
+        }
+
+        .process-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .process-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .process-box {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            margin: 0 10px;
+            position: relative;
+        }
+
+        .human .process-box {
+            border-left: 5px solid var(--human-color);
+        }
+
+        .business .process-box {
+            border-left: 5px solid var(--business-color);
+        }
+
+        .process-box h4 {
+            margin: 0 0 10px 0;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .process-box p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .arrow {
+            font-size: 2rem;
+            color: var(--accent-color);
+            margin: 0 10px;
+        }
+
+        .human .process-title {
+            color: var(--human-color);
+        }
+
+        .business .process-title {
+            color: var(--business-color);
+        }
+
+        .conclusion {
+            text-align: center;
+            font-size: 1.4rem;
+            font-style: italic;
+            color: var(--accent-color);
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            margin: 40px auto;
+            max-width: 700px;
+            border-left: 5px solid var(--accent-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-section" data-action="0">
+        <h1 class="main-title">Секрет — начать с знакомого</h1>
+        <p class="subtitle">Универсальные этапы мышления</p>
+    </div>
+
+    <div class="slide-section human" data-action="1">
+        <div class="process-container">
+            <div class="process-title">ЧЕЛОВЕЧЕСКОЕ МЫШЛЕНИЕ:</div>
+            <div class="process-flow">
+                <div class="process-box">
+                    <h4>Восприятие</h4>
+                    <p>Сенсорная информация преобразуется в понятные образы</p>
+                </div>
+                <div class="arrow">→</div>
+                <div class="process-box">
+                    <h4>Размышление</h4>
+                    <p>Анализ, сопоставление с опытом, принятие решений</p>
+                </div>
+                <div class="arrow">→</div>
+                <div class="process-box">
+                    <h4>Выражение</h4>
+                    <p>Формулирование мыслей в слова или действия</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-section business" data-action="2">
+        <div class="process-container">
+            <div class="process-title">КОРПОРАТИВНЫЙ ПРОЦЕСС:</div>
+            <div class="process-flow">
+                <div class="process-box">
+                    <h4>Входящие данные</h4>
+                    <p>Информация поступает в организацию</p>
+                </div>
+                <div class="arrow">→</div>
+                <div class="process-box">
+                    <h4>Анализ отделами</h4>
+                    <p>Многоуровневая обработка специалистами</p>
+                </div>
+                <div class="arrow">→</div>
+                <div class="process-box">
+                    <h4>Итоговое решение</h4>
+                    <p>Принятие и формулирование решения</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-section" data-action="3">
+        <div class="conclusion">
+            "ИИ использует ту же логику. Только по-своему"
+        </div>
+    </div>
+
+    <script>
+        let maxActions = 3;
+
+        function revealSection(actionIndex) {
+            for (let i = 0; i <= actionIndex; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.add('revealed'));
+            }
+            for (let i = actionIndex + 1; i <= maxActions; i++) {
+                document.querySelectorAll(`[data-action="${i}"]`)
+                    .forEach(el => el.classList.remove('revealed'));
+            }
+        }
+
+        // PostMessage listener (REQUIRED)
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'revealSection') {
+                revealSection(event.data.actionIndex);
+            }
+        });
+
+        // External control (REQUIRED)
+        window.revealSection = revealSection;
+
+        // Metadata (REQUIRED)
+        window.slideMetadata = {
+            id: "3-1",
+            title: "Знакомые Параллели (Человек + Бизнес)",
+            maxActions: maxActions,
+            type: "content"
+        };
+
+        // Auto-reveal initial content
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => revealSection(0), 300);
+        });
+    </script>
+</body>
+</html>

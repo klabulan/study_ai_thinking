@@ -8,18 +8,31 @@
         :root {
             --success-color: #28a745;
             --danger-color: #dc3545;
-            --primary-text: #1e3a5f;
-            --secondary-text: #6c757d;
+            --primary-text: #0f172a;     /* Much darker for better contrast */
+            --secondary-text: #475569;   /* Darker secondary text */
             --background: #ffffff;
             --background-secondary: #f8f9fa;
             --border-color: #e2e8f0;
 
             --font-family-main: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
-            --spacing-sm: 0.5rem;
-            --spacing-md: 1rem;
-            --spacing-lg: 1.5rem;
-            --spacing-xl: 2rem;
+            /* Enhanced spacing for big screens */
+            --spacing-sm: 0.75rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2.5rem;
+            --spacing-xl: 3.5rem;
+
+            /* Font sizes balanced for projection and readability */
+            --font-size-sm: 1rem;        /* 16px */
+            --font-size-base: 1.125rem;  /* 18px */
+            --font-size-lg: 1.375rem;    /* 22px */
+            --font-size-xl: 1.625rem;    /* 26px */
+            --font-size-2xl: 2rem;       /* 32px */
+            --font-size-3xl: 2.5rem;     /* 40px */
+            --font-size-4xl: 3rem;       /* 48px */
+
+            /* Enhanced brightness for projection */
+            --text-brightness: 1.15;
 
             --transition-normal: 0.5s ease;
             --transition-fast: 0.3s ease;
@@ -34,6 +47,9 @@
             height: 100vh;
             box-sizing: border-box;
             overflow: hidden;
+            font-size: var(--font-size-base);
+            font-weight: 500;
+            filter: brightness(var(--text-brightness));
         }
 
         .slide-header {
@@ -42,13 +58,14 @@
         }
 
         .contrast-title {
-            font-size: 3rem;
-            font-weight: 700;
+            font-size: var(--font-size-3xl);
+            font-weight: 800;
             color: var(--primary-text);
             margin-bottom: var(--spacing-md);
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(15px);
             transition: all var(--transition-normal);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .contrast-title.revealed {
@@ -65,12 +82,13 @@
         }
 
         .column-header {
-            font-size: 2rem;
-            font-weight: 700;
+            font-size: var(--font-size-2xl);
+            font-weight: 800;
             text-align: center;
             padding: var(--spacing-md);
-            border-radius: 12px 12px 0 0;
-            margin-bottom: var(--spacing-lg);
+            border-radius: 8px 8px 0 0;
+            margin-bottom: var(--spacing-md);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .can-do-header {
@@ -111,16 +129,17 @@
         }
 
         .item-icon {
-            font-size: 2rem;
+            font-size: var(--font-size-xl);
             margin-bottom: var(--spacing-sm);
             display: block;
         }
 
         .item-metric {
-            font-size: 1.5rem;
-            font-weight: 700;
+            font-size: var(--font-size-xl);
+            font-weight: 800;
             margin-bottom: var(--spacing-sm);
             line-height: 1.2;
+            filter: brightness(var(--text-brightness));
         }
 
         .can-do .item-metric {
@@ -132,17 +151,20 @@
         }
 
         .item-description {
-            font-size: 1rem;
+            font-size: var(--font-size-base);
+            font-weight: 500;
             color: var(--secondary-text);
-            line-height: 1.4;
+            line-height: 1.5;
+            filter: brightness(var(--text-brightness));
         }
 
         .highlight {
-            background: rgba(30, 58, 95, 0.1);
-            padding: 2px 6px;
-            border-radius: 4px;
+            background: rgba(30, 58, 95, 0.15);
+            padding: 4px 8px;
+            border-radius: 6px;
             color: var(--primary-text);
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 1.1em;
         }
 
         .statistics-bar {

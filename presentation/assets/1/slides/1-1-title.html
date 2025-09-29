@@ -6,12 +6,25 @@
     <title>Slide 1.1: Титульный Слайд</title>
     <style>
         :root {
-            --primary-title: #1e3a5f;
-            --secondary-text: #6c757d;
+            --primary-title: #0f172a;    /* Much darker for better contrast */
+            --secondary-text: #475569;   /* Darker secondary text */
             --background: #ffffff;
             --background-gradient: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%);
 
             --font-family-main: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+            /* Font sizes balanced for projection and readability */
+            --font-size-sm: 1.125rem;    /* 18px */
+            --font-size-base: 1.25rem;   /* 20px */
+            --font-size-lg: 1.5rem;      /* 24px */
+            --font-size-xl: 1.875rem;    /* 30px */
+            --font-size-2xl: 2.25rem;    /* 36px */
+            --font-size-3xl: 3rem;       /* 48px */
+            --font-size-4xl: 4rem;       /* 64px */
+            --font-size-5xl: 5rem;       /* 80px */
+
+            /* Enhanced brightness for projection */
+            --text-brightness: 1.15;
 
             --transition-slow: 1s ease;
         }
@@ -28,22 +41,26 @@
             align-items: center;
             text-align: center;
             overflow: hidden;
+            font-size: var(--font-size-base);
+            font-weight: 500;
+            filter: brightness(var(--text-brightness));
         }
 
         .slide-container {
-            max-width: 900px;
-            padding: 2rem;
+            max-width: 1200px;
+            padding: 3rem;
         }
 
         .main-title {
-            font-size: 4rem;
-            font-weight: 700;
+            font-size: var(--font-size-4xl);
+            font-weight: 800;
             color: var(--primary-title);
             margin-bottom: 2rem;
             line-height: 1.2;
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(20px);
             transition: all var(--transition-slow);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .main-title.revealed {
@@ -52,14 +69,15 @@
         }
 
         .subtitle {
-            font-size: 1.5rem;
+            font-size: var(--font-size-xl);
             color: var(--secondary-text);
-            font-weight: 300;
+            font-weight: 400;
             line-height: 1.4;
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(15px);
             transition: all var(--transition-slow) 0.3s;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
+            filter: brightness(var(--text-brightness));
         }
 
         .subtitle.revealed {
@@ -68,12 +86,13 @@
         }
 
         .presenter-info {
-            font-size: 1rem;
+            font-size: var(--font-size-lg);
             color: var(--secondary-text);
-            font-weight: 400;
+            font-weight: 500;
             opacity: 0;
-            transform: translateY(15px);
+            transform: translateY(10px);
             transition: all var(--transition-slow) 0.6s;
+            filter: brightness(var(--text-brightness));
         }
 
         .presenter-info.revealed {
