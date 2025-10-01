@@ -7,9 +7,16 @@
       "Bash(dir:*)",
       "WebSearch",
       "WebFetch(domain:github.com)",
-      "WebFetch(domain:sindresorhus.com)"
+      "WebFetch(domain:sindresorhus.com)",
+      "Bash(for dir in papers/researches/idea_*)",
+      "Bash(do echo \"=== $dir ===\")",
+      "Bash(head:*)",
+      "Bash(done)",
+      "Bash(mv:*)",
+      "WebFetch(domain:medium.com)"
     ],
     "deny": [],
     "ask": []
-  }
+  },
+  "outputStyle": "Explanatory"
 }
