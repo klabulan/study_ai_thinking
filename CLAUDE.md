@@ -1,5 +1,44 @@
 # AI Presentation Repository Configuration
 
+---
+
+# ⚠️ MANDATORY FIRST CHECK - READ THIS BEFORE ANY ACTION ⚠️
+
+## 🛑 STOP: Is This Major Content Work?
+
+**Before doing ANYTHING, check if the user request matches ANY of these patterns:**
+
+### 🚨 **TRIGGER PATTERNS → MUST INVOKE content-director**
+
+| User Says | Pattern Match | Action |
+|-----------|---------------|--------|
+| "create a post/blog/article" | ✅ Blog post creation | 🛑 INVOKE content-director |
+| "write a paper/document" | ✅ Paper creation | 🛑 INVOKE content-director |
+| "create a slide/presentation" | ✅ Presentation creation | 🛑 INVOKE content-director |
+| "create a plan for X" | ✅ Planning major content | 🛑 INVOKE content-director |
+| "design/outline/structure X" | ✅ Planning major content | 🛑 INVOKE content-director |
+| "research and write X" | ✅ Research + content | 🛑 INVOKE research-coordinator |
+| "improve/rewrite/revise X" (major) | ✅ Major revision | 🛑 INVOKE content-director |
+
+### ✅ **OK TO DO DIRECTLY**
+
+| User Says | Pattern Match | Action |
+|-----------|---------------|--------|
+| "fix typo in X" | ✅ Minor edit | ✅ Use Edit tool directly |
+| "change 'foo' to 'bar'" | ✅ Small correction | ✅ Use Edit tool directly |
+| "read/analyze/explain X" | ✅ Read-only | ✅ Use Read/Grep/analysis directly |
+| "search for X" | ✅ Search task | ✅ Use Glob/Grep directly |
+
+### 🔥 **CRITICAL KEYWORDS THAT DEMAND AGENT INVOCATION**
+
+```
+create | write | design | plan | outline | structure | compose | draft | develop
+```
+
+**If user request contains ANY of these + content type (post/blog/paper/slide), you MUST invoke content-director.**
+
+---
+
 ## Project Overview
 This repository contains materials for the presentation **"Парадокс Умного Незнакомца: Как ИИ Понимает, Думает и Отвечает"** - a comprehensive exploration of Large Language Model mechanics designed for an intellectually curious Russian-speaking audience with basic AI knowledge.
 
@@ -190,11 +229,215 @@ Transition Phrases:
 - [ ] Note which examples resonated most
 - [ ] Update materials based on audience feedback
 
+---
+
+## 🚨 CRITICAL: Main Agent Content Creation Protocol
+
+### ⚠️ PRE-ACTION CHECKPOINT (MANDATORY)
+
+**❌ FAILURE EXAMPLE - What NOT to Do:**
+
+```
+User: "create preliminary plan of post, research plan..."
+Main Agent: *Creates todos, reads files, starts mkdir, plans to write directly*
+❌ WRONG - This is major content creation (blog post planning)
+```
+
+**✅ CORRECT APPROACH:**
+
+```
+User: "create preliminary plan of post, research plan..."
+Main Agent: "This matches 'create a plan' pattern → Major content creation
+             I must invoke content-director first."
+Main Agent: *Uses Task tool with content-director subagent*
+✅ CORRECT - Director plans, then main agent executes
+```
+
+---
+
+**BEFORE ANY Write/Edit tool use on content:**
+
+```
+Q1: Major content creation (new slides, papers, blog posts, analysis)?
+    YES → 🛑 INVOKE content-director for planning
+    NO  → Continue to Q2
+
+Q2: Small improvement (typo fix, minor clarification, formatting)?
+    YES → ✅ OK to edit directly
+    NO  → Continue to Q3
+
+Q3: Research task requiring multi-source investigation?
+    YES → 🛑 INVOKE research-coordinator OR research-intelligence-agent
+    NO  → Continue to Q4
+
+Q4: Technical config file (.gitignore, package.json, metadata)?
+    YES → ✅ OK to edit directly
+    NO  → Continue to Q5
+
+Q5: Read-only analysis (no file changes)?
+    YES → ✅ OK to do directly
+    NO  → 🛑 INVOKE content-director for planning
+```
+
+### Content Types Requiring Director Planning
+
+**Must use content-director for:**
+- **Presentation materials**: New slides, speech notes, extended analysis
+- **Papers**: Research papers, technical documents, academic writing
+- **Blog posts**: Articles, essays, structured blog content
+- **Major revisions**: Restructuring, rewriting, significant content changes
+- **Multi-file updates**: Changes affecting multiple files
+
+**Can edit directly (small improvements):**
+- Typo corrections
+- Minor clarifications (1-2 sentences)
+- Formatting fixes
+- Broken link repairs
+- Small factual corrections with clear source
+
+### Absolute Rules
+
+**❌ YOU (Main Agent) CANNOT:**
+- Write new slides, papers, or blog posts directly
+- Create major content without director planning
+- Make significant revisions without review cycle
+- Skip write-review-improve for quality-critical content
+
+**✅ YOU CAN:**
+- Read files, search (Glob/Grep)
+- Analyze and answer questions
+- Create task directories: `mkdir -p tasks/task-name/`
+- Write planning docs in `/tasks/` ONLY
+- Edit technical configs
+- Make small improvements (see above)
+- Coordinate research tasks
+
+**NO EXCEPTIONS. QUALITY REQUIRES PROCESS.**
+
+---
+
+## Agent Orchestration Protocol
+
+### Agent Roles & Responsibilities
+
+```
+Main Agent (YOU)
+  └─ Gatekeeper: Distinguishes major vs minor work
+  └─ Invoker: Launches director/coordinator for complex tasks
+  └─ Executor: Runs specialists per plan
+  └─ Reporter: Relays results to user
+  └─ Direct Editor: Handles small improvements only
+
+Content Director (content-director)
+  └─ Planner: Creates detailed execution plans for all content
+  └─ Coordinator: Writes agent-instructions files
+  └─ Context Analyzer: Reviews existing materials
+  └─ Workflow Designer: Plans write-review-improve cycles
+  └─ NEVER: Creates content or executes plan
+
+Content Writer (content-writer)
+  └─ Presentation Specialist: Slides, speech notes (Dr. Elena voice)
+  └─ Paper Specialist: Research papers, technical docs
+  └─ Blog Specialist: Articles, essays, blog posts
+  └─ Executor: Follows director's detailed instructions
+  └─ Voice Maintainer: Adapts to content type requirements
+
+Content Reviewer (content-reviewer)
+  └─ Quality Critic: Detailed assessment per content type
+  └─ Standards Verifier: Checks against project requirements
+  └─ Improvement Recommender: Specific, actionable suggestions
+  └─ Source Validator: Verifies citations and claims
+
+Research Coordinator (research-coordinator)
+  └─ Research Planner: Orchestrates multi-source research
+  └─ Source Verifier: Ensures academic/industry credibility
+  └─ Synthesis Director: Coordinates research-intelligence-agent
+  └─ Memory Manager: Stores results in /tasks/ subfolders
+```
+
+### Mandatory Task Flow
+
+```
+User Request (major content creation/revision)
+    ↓
+Main Agent: "I'll get plan from Content Director, then execute it."
+    ↓
+Main Agent invokes director:
+  Task tool: subagent_type: content-director
+  prompt: "Create execution plan for: [task description]
+          Content type: [presentation/paper/blog]
+          Scope: [new creation/major revision/improvement]"
+    ↓
+Director (PLANNING ONLY):
+  - Reads context (presentation/, papers/, research/)
+  - Creates task structure in /tasks/task-name/
+  - Writes plan.md + agent-instructions-*.md
+  - Returns plan
+  - STOPS (does NOT execute)
+    ↓
+Main Agent (EXECUTION):
+  - Reads tasks/[name]/plan.md
+  - For each step:
+    • Reads agent-instructions-stepN.md
+    • Invokes specialist (content-writer/reviewer/research-coordinator)
+    • Waits for completion
+    • Stores intermediate results in /tasks/task-name/
+    • Marks todo completed
+  - Verifies results
+  - Reports to user
+```
+
+**CRITICAL: Director PLANS. Main agent EXECUTES. Specialists CREATE.**
+
+### Main Agent Verification: Scope Calibration Check
+
+**When content-director returns a plan, main agent must verify:**
+
+1. **Check for scope calibration section:**
+   ```markdown
+   Does plan.md contain "## Scope Calibration Check ✅" section?
+   ```
+
+2. **If missing:**
+   - Don't proceed with execution
+   - Ask director: "Please check /.claude/reference/content-scoping-guide.md and add scope calibration to plan"
+   - Director re-submits plan with scope check
+
+3. **If present, review assessment:**
+   - **Ratio 0.5-1.5 (Calibrated):** ✅ Proceed with confidence
+   - **Ratio >2.5 (Over-scope):** ⚠️ Review justification
+     - Is justification strong and specific?
+     - Are mitigation strategies clear?
+     - If justification weak: Request director to revise scope OR strengthen justification
+
+4. **Proceed with execution** once scope verified
+
+**Purpose:** Prevent scope creep before time is invested in execution.
+
+### Research Workflow
+
+```
+Research Request (multi-source investigation)
+    ↓
+Option A: Direct research-intelligence-agent
+  - For straightforward research tasks
+  - Single focused research question
+  - Main agent invokes directly
+    ↓
+Option B: Through research-coordinator
+  - For complex multi-phase research
+  - Research requiring synthesis across phases
+  - Coordinator directs research-intelligence-agent
+  - Results stored in /tasks/research-name/
+```
+
+---
+
 ## Command Guidelines for AI Assistant
 
 ### Critical Development Principles - UPDATED APPROACH
 
-When developing presentation materials:
+When developing ANY content (presentation, papers, blogs):
 
 1. **AI Content First Philosophy**:
    - **Technical depth** - explain tokenization, layer specialization, generation mechanics
@@ -344,6 +587,268 @@ The presentation succeeds when:
 **Streamlined Efficiency**: Russian tech audiences prefer dense, information-rich content over multiple simple explanations. Trust their ability to follow complex technical analogies.
 
 **Source Credibility**: Academic backing creates trust foundation, especially when explaining AI mechanisms that seem almost magical.
+
+---
+
+## 🔥 Major Changes Protocol: Roast-Before-Implement
+
+**Before implementing changes affecting core project systems, follow graduated review protocol.**
+
+### Change Classification
+
+#### Small Changes (<2 hours, low risk)
+**Examples:**
+- Fix typo in agent file
+- Clarify existing protocol
+- Add example to documentation
+- Update README formatting
+
+**Protocol:**
+- ✅ Implement directly
+- ✅ Document in git commit message
+- ❌ No roast required
+
+---
+
+#### Medium Changes (2-8 hours, medium risk)
+**Examples:**
+- Add new protocol section
+- Modify agent responsibilities
+- Create new template
+- Update workflow guidance
+
+**Protocol:**
+
+1. **Create proposal** in `tasks/[change-name]/proposal.md`:
+   ```markdown
+   # Proposal: [Change Name]
+
+   ## Problem
+   [What's wrong? Evidence of the problem]
+
+   ## Proposed Solution
+   [What will change? How it addresses the problem]
+
+   ## Implementation Plan
+   [Step-by-step: what files, what changes, time estimate]
+
+   ## Risks
+   [What could go wrong? Breaking changes?]
+   ```
+
+2. **Self-review checklist:**
+   - [ ] Clear evidence of problem? (not speculation)
+   - [ ] Solution addresses root cause? (not symptom)
+   - [ ] Acceptable risk/benefit ratio?
+   - [ ] Could this break anything?
+   - [ ] Are we solving right problem?
+
+3. **Implement if checklist passes**
+
+4. **Document** in `.claude/reflections/improvements/implemented.md`
+
+**Optional:** Request roast if uncertainty high
+
+---
+
+#### Large Changes (>8 hours, high risk)
+**Examples:**
+- Major architectural changes
+- New agent system
+- Workflow overhaul
+- Process framework changes
+
+**Protocol: MANDATORY ROAST**
+
+1. **Create detailed proposal** in `tasks/[change-name]/`:
+   - `proposal.md` (problem, solution, implementation, risks)
+   - `rationale.md` (evidence, alternatives considered)
+   - `implementation-plan.md` (step-by-step with time estimates)
+   - `risk-assessment.md` (worst-case scenarios, mitigation)
+
+2. **Invoke content-reviewer for brutal assessment:**
+   ```
+   description: "Critical review: [change name]"
+   prompt: |
+     ROASTING MODE: Maximum brutality. Find every flaw.
+
+     Review: tasks/[change-name]/proposal.md
+
+     Critical Questions:
+     1. Will this ACTUALLY solve the stated problem?
+     2. What could go wrong? (worst-case scenarios)
+     3. Are we solving the RIGHT problem?
+     4. What are we MISSING?
+     5. Is this premature optimization?
+     6. What's the EVIDENCE supporting this?
+     7. What ALTERNATIVES should we consider?
+     8. Will this be followed under pressure? (if protocol)
+     9. Time estimate realistic? (check planning fallacy)
+     10. What's the simplest version that could work?
+
+     Be skeptical. Find flaws. Suggest alternatives.
+
+     Rate: [Critical Issues] / [High-Impact Issues] / [Polish Issues]
+     Recommend: APPROVE / REVISE / REJECT / ALTERNATIVES
+   ```
+
+3. **Implement ONLY if review shows:**
+   - ✅ Clear evidence of problem
+   - ✅ Solution addresses root cause
+   - ✅ Acceptable risk/benefit
+   - ✅ No better alternatives
+   - ✅ Critical issues resolved
+
+4. **If review finds critical issues:**
+   - Revise proposal addressing all critical points
+   - Re-roast (can be lighter review focusing on changes)
+   - Document iteration in proposal
+
+5. **Document decision** in `.claude/reflections/improvements/`:
+   - Original proposal files
+   - Roast review file
+   - Revisions made (if any)
+   - Final implementation notes
+   - Measurement plan (check after 3-5 uses)
+
+---
+
+### Accountability & Measurement
+
+**Track implementation compliance:**
+- Small changes: No tracking needed (move fast)
+- Medium changes: Log in improvements/ with self-review results
+- Large changes: Full documentation required (all files)
+
+**Measure outcomes quarterly:**
+- Changes with roast: Success rate, issues encountered, time saved/wasted
+- Changes without roast: Success rate, issues encountered
+- Compare: Is roast worth the overhead?
+
+**Adjust thresholds:**
+- If roasts find no issues consistently: Raise threshold (fewer roasts)
+- If changes without roast fail frequently: Lower threshold (more roasts)
+- Base on data, not dogma
+
+---
+
+### Philosophy
+
+**Not about perfection, about risk management:**
+- Small changes: Low risk → move fast
+- Medium changes: Medium risk → self-check
+- Large changes: High risk → external validation
+
+**ROI Evidence:**
+- Roast cycle: 9 hours invested, 16-20 hours waste avoided = 78% efficiency gain
+- Self-review: <30 min, catches obvious flaws
+- No review: Fast but risky (some failures inevitable)
+
+**Remember:** Process exists to prevent wasted effort, not to slow down good work.
+
+---
+
+## Agent System Reference
+
+### Available Agents
+
+**Located in:** `.claude/agents/`
+
+1. **content-director** (`content-director.md`)
+   - Role: Strategic planner for all content creation
+   - Use: Plans presentation, papers, blogs with write-review-improve cycles
+   - Returns: Detailed execution plans in `/tasks/`
+
+2. **content-writer** (`content-writer.md`)
+   - Role: Multi-format content specialist
+   - Voices: Dr. Elena Cognitive (presentation), Academic (papers), Accessible (blogs)
+   - Use: Creates content following director's plans
+
+3. **content-reviewer** (`content-reviewer.md`)
+   - Role: Quality assurance specialist
+   - Use: Reviews content against project standards
+   - Returns: Detailed assessments with actionable improvements
+
+4. **research-coordinator** (`research-coordinator.md`)
+   - Role: Research orchestration specialist
+   - Use: Coordinates complex multi-phase research
+   - Delegates: research-intelligence-agent for actual research
+
+### Quick Usage Examples
+
+#### Create New Presentation Slide
+
+```
+User: "Create a slide explaining tokenization"
+
+Main Agent:
+1. Recognizes: Major content creation
+2. Invokes: content-director
+   prompt: "Create execution plan for tokenization slide
+           Content type: presentation"
+3. Director returns: plan in tasks/tokenization-slide/
+4. Main Agent executes plan:
+   - Invokes content-writer (creates content)
+   - Invokes content-reviewer (reviews quality)
+   - Invokes content-writer again (improves based on review)
+5. Reports: "Slide created at [path]"
+```
+
+#### Write Research Paper Section
+
+```
+User: "Write the introduction for my encoding paper"
+
+Main Agent:
+1. Recognizes: Major content creation
+2. Invokes: content-director
+   prompt: "Create execution plan for paper introduction
+           Content type: paper"
+3. Director returns: plan in tasks/paper-intro/
+4. Main Agent executes plan:
+   - Optional: research-coordinator (if new research needed)
+   - Invokes content-writer (creates intro)
+   - Invokes content-reviewer (reviews quality)
+   - Invokes content-writer (revises)
+5. Reports: "Introduction created at [path]"
+```
+
+#### Fix Typo (Direct Edit)
+
+```
+User: "Fix typo in slide 3"
+
+Main Agent:
+1. Recognizes: Small improvement
+2. Uses Edit tool directly
+3. Reports: "Typo fixed"
+
+NO agent invocation needed for trivial changes.
+```
+
+### When to Use Each Agent
+
+**content-director:**
+- Always for new content creation
+- Major revisions/rewrites
+- Multi-file updates
+- Anytime write-review-improve cycle needed
+
+**content-writer:**
+- Never invoke directly (main agent does)
+- Always via content-director's plan
+- Creates presentation/paper/blog content
+
+**content-reviewer:**
+- Never invoke directly (main agent does)
+- Always via content-director's plan
+- Reviews quality before finalization
+
+**research-coordinator:**
+- Complex multi-phase research
+- Research needing synthesis
+- Source verification critical
+- Alternative: invoke research-intelligence-agent directly for simple research
 
 ---
 
